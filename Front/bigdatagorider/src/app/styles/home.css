@@ -1,0 +1,229 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+
+    font-family: 'Montserrat', cursive;
+}
+
+.header {
+    height: 90px;
+    display: flex;
+    justify-items: center;
+    justify-content: space-between;
+    padding: 20px;
+    background-color: black;
+    color: white;
+    position: relative;
+    align-items: center;
+}
+
+.logo {
+    padding-left: 20px;
+    width: 170px;
+    height: auto;
+}
+
+.logo1 {
+    width: 250px;
+    height: auto;
+}
+
+.mobilidade {
+    display: flex;
+    justify-content: space-evenly;
+}
+
+.aviao {
+    width: 30px;
+    height: auto;
+}
+
+.aviaozao {
+    display: flex;
+    flex-direction: column;
+    gap:20px;
+}
+
+.aviaozinho{
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+
+
+.li {
+    display: flex;
+    gap: 20px;
+    list-style: none;
+    cursor: pointer;
+}
+
+.ref:hover{
+    text-decoration: underline;
+}
+
+.botao {
+    border: 0px;
+    border-radius: 10px;
+    padding: 6px;
+    width: fit-content;
+    transition: background-color 0.5s ease;
+    cursor: pointer;
+    background-color: #ff0000;
+    color: white;
+}
+
+.botao:hover {
+    background-color: #E90000;
+}
+
+section {
+   padding: 30px;
+   display: flex;
+   flex-direction: column;
+   gap: 10px
+}
+
+.prioridade {
+    font-size: 40px;
+}
+
+.escolher {
+    margin-top: 150px;
+    padding: 15px;
+    text-align: center;
+} 
+
+.rectangle {
+    width: 150px;
+    height: auto;
+    border-radius: 10px;
+}
+
+.container {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 40px; 
+    text-align: center;
+}
+
+.circulo {
+    width: 100px;
+    height: auto;
+}
+
+.experimente {
+    margin-top:10px;
+    display:flex;
+    flex-direction: column;
+    align-items: left;
+    gap: 10px;
+}
+
+.meio{
+    padding: 50px;
+    text-align: center;
+}
+
+.quadrado {
+    display: flex;
+    justify-content: space-evenly;
+}
+
+.square {
+    border-radius: 15px;
+    width: 200px;
+    height: 230px; 
+    background-color: black;
+    padding: 30px;
+    text-align: center;
+    color:white;
+}
+
+.pronto {
+    padding: 10px;
+    display: flex;
+    justify-content: space-evenly;
+    gap: 15px;
+}
+
+.comeco{
+    display: flex;
+    flex-direction: column;
+    gap: 30px;
+}
+
+.antesdafaq {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-evenly;
+}
+
+.faq {
+    width: 400px;
+    margin: 30px auto;
+    display: flex;
+    flex-direction: column;
+}
+  
+.item {
+    margin-bottom: 10px;
+}
+  
+.pergunta {
+    background-color: red;
+    color: white;
+    padding: 10px;
+    cursor: pointer;
+    border-radius: 6px;
+}
+  
+.resposta {
+    background-color: #ecf0f1;
+    padding: 10px;
+    display: none;
+    border-radius: 6px;
+    margin-top: 5px;
+    transition: 1s ease;
+}
+
+.final {
+    display: flex;
+    justify-content: space-evenly;
+    padding: 30px;
+    width: auto;
+    height: 250px;
+    background-color: black;
+    color: white;
+}
+
+li {
+    list-style-type: none;
+}
+
+.links {
+    cursor: pointer;
+    display: flex;
+}
+
+.links a{
+    list-style: none;
+}
+
+.links:hover {
+    text-decoration:underline;
+}
+
+.redes {
+    gap:10px;
+    width: 100%;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    cursor: pointer;
+    img{
+        height: 25px;
+    }
+}
