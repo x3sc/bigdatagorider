@@ -1,6 +1,6 @@
 "use client";
 import Image from "next/image";
-import "../styles/style.css";
+import "./style.css";
 import { useState } from "react";
 
 export default function Cadastro() {
