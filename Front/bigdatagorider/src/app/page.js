@@ -8,6 +8,9 @@ import Image from 'next/image';
 export default function Home() {
   const router = useRouter();
   const [activeIndex, setActiveIndex] = useState(null);
+  const handleLoginClick = () => {
+    router.push('/Login');
+  };
 
   // Dados do FAQ
   const faqItems = [
@@ -55,7 +58,7 @@ export default function Home() {
           </ul>
         </div>
         <div>
-          <button className="botao">Fazer Login</button>
+          <button className="botao" onClick={handleLoginClick}>Fazer Login</button>
           <button className="botao">Cadastre-se</button>
         </div>
       </nav>
