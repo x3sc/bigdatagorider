@@ -2,8 +2,9 @@
 
 import React, { useState } from "react";
 import { useRouter } from "next/navigation";
-import "./styles/home.css";
 import Image from 'next/image';
+import Header from "@/components/header";
+import styles from './styles/Home.module.css';
 
 export default function Home() {
   const router = useRouter();
@@ -39,193 +40,172 @@ export default function Home() {
 
   return (
     <main>
-      <nav className="header">
-        <div>
-          <Image 
-            src="/assets/home/LOGO.png" 
-            className="logo"
-            width={1200}
-            height={630}
-            alt="Logo GoRide"
-          />
-        </div>
-        <div>
-          <ul className="li">
-            <li><a className="ref">Início</a></li>
-            <li><a className="ref">Viajar</a></li>
-            <li><a className="ref">Dirigir</a></li>
-            <li><a className="ref">Sobre Nós</a></li>
-          </ul>
-        </div>
-        <div>
-          <button className="botao" onClick={handleLoginClick}>Fazer Login</button>
-          <button className="botao">Cadastre-se</button>
-        </div>
-      </nav>
-
-      <section>
-        <div className="jornada">
+      <div>
+      <Header onLoginClick={handleLoginClick} />
+      </div>
+      <section className={styles.section}>
+        <div className={styles.jornada}>
           <p>Bem-Vindo(a) à GoRide</p>
-          <h1 className="prioridade">Sua Jornada,<br/>nossa prioridade</h1>
-          <p>Mobilidade sob medida, onde e quando <br/>você precisar</p>
+          <h1 className={styles.prioridade}>Sua Jornada,<br />nossa prioridade</h1>
+          <p>Mobilidade sob medida, onde e quando <br />você precisar</p>
         </div>
         <div>
-          <button className="botao">Quero Começar Agora</button>
+          <button className={styles.botao}>Quero Começar Agora</button>
         </div>
       </section>
 
-      <div className="mobilidade">
+      <div className={styles.mobilidade}>
         <div>
-          <Image 
-            src="/assets/home/retangulo.png" 
-            className="logo"
+          <Image
+            src="/assets/home/retangulo.png"
+            className={styles.logo}
             width={1200}
             height={630}
             alt="Imagem de mobilidade"
           />
         </div>
-        <div className="aviaozao">
-          <h1>Encontre a Mobilidade<br/>Perfeita para você</h1>
+        <div className={styles.aviaozao}>
+          <h1>Encontre a Mobilidade<br />Perfeita para você</h1>
           <p>Na <strong>Go Ride</strong>, conectamos você às <strong>melhores soluções</strong>
-            de<br/><strong>transporte</strong>, seja para alugar,comprar, ou contratar serviços<br/>com segurança e
+            de<br /><strong>transporte</strong>, seja para alugar,comprar, ou contratar serviços<br />com segurança e
             praticidade</p>
-          <div className="aviaozinho">
-            <Image 
-              src="/assets/home/logo-aviao 1.png" 
-              className="aviao"
+          <div className={styles.aviaozinho}>
+            <Image
+              src="/assets/home/logo-aviao 1.png"
+              className={styles.aviao}
               width={1200}
               height={630}
               alt="Ícone de avião"
             />
             <p>Viaje com liberdade</p>
           </div>
-          <div className="aviaozinho">
-            <Image 
-              src="/assets/home/logo-aviao 1.png" 
-              className="aviao"
+          <div className={styles.aviaozinho}>
+            <Image
+              src="/assets/home/logo-aviao 1.png"
+              className={styles.aviao}
               width={1200}
               height={630}
               alt="Ícone de avião"
             />
             <p>Compre com Confiança</p>
           </div>
-          <div className="aviaozinho">
-            <Image 
-              src="/assets/home/logo-aviao 1.png" 
-              className="aviao"
+          <div className={styles.aviaozinho}>
+            <Image
+              src="/assets/home/logo-aviao 1.png"
+              className={styles.aviao}
               width={1200}
               height={630}
               alt="Ícone de avião"
             />
             <p>Contrate serviços sob medida</p>
           </div>
-          <div className="experimente">
+          <div className={styles.experimente}>
             <strong>Experimente agora</strong>
-            <button className="botao">Cadastre-se em 1 minuto</button>
+            <button className={styles.botao}>Cadastre-se em 1 minuto</button>
           </div>
         </div>
       </div>
 
-      <div className="escolher">
+      <div className={styles.escolher}>
         <h1>Por que escolher a Go Ride ?</h1>
-        <Image 
-          src="/assets/home/Rectangle 1018.png" 
-          className="rectangle"
+        <Image
+          src="/assets/home/Rectangle 1018.png"
+          className={styles.rectangle}
           width={1200}
           height={630}
           alt="Retângulo decorativo"
         />
       </div>
 
-      <div className="container">
-        <div className="bola">
-          <Image 
-            src="/assets/home/computador.png" 
-            className="circulo"
+      <div className={styles.container}>
+        <div className={styles.bola}>
+          <Image
+            src="/assets/home/computador.png"
+            className={styles.circulo}
             width={1200}
             height={630}
             alt="Ícone de computador"
           />
-          <p><b>Processo <br/>100% Online</b></p>
-          <p>Veículos novos<br/>e revisados regularmente</p>
+          <p><b>Processo <br />100% Online</b></p>
+          <p>Veículos novos<br />e revisados regularmente</p>
         </div>
-        <div className="bola">
-          <Image 
-            src="/assets/home/Group 1171275239.png" 
-            className="circulo"
+        <div className={styles.bola}>
+          <Image
+            src="/assets/home/Group 1171275239.png"
+            className={styles.circulo}
             width={1200}
             height={630}
             alt="Ícone de ofertas"
           />
-          <p><b>Ofertas <br/> exclusivas</b></p>
-          <p>aluguel de curto ou longo<br/>prazo, financiamento facilitado</p>
+          <p><b>Ofertas <br /> exclusivas</b></p>
+          <p>aluguel de curto ou longo<br />prazo, financiamento facilitado</p>
         </div>
-        <div className="bola">
-          <Image 
-            src="/assets/home/Group 1171275240.png" 
-            className="circulo"
+        <div className={styles.bola}>
+          <Image
+            src="/assets/home/Group 1171275240.png"
+            className={styles.circulo}
             width={1200}
             height={630}
             alt="Ícone de flexibilidade"
           />
-          <p><b>Flexibilidade<br/>total</b></p>
-          <p>Seguro completo e assistência 24/7<br/>para sua tranquilidade</p>
+          <p><b>Flexibilidade<br />total</b></p>
+          <p>Seguro completo e assistência 24/7<br />para sua tranquilidade</p>
         </div>
-        <div className="bola">
-          <Image 
-            src="/assets/home/Group 1171275241.png" 
-            className="circulo"
+        <div className={styles.bola}>
+          <Image
+            src="/assets/home/Group 1171275241.png"
+            className={styles.circulo}
             width={1200}
             height={630}
             alt="Ícone de suporte"
           />
-          <p><b>Suporte<br/>dedicado</b></p>
+          <p><b>Suporte<br />dedicado</b></p>
           <p>Contratação digital com suporte especializado</p>
         </div>
       </div>
 
-      <div className="meio">
+      <div className={styles.meio}>
         <h1>Como Funciona</h1>
       </div>
 
-      <div className="quadrado">
-        <div className="square">1 - Cadastre-se<br/>Rápido,simples e gratuito.</div>
-        <div className="square">2 - Escolha seu serviço<br/>Aluguel, compra ou transporte.</div>
-        <div className="square">3 - Aproveite!<br/>Tudo resolvido em poucos cliques.</div>
+      <div className={styles.quadrado}>
+        <div className={styles.square}>1 - Cadastre-se<br />Rápido,simples e gratuito.</div>
+        <div className={styles.square}>2 - Escolha seu serviço<br />Aluguel, compra ou transporte.</div>
+        <div className={styles.square}>3 - Aproveite!<br />Tudo resolvido em poucos cliques.</div>
       </div>
 
-      <div className="meio">
-        <h1>Depoimento de<br/> Quem Já Usa</h1>
-        <Image 
-          src="/assets/home/Rectangle 1018.png" 
-          className="rectangle"
+      <div className={styles.meio}>
+        <h1>Depoimento de<br /> Quem Já Usa</h1>
+        <Image
+          src="/assets/home/Rectangle 1018.png"
+          className={styles.rectangle}
           width={1200}
           height={630}
           alt="Retângulo decorativo"
         />
       </div>
 
-      <div className="quadrado">
-        <div className="square"></div>
-        <div className="square"></div>
-        <div className="square"></div>
+      <div className={styles.quadrado}>
+        <div className={styles.square}></div>
+        <div className={styles.square}></div>
+        <div className={styles.square}></div>
       </div>
 
-      <div className="meio">
-        <button className="botao">Quero fazer parte também</button>
+      <div className={styles.meio}>
+        <button className={styles.botao}>Quero fazer parte também</button>
       </div>
 
-      <div className="pronto">
-        <div className="comeco">
+      <div className={styles.pronto}>
+        <div className={styles.comeco}>
           <h1>Pronto para Começar ?</h1>
-          <p>Seja para alugar, comprar ou trabalhar conosco,<br/> sua jornada começa aqui!</p>
+          <p>Seja para alugar, comprar ou trabalhar conosco,<br /> sua jornada começa aqui!</p>
           <strong>Cadastre-se agora e ganhe benefício exclusivo</strong>
-          <button className="botao">Vamos lá</button>
+          <button className={styles.botao}>Vamos lá</button>
         </div>
         <div>
-          <Image 
-            src="/assets/home/retangulo.png" 
-            className="logo"
+          <Image
+            src="/assets/home/retangulo.png"
+            className={styles.logo}
             width={1200}
             height={630}
             alt="Imagem decorativa"
@@ -234,23 +214,23 @@ export default function Home() {
       </div>
 
       {/* Seção FAQ Corrigida */}
-      <div className="antesdafaq">
+      <div className={styles.antesdafaq}>
         <div>
-          <div className="retangulo">
-            <Image 
-              src="/assets/home/retangulo.png" 
-              className="logo"
+          <div className={styles.retangulo}>
+            <Image
+              src="/assets/home/retangulo.png"
+              className={styles.logo}
               width={1200}
               height={630}
               alt="Imagem decorativa"
             />
           </div>
-          <div className="faq"> 
+          <div className={styles.faq}>
             <h1>FAQ</h1>
             {faqItems.map((item, index) => (
-              <div className="item" key={index}>
-                <div 
-                  className={`pergunta ${activeIndex === index ? 'active' : ''}`} 
+              <div className={styles.item} key={index}>
+                <div
+                  className={`${styles.pergunta} ${activeIndex === index ? styles.active : ""}`}
                   onClick={() => toggleAnswer(index)}
                 >
                   <p>{item.pergunta}</p>
@@ -258,8 +238,8 @@ export default function Home() {
                     {activeIndex === index ? '−' : '+'}
                   </span>
                 </div>
-                <div 
-                  className={`resposta ${activeIndex === index ? 'show' : ''}`}
+                <div
+                  className={`${styles.resposta} ${activeIndex === index ? styles.show : ""}`}
                 >
                   <p>{item.resposta}</p>
                 </div>
@@ -269,41 +249,41 @@ export default function Home() {
         </div>
       </div>
 
-      <div className="final">
+      <div className={styles.final}>
         <div style={{ width: '300px', padding: '20px' }}>
-          <Image 
-            src="/assets/home/LOGO 1.png" 
-            className="logo1"
+          <Image
+            src="/assets/home/LOGO 1.png"
+            className={styles.logo1}
             width={1200}
             height={630}
             alt="Logo alternativo"
           />
-          <div className="redes">
-            <Image 
+          <div className={styles.redes}>
+            <Image
               src="/assets/home/youtube-logo-white 1.png"
               width={1200}
               height={630}
               alt="YouTube"
             />
-            <Image 
+            <Image
               src="/assets/home/X_logo_2023_(white) 1.png"
               width={1200}
               height={630}
               alt="Twitter/X"
             />
-            <Image 
+            <Image
               src="/assets/home/Square-Facebook-Logo-PNG-Pic 1.png"
               width={1200}
               height={630}
               alt="Facebook"
             />
-            <Image 
+            <Image
               src="/assets/home/Design sem nome (81) 1.png"
               width={1200}
               height={630}
               alt="Rede social"
             />
-            <Image 
+            <Image
               src="/assets/home/Design sem nome (82) 1.png"
               width={1200}
               height={630}
@@ -314,25 +294,25 @@ export default function Home() {
         <div>
           <strong>Empresa</strong>
           <ul>
-            <li><a className="links">O que oferecemos</a></li>
-            <li><a className="links">Investidores</a></li>
-            <li><a className="links">Blog</a></li>
+            <li><a className={styles.links}>O que oferecemos</a></li>
+            <li><a className={styles.links}>Investidores</a></li>
+            <li><a className={styles.links}>Blog</a></li>
           </ul>
         </div>
         <div>
           <strong>Serviços</strong>
           <ul>
-            <li><a className="links">Viajar</a></li>
-            <li><a className="links">Dirigir</a></li>
-            <li><a className="links">Fazer entregas</a></li>
-            <li><a className="links"> Aluguéis</a></li>
+            <li><a className={styles.links}>Viajar</a></li>
+            <li><a className={styles.links}>Dirigir</a></li>
+            <li><a className={styles.links}>Fazer entregas</a></li>
+            <li><a className={styles.links}> Aluguéis</a></li>
           </ul>
         </div>
         <div>
           <strong>Cidadania global</strong>
           <ul>
-            <li><a className="links">Segurança</a></li>
-            <li><a className="links">Sustentabilidade</a></li>
+            <li><a className={styles.links}>Segurança</a></li>
+            <li><a className={styles.links}>Sustentabilidade</a></li>
           </ul>
         </div>
       </div>

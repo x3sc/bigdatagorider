@@ -1,11 +1,4 @@
-* {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-
-    font-family: 'Montserrat', cursive;
-}
-
+/* Estilos específicos da Home */
 .header {
     height: 90px;
     display: flex;
@@ -42,16 +35,14 @@
 .aviaozao {
     display: flex;
     flex-direction: column;
-    gap:20px;
+    gap: 20px;
 }
 
-.aviaozinho{
+.aviaozinho {
     display: flex;
     align-items: center;
     gap: 10px;
 }
-
-
 
 .li {
     display: flex;
@@ -60,7 +51,7 @@
     cursor: pointer;
 }
 
-.ref:hover{
+.ref:hover {
     text-decoration: underline;
 }
 
@@ -79,11 +70,11 @@
     background-color: #E90000;
 }
 
-section {
-   padding: 30px;
-   display: flex;
-   flex-direction: column;
-   gap: 10px
+.section {
+    padding: 30px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
 }
 
 .prioridade {
@@ -94,7 +85,7 @@ section {
     margin-top: 150px;
     padding: 15px;
     text-align: center;
-} 
+}
 
 .rectangle {
     width: 150px;
@@ -105,7 +96,7 @@ section {
 .container {
     display: flex;
     justify-content: space-between;
-    margin-top: 40px; 
+    margin-top: 40px;
     text-align: center;
 }
 
@@ -115,14 +106,14 @@ section {
 }
 
 .experimente {
-    margin-top:10px;
-    display:flex;
+    margin-top: 10px;
+    display: flex;
     flex-direction: column;
     align-items: left;
     gap: 10px;
 }
 
-.meio{
+.meio {
     padding: 50px;
     text-align: center;
 }
@@ -135,11 +126,11 @@ section {
 .square {
     border-radius: 15px;
     width: 200px;
-    height: 230px; 
+    height: 230px;
     background-color: black;
     padding: 30px;
     text-align: center;
-    color:white;
+    color: white;
 }
 
 .pronto {
@@ -149,7 +140,7 @@ section {
     gap: 15px;
 }
 
-.comeco{
+.comeco {
     display: flex;
     flex-direction: column;
     gap: 30px;
@@ -167,11 +158,11 @@ section {
     display: flex;
     flex-direction: column;
 }
-  
+
 .item {
     margin-bottom: 10px;
 }
-  
+
 .pergunta {
     background-color: red;
     color: white;
@@ -179,7 +170,7 @@ section {
     cursor: pointer;
     border-radius: 6px;
 }
-  
+
 .resposta {
     background-color: #ecf0f1;
     padding: 10px;
@@ -199,31 +190,24 @@ section {
     color: white;
 }
 
-li {
-    list-style-type: none;
-}
-
 .links {
     cursor: pointer;
     display: flex;
 }
 
-.links a{
-    list-style: none;
-}
-
 .links:hover {
-    text-decoration:underline;
+    text-decoration: underline;
 }
 
 .redes {
-    gap:10px;
+    gap: 10px;
     width: 100%;
     display: flex;
     flex-direction: row;
     justify-content: space-between;
     cursor: pointer;
-    img{
-        height: 25px;
-    }
+}
+
+.redes img {
+    height: 25px;
 }
