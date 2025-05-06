@@ -7,12 +7,32 @@ export default function Cadastro() {
   const [showPassword, setShowPassword] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [errors, setErrors] = useState({});
+  const [loading, setLoading] = useState(false);
 
-  const handleLogin = () => {
-    if (!email || !password) {
-      alert('Preencha todos os campos.');
-    } else {
-      alert(`Tentando logar com:\nE-mail: ${email}\nSenha: ${password}`);
+  const validate = () => {
+    const newErrors = {};
+    if (!email) newErrors.email = "E-mail é obrigatório";
+    else if (!/\S+@\S+\.\S+/.test(email)) newErrors.email = "E-mail inválido";
+    
+    if (!password) newErrors.password = "Senha é obrigatória";
+    
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
+
+  const handleLogin = async () => {
+    if (validate()) {
+      setLoading(true);
+      try {
+        // Simulação de chamada API
+        await new Promise(resolve => setTimeout(resolve, 1500));
+        alert(`Login realizado com:\nE-mail: ${email}\nSenha: ${password}`);
+      } catch (error) {
+        console.error("Erro no login:", error);
+      } finally {
+        setLoading(false);
+      }
     }
   };
 
@@ -22,10 +42,11 @@ export default function Cadastro() {
     <main>
       <div className="top-bar">
         <Image 
-          src="https://encurtador.com.br/x28xw" 
+          src="/assets/login/LOGO 1.png" 
           alt="Logo GoRide"
-          width={120}
-          height={40}
+          width={100}
+          height={45}
+          priority
         />
       </div>
 
@@ -34,21 +55,41 @@ export default function Cadastro() {
           <div className="content-wrapper">
             <div className="left">
               <Image 
-                src="/assets/cadastro/foto.png"
+                src="/assets/login/homem 1 (1).png"
                 alt="Homem apontando"
                 width={500}
-                height={300}
+                height={400}
+                style={{
+                  width: '100%',
+                  height: 'auto',
+                  maxWidth: '500px'
+                }}
               />
             </div>
 
             <div className="login-box">
               <h2>Acessar minha conta</h2>
+              
+              <button className="google-btn">
+                <Image 
+                  src="/assets/login/Logo-Google-G.png" 
+                  alt="Google"
+                  width={50}
+                  height={50}
+                 
+                />
+                Continue com o Google
+              </button>
+
               <input 
                 type="email" 
                 placeholder="E-mail"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
+                aria-invalid={!!errors.email}
+                aria-describedby="email-error"
               />
+              {errors.email && <span id="email-error" className="error-message">{errors.email}</span>}
               
               <div className="password-wrapper">
                 <input 
@@ -56,25 +97,43 @@ export default function Cadastro() {
                   placeholder="Senha"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
+                  aria-invalid={!!errors.password}
+                  aria-describedby="password-error"
                 />
-                <Image 
-                  src={showPassword ? 
-                    "https://img.icons8.com/ios-glyphs/30/closed-eye.png" : 
-                    "https://img.icons8.com/ios-glyphs/30/visible--v1.png"}
-                  alt="Mostrar senha"
+                <button 
+                  type="button" 
                   className="toggle-password"
                   onClick={togglePasswordVisibility}
-                  width={30}
-                  height={30}
-                />
+                  aria-label={showPassword ? "Ocultar senha" : "Mostrar senha"}
+                >
+                  <Image 
+                    src={showPassword ? 
+                      "https://img.icons8.com/ios-glyphs/30/closed-eye.png" : 
+                      "https://img.icons8.com/ios-glyphs/30/visible--v1.png"}
+                    alt=""
+                    width={30}
+                    height={30}
+                  />
+                </button>
               </div>
+              {errors.password && <span id="password-error" className="error-message">{errors.password}</span>}
 
-              <div className="forgot"><a href="#">Esqueci minha senha</a></div>
-              <button className="login" onClick={handleLogin}>Entrar</button>
+              <div className="forgot">
+                <a href="#" aria-label="Recuperar senha">Esqueci minha senha</a>
+              </div>
+              
+              <button 
+                className={`login ${loading ? 'loading' : ''}`}
+                onClick={handleLogin}
+                disabled={loading}
+                aria-busy={loading}
+              >
+                {loading ? 'Carregando...' : 'Entrar'}
+              </button>
               
               <div className="signup-link">
-                Ainda não criou sua conta na GoRide? <a href="#">Cadastre-se</a><br/>
-                <a href="#">Preciso de ajuda</a>
+                Ainda não criou sua conta na GoRide? <a href="#" aria-label="Cadastre-se">Cadastre-se</a><br/>
+                <a href="#" aria-label="Ajuda">Preciso de ajuda</a>
               </div>
             </div>
           </div>
@@ -83,18 +142,24 @@ export default function Cadastro() {
         <footer>
           <div className="column logo">
             <Image 
-              src="https://encurtador.com.br/x28xw" 
+              src="/assets/login/LOGO 1.png"
               alt="Logo GoRide" 
-              width={120}
-              height={40}
+              width={100}
+              height={45}
             />
             <p>Sua jornada, nossa missão</p>
             <div className="social-icons">
               {['facebook', 'instagram-new', 'youtube-play'].map((icon) => (
-                <a key={icon} href="#">
+                <a 
+                  key={icon} 
+                  href="#" 
+                  aria-label={icon}
+                  target="_blank" 
+                  rel="noopener noreferrer"
+                >
                   <Image 
                     src={`https://img.icons8.com/ios-glyphs/30/${icon}.png`}
-                    alt={icon}
+                    alt=""
                     width={30}
                     height={30}
                   />
@@ -102,7 +167,7 @@ export default function Cadastro() {
               ))}
             </div>
           </div>
-
+          
           {['Empresa', 'Serviços', 'Cidadania global'].map((title) => (
             <div key={title} className="column">
               <strong>{title}</strong>
