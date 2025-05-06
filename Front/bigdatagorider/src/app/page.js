@@ -13,6 +13,10 @@ export default function Home() {
     router.push('/Login');
   };
 
+  const handleCadastroClick = () => {
+    router.push('/Cadastro');
+  };
+
   // Dados do FAQ
   const faqItems = [
     {
@@ -41,7 +45,8 @@ export default function Home() {
   return (
     <main>
       <div>
-      <Header onLoginClick={handleLoginClick} />
+      <Header onLoginClick={handleLoginClick} 
+      onCadastroClick={handleCadastroClick}/>
       </div>
       <section className={styles.section}>
         <div className={styles.jornada}>
