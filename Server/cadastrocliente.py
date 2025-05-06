@@ -3,7 +3,7 @@ import pymysql
 from fastapi import APIRouter, HTTPException, Body
 from dotenv import load_dotenv
 
-load_dotenv()
+load_dotenv("server.env")
 
 router = APIRouter()
 
