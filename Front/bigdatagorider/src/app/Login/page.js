@@ -14,26 +14,37 @@ export default function Cadastro() {
     const newErrors = {};
     if (!email) newErrors.email = "E-mail é obrigatório";
     else if (!/\S+@\S+\.\S+/.test(email)) newErrors.email = "E-mail inválido";
-    
     if (!password) newErrors.password = "Senha é obrigatória";
-    
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
 
   const handleLogin = async () => {
-    if (validate()) {
-      setLoading(true);
-      try {
-        // Simulação de chamada API
-        await new Promise(resolve => setTimeout(resolve, 1500));
-        alert(`Login realizado com:\nE-mail: ${email}\nSenha: ${password}`);
-      } catch (error) {
-        console.error("Erro no login:", error);
-      } finally {
-        setLoading(false);
+    if (!validate()) return;
+
+    setLoading(true);
+    try {
+      const response = await fetch("http://127.0.0.1:8000/login", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ email, password }),
+      });
+
+      const data = await response.json();
+
+      if (data.success) {
+        alert("Logado com sucesso!");
+        // window.location.href = "/dashboard";
+      } else {
+        alert("Usuário ou senha incorretos.");
       }
+    } catch (error) {
+      alert("Erro ao conectar com o servidor. Tente novamente.");
+      console.error("Erro:", error);
     }
+    setLoading(false);
   };
 
   const togglePasswordVisibility = () => setShowPassword(!showPassword);
