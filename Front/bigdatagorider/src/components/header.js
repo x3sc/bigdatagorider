@@ -1,7 +1,7 @@
 import Image from 'next/image';
 import styles from '../app/styles/Header.module.css';
 
-export default function Header({ onLoginClick }) {
+export default function Header({ onLoginClick, onCadastroClick }) {
   return (
     <nav className={styles.header}>
       <div>
@@ -23,7 +23,7 @@ export default function Header({ onLoginClick }) {
       </div>
       <div className={styles.actions}>
         <button className={styles.button} onClick={onLoginClick}>Fazer Login</button>
-        <button className={styles.button}>Cadastre-se</button>
+        <button className={styles.button} onClick={onCadastroClick}>Cadastre-se</button>
       </div>
     </nav>
   );
