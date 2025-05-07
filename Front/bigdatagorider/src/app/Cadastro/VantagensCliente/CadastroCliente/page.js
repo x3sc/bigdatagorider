@@ -1,6 +1,8 @@
 "use client";
 import React, { useState } from 'react';
 import styles from './CdCliente.module.css';
+import Footer from '@/components/footer';
+import Header from '@/components/header';
 
 export default function CadastroCliente() {
     const [formData, setFormData] = useState({
@@ -22,6 +24,8 @@ export default function CadastroCliente() {
     };
 
     return (
+        <main>
+            <Header />
         <div className={styles.container}>
             <div className={styles.imageContainer}>
                 <img src="/assets/login/homem 1 (1).png" alt="Descrição" />
@@ -87,6 +91,8 @@ export default function CadastroCliente() {
                 </form>
             </div>
         </div>
+        <Footer />
+        </main>
     );
 }
 
