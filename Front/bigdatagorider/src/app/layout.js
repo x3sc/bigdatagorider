@@ -1,4 +1,5 @@
-import './global.css';
+import "./styles/globals.css"
+import { HeroUIProvider } from "@heroui/react";
 
 export const metadata = {
   title: 'Next.js',
@@ -8,7 +9,11 @@ export const metadata = {
 export default function RootLayout({ children }) {
   return (
     <html lang="pt-br">
-      <body>{children}</body>
+      <body>
+        <HeroUIProvider>
+          {children}
+        </HeroUIProvider>
+      </body>
     </html>
   );
 }

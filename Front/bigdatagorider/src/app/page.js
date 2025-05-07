@@ -35,6 +35,7 @@ export default function Home() {
   };
 
   return (
+
     <main>
       <div>
         <Header />
@@ -246,5 +247,7 @@ export default function Home() {
       </div>
       <Footer />
     </main>
+
+
   );
 }

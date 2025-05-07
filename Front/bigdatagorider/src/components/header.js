@@ -1,6 +1,7 @@
 import Image from 'next/image';
 import Link from 'next/link';
 import styles from '../app/styles/Header.module.css';
+import { Button } from "@heroui/react";
 
 export default function Header() {
   return (
@@ -25,8 +26,16 @@ export default function Header() {
         </ul>
       </div>
       <div className={styles.actions}>
-        <Link href="/Login" className={styles.button}>Fazer Login</Link>
-        <Link href="/Cadastro" className={styles.button}>Cadastre-se</Link>
+        <Link href="/Login" passHref>
+          <Button color="danger">
+            Fazer Login
+          </Button>
+        </Link>
+        <Link href="/Cadastro" passHref>
+          <Button color="danger">
+          Cadastre-se
+          </Button>
+        </Link>
       </div>
     </nav>
   );

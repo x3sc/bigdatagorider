@@ -1,6 +1,7 @@
 import React from "react";
 import styles from "../app/Login/login.module.css"; // Altere o caminho se seu CSS estiver em outro local
 import Image from "next/image";
+import Link from "next/link";
 
 export default function Footer() {
   return (
