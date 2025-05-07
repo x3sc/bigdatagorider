@@ -1,21 +1,13 @@
 "use client";
 
 import React, { useState } from "react";
-import { useRouter } from "next/navigation";
 import Image from 'next/image';
 import Header from "@/components/header";
 import styles from './styles/Home.module.css';
+import Footer from "@/components/footer";
 
 export default function Home() {
-  const router = useRouter();
   const [activeIndex, setActiveIndex] = useState(null);
-  const handleLoginClick = () => {
-    router.push('/Login');
-  };
-
-  const handleCadastroClick = () => {
-    router.push('/Cadastro');
-  };
 
   // Dados do FAQ
   const faqItems = [
@@ -45,8 +37,7 @@ export default function Home() {
   return (
     <main>
       <div>
-      <Header onLoginClick={handleLoginClick} 
-      onCadastroClick={handleCadastroClick}/>
+        <Header />
       </div>
       <section className={styles.section}>
         <div className={styles.jornada}>
@@ -253,74 +244,7 @@ export default function Home() {
           </div>
         </div>
       </div>
-
-      <div className={styles.final}>
-        <div style={{ width: '300px', padding: '20px' }}>
-          <Image
-            src="/assets/home/LOGO 1.png"
-            className={styles.logo1}
-            width={1200}
-            height={630}
-            alt="Logo alternativo"
-          />
-          <div className={styles.redes}>
-            <Image
-              src="/assets/home/youtube-logo-white 1.png"
-              width={1200}
-              height={630}
-              alt="YouTube"
-            />
-            <Image
-              src="/assets/home/X_logo_2023_(white) 1.png"
-              width={1200}
-              height={630}
-              alt="Twitter/X"
-            />
-            <Image
-              src="/assets/home/Square-Facebook-Logo-PNG-Pic 1.png"
-              width={1200}
-              height={630}
-              alt="Facebook"
-            />
-            <Image
-              src="/assets/home/Design sem nome (81) 1.png"
-              width={1200}
-              height={630}
-              alt="Rede social"
-            />
-            <Image
-              src="/assets/home/Design sem nome (82) 1.png"
-              width={1200}
-              height={630}
-              alt="Rede social"
-            />
-          </div>
-        </div>
-        <div>
-          <strong>Empresa</strong>
-          <ul>
-            <li><a className={styles.links}>O que oferecemos</a></li>
-            <li><a className={styles.links}>Investidores</a></li>
-            <li><a className={styles.links}>Blog</a></li>
-          </ul>
-        </div>
-        <div>
-          <strong>Serviços</strong>
-          <ul>
-            <li><a className={styles.links}>Viajar</a></li>
-            <li><a className={styles.links}>Dirigir</a></li>
-            <li><a className={styles.links}>Fazer entregas</a></li>
-            <li><a className={styles.links}> Aluguéis</a></li>
-          </ul>
-        </div>
-        <div>
-          <strong>Cidadania global</strong>
-          <ul>
-            <li><a className={styles.links}>Segurança</a></li>
-            <li><a className={styles.links}>Sustentabilidade</a></li>
-          </ul>
-        </div>
-      </div>
+      <Footer />
     </main>
   );
 }

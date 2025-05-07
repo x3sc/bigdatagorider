@@ -1,13 +1,9 @@
-
-
 .topBar {
   background-color: #000;
-  position: fixed;
-  top: 0;
-  left: 0;
+  position: relative;      /* Remova o fixed para não ocupar espaço extra */
   width: 100%;
-  height: 80px;
-  padding: 24px 40px;
+  height: 60px;            /* Reduza a altura */
+  padding: 12px 24px;      /* Reduza o padding */
   display: flex;
   align-items: center;
   z-index: 1000;
@@ -18,7 +14,8 @@
   display: flex;
   flex-direction: column;
   min-height: 100vh;
-  margin-top: 80px;
+  margin-top: 0;           /* Remova a margem superior */
+  justify-content: center; /* Centraliza verticalmente */
 }
 
 /* Conteúdo Central */
@@ -27,10 +24,11 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 40px 40px;
+  padding: 16px 8px;       /* Reduza o padding */
   background-color: #fff;
   color: #333;
-  min-height: calc(100vh - 160px);
+  min-height: unset;       /* Remova o min-height fixo */
+  height: 100vh;           /* Ocupa toda a altura da tela */
 }
 
 .contentWrapper {
@@ -275,11 +273,12 @@
   }
   
   .loginBox {
-    padding: 40px 24px;
+    padding: 24px 8px;
   }
   
   .mainContent {
-    padding: 40px 16px;
+    padding: 8px 2px;
+    height: auto;
   }
 }
 

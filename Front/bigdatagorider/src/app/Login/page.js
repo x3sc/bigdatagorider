@@ -3,8 +3,7 @@ import Image from "next/image";
 import styles from "./login.module.css";
 import { useState } from "react";
 import Header from "@/components/header";
-import { useRouter } from "next/navigation";
-
+import Footer from "@/components/footer";
 
 export default function Cadastro() {
   const [showPassword, setShowPassword] = useState(false);
@@ -12,15 +11,6 @@ export default function Cadastro() {
   const [password, setPassword] = useState("");
   const [errors, setErrors] = useState({});
   const [loading, setLoading] = useState(false);
-  const router = useRouter();
-
-  const handleLoginClick = () => {
-    router.push('/Login');
-  };
-
-  const handleCadastroClick = () => {
-    router.push('/Cadastro');
-  };
 
   const validate = () => {
     const newErrors = {};
@@ -63,9 +53,7 @@ export default function Cadastro() {
 
   return (
     <main>
-
-      <Header onLoginClick={handleLoginClick} 
-      onCadastroClick={handleCadastroClick}/>
+      <Header />
 
       <div className={styles.container}>
         <div className={styles.mainContent}>
@@ -159,54 +147,7 @@ export default function Cadastro() {
           </div>
         </div>
 
-        <footer className={styles.footer}>
-          <div className={`${styles.footerColumn} ${styles.footerLogoText}`}>
-            <Image 
-              src="/assets/login/LOGO 1.png"
-              alt="Logo GoRide" 
-              width={100}
-              height={45}
-            />
-            <p className={styles.footerLogoText}>Sua jornada, nossa missão</p>
-            <div className={styles.footerSocialIcons}>
-              {['facebook', 'instagram-new', 'youtube-play'].map((icon) => (
-                <a 
-                  key={icon} 
-                  href="#" 
-                  aria-label={icon}
-                  target="_blank" 
-                  rel="noopener noreferrer"
-                >
-                  <Image 
-                    src={`https://img.icons8.com/ios-glyphs/30/${icon}.png`}
-                    alt=""
-                    width={30}
-                    height={30}
-                    className={styles.footerSocialIconImg}
-                  />
-                </a>
-              ))}
-            </div>
-          </div>
-          
-          <div className={styles.footerColumn}>
-            <strong className={styles.footerColumnTitle}>Empresa</strong>
-            <a href="#" className={styles.footerLink}>Quem somos</a>
-            <a href="#" className={styles.footerLink}>Trabalhe conosco</a>
-          </div>
-          <div className={styles.footerColumn}>
-            <strong className={styles.footerColumnTitle}>Serviços</strong>
-            <a href="#" className={styles.footerLink}>Viajar</a>
-            <a href="#" className={styles.footerLink}>Dirigir</a>
-            <a href="#" className={styles.footerLink}>Fazer entregas</a>
-            <a href="#" className={styles.footerLink}>Alugar</a>
-          </div>
-          <div className={styles.footerColumn}>
-            <strong className={styles.footerColumnTitle}>Cidadania global</strong>
-            <a href="#" className={styles.footerLink}>Segurança</a>
-            <a href="#" className={styles.footerLink}>Sustentabilidade</a>
-          </div>
-        </footer>
+        <Footer />
       </div>
     </main>
   );
