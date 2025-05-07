@@ -1,7 +1,10 @@
 "use client";
 import Image from "next/image";
-import "./style.css";
+import styles from "./login.module.css";
 import { useState } from "react";
+import Header from "@/components/header";
+import { useRouter } from "next/navigation";
+
 
 export default function Cadastro() {
   const [showPassword, setShowPassword] = useState(false);
@@ -9,6 +12,15 @@ export default function Cadastro() {
   const [password, setPassword] = useState("");
   const [errors, setErrors] = useState({});
   const [loading, setLoading] = useState(false);
+  const router = useRouter();
+
+  const handleLoginClick = () => {
+    router.push('/Login');
+  };
+
+  const handleCadastroClick = () => {
+    router.push('/Cadastro');
+  };
 
   const validate = () => {
     const newErrors = {};
@@ -51,25 +63,20 @@ export default function Cadastro() {
 
   return (
     <main>
-      <div className="top-bar">
-        <Image 
-          src="/assets/login/LOGO 1.png" 
-          alt="Logo GoRide"
-          width={100}
-          height={45}
-          priority
-        />
-      </div>
 
-      <div className="container">
-        <div className="main-content">
-          <div className="content-wrapper">
-            <div className="left">
+      <Header onLoginClick={handleLoginClick} 
+      onCadastroClick={handleCadastroClick}/>
+
+      <div className={styles.container}>
+        <div className={styles.mainContent}>
+          <div className={styles.contentWrapper}>
+            <div className={styles.left}>
               <Image 
                 src="/assets/login/homem 1 (1).png"
                 alt="Homem apontando"
                 width={500}
                 height={400}
+                className={styles.leftImg}
                 style={{
                   width: '100%',
                   height: 'auto',
@@ -78,16 +85,16 @@ export default function Cadastro() {
               />
             </div>
 
-            <div className="login-box">
-              <h2>Acessar minha conta</h2>
+            <div className={styles.loginBox}>
+              <h2 className={styles.loginBoxTitle}>Acessar minha conta</h2>
               
-              <button className="google-btn">
+              <button className={styles.googleBtn}>
                 <Image 
                   src="/assets/login/Logo-Google-G.png" 
                   alt="Google"
                   width={50}
                   height={50}
-                 
+                  className={styles.googleBtnImg}
                 />
                 Continue com o Google
               </button>
@@ -99,10 +106,11 @@ export default function Cadastro() {
                 onChange={(e) => setEmail(e.target.value)}
                 aria-invalid={!!errors.email}
                 aria-describedby="email-error"
+                className={styles.loginInput}
               />
-              {errors.email && <span id="email-error" className="error-message">{errors.email}</span>}
+              {errors.email && <span id="email-error" className={styles.errorMessage}>{errors.email}</span>}
               
-              <div className="password-wrapper">
+              <div className={styles.passwordWrapper}>
                 <input 
                   type={showPassword ? "text" : "password"} 
                   placeholder="Senha"
@@ -110,10 +118,11 @@ export default function Cadastro() {
                   onChange={(e) => setPassword(e.target.value)}
                   aria-invalid={!!errors.password}
                   aria-describedby="password-error"
+                  className={styles.loginInput}
                 />
                 <button 
                   type="button" 
-                  className="toggle-password"
+                  className={styles.togglePassword}
                   onClick={togglePasswordVisibility}
                   aria-label={showPassword ? "Ocultar senha" : "Mostrar senha"}
                 >
@@ -127,14 +136,14 @@ export default function Cadastro() {
                   />
                 </button>
               </div>
-              {errors.password && <span id="password-error" className="error-message">{errors.password}</span>}
+              {errors.password && <span id="password-error" className={styles.errorMessage}>{errors.password}</span>}
 
-              <div className="forgot">
-                <a href="#" aria-label="Recuperar senha">Esqueci minha senha</a>
+              <div className={styles.forgot}>
+                <a href="#" className={styles.forgotLink} aria-label="Recuperar senha">Esqueci minha senha</a>
               </div>
               
               <button 
-                className={`login ${loading ? 'loading' : ''}`}
+                className={`${styles.loginBtn} ${loading ? styles.loginBtnLoading : ""}`}
                 onClick={handleLogin}
                 disabled={loading}
                 aria-busy={loading}
@@ -142,24 +151,24 @@ export default function Cadastro() {
                 {loading ? 'Carregando...' : 'Entrar'}
               </button>
               
-              <div className="signup-link">
-                Ainda não criou sua conta na GoRide? <a href="#" aria-label="Cadastre-se">Cadastre-se</a><br/>
-                <a href="#" aria-label="Ajuda">Preciso de ajuda</a>
+              <div className={styles.signupLink}>
+                Ainda não criou sua conta na GoRide? <a href="#" className={styles.signupLinkA} aria-label="Cadastre-se">Cadastre-se</a><br/>
+                <a href="#" className={styles.signupLinkA} aria-label="Ajuda">Preciso de ajuda</a>
               </div>
             </div>
           </div>
         </div>
 
-        <footer>
-          <div className="column logo">
+        <footer className={styles.footer}>
+          <div className={`${styles.footerColumn} ${styles.footerLogoText}`}>
             <Image 
               src="/assets/login/LOGO 1.png"
               alt="Logo GoRide" 
               width={100}
               height={45}
             />
-            <p>Sua jornada, nossa missão</p>
-            <div className="social-icons">
+            <p className={styles.footerLogoText}>Sua jornada, nossa missão</p>
+            <div className={styles.footerSocialIcons}>
               {['facebook', 'instagram-new', 'youtube-play'].map((icon) => (
                 <a 
                   key={icon} 
@@ -173,37 +182,30 @@ export default function Cadastro() {
                     alt=""
                     width={30}
                     height={30}
+                    className={styles.footerSocialIconImg}
                   />
                 </a>
               ))}
             </div>
           </div>
           
-          {['Empresa', 'Serviços', 'Cidadania global'].map((title) => (
-            <div key={title} className="column">
-              <strong>{title}</strong>
-              {title === 'Empresa' && (
-                <>
-                  <a href="#">Quem somos</a>
-                  <a href="#">Trabalhe conosco</a>
-                </>
-              )}
-              {title === 'Serviços' && (
-                <>
-                  <a href="#">Viajar</a>
-                  <a href="#">Dirigir</a>
-                  <a href="#">Fazer entregas</a>
-                  <a href="#">Alugar</a>
-                </>
-              )}
-              {title === 'Cidadania global' && (
-                <>
-                  <a href="#">Segurança</a>
-                  <a href="#">Sustentabilidade</a>
-                </>
-              )}
-            </div>
-          ))}
+          <div className={styles.footerColumn}>
+            <strong className={styles.footerColumnTitle}>Empresa</strong>
+            <a href="#" className={styles.footerLink}>Quem somos</a>
+            <a href="#" className={styles.footerLink}>Trabalhe conosco</a>
+          </div>
+          <div className={styles.footerColumn}>
+            <strong className={styles.footerColumnTitle}>Serviços</strong>
+            <a href="#" className={styles.footerLink}>Viajar</a>
+            <a href="#" className={styles.footerLink}>Dirigir</a>
+            <a href="#" className={styles.footerLink}>Fazer entregas</a>
+            <a href="#" className={styles.footerLink}>Alugar</a>
+          </div>
+          <div className={styles.footerColumn}>
+            <strong className={styles.footerColumnTitle}>Cidadania global</strong>
+            <a href="#" className={styles.footerLink}>Segurança</a>
+            <a href="#" className={styles.footerLink}>Sustentabilidade</a>
+          </div>
         </footer>
       </div>
     </main>
