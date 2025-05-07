@@ -1,7 +1,14 @@
+
+'use client';
 import React from 'react';
 import styles from './cadastro.module.css';
+import { useRouter } from 'next/navigation';
 
 function Cadastro() {
+  const router = useRouter();
+  const CadastroCliente = () => {
+    router.push('/Cadastro/VantagensCliente/CadastroCliente');
+  };
   return (
     <div className={styles.cadastroContainer}>
       <h2 className={styles.formTitle}>Olá! Como você quer se cadastrar?</h2>
@@ -21,7 +28,7 @@ function Cadastro() {
             <strong>aquisição de veículos seminovos</strong>,{" "}
             <strong>serviços de transporte sob demanda</strong>.
           </p>
-          <button className={styles.opcaoBotao}>Quero ser cliente</button>
+          <button className={styles.opcaoBotao} onClick={CadastroCliente}>Quero ser cliente</button>
         </div>
         <div className={styles.opcaoCadastro}>
           <h3 className={styles.opcaoTitulo}>Quero oferecer meus serviços</h3>
