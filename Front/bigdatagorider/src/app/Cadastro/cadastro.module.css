@@ -1,0 +1,114 @@
+/* Container principal */
+.cadastroContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 10px;
+  font-family: sans-serif;
+}
+
+/* Título do formulário */
+.formTitle {
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: 40px;
+  color: #000;
+  margin-bottom: 20px;
+  text-align: center;
+}
+
+/* Subtítulo do formulário */
+.formSubtitle {
+  font-size: 16px;
+  margin-bottom: 20px;
+  color: #666;
+  text-align: center;
+}
+
+/* Container das opções */
+.opcaoCadastroContainer {
+  display: flex;
+  justify-content: center;
+  gap: 20px;
+  margin-top: 20px;
+  width: 100%;
+  max-width: 800px;
+  flex-wrap: wrap;
+}
+
+/* Cada opção/quadrado */
+.opcaoCadastro {
+  background-color: #f0f0f0;
+  border-radius: 8px;
+  padding: 20px;
+  text-align: center;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  width: 300px;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  min-height: 150px;
+  margin-bottom: 20px;
+}
+
+.opcaoCadastro h3 {
+  margin-bottom: 10px;
+  font-size: 1.2em;
+}
+
+.opcaoCadastro p {
+  margin-bottom: 10px;
+  font-size: 0.9em;
+}
+
+/* Título da opção */
+.opcaoTitulo {
+  font-size: 18px;
+  margin-bottom: 10px;
+  color: #333;
+}
+
+/* Descrição da opção */
+.opcaoDescricao {
+  font-size: 16px;
+  margin-bottom: 10px;
+  color: #444;
+}
+
+/* Texto "Ideal para" */
+.opcaoIdeal {
+  font-size: 14px;
+  margin-bottom: 15px;
+  color: #555;
+}
+
+/* Botão */
+.opcaoBotao {
+  background-color: #e90000;
+  color: #fff;
+  padding: 10px 15px;
+  border: none;
+  border-radius: 5px;
+  font-size: 16px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  align-self: center;
+}
+
+.opcaoBotao:hover {
+  background-color: #b80000;
+}
+
+/* Responsividade */
+@media (max-width: 768px) {
+  .opcaoCadastroContainer {
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+  }
+
+  .opcaoCadastro {
+    width: 90%;
+    margin-bottom: 20px;
+  }
+}
