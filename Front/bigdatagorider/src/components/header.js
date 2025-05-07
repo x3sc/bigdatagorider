@@ -31,7 +31,11 @@ export default function Header() {
             Fazer Login
           </Button>
         </Link>
-        <Link href="/Cadastro" className={styles.button}>Cadastre-se</Link>
+        <Link href="/Cadastro" passHref>
+          <Button color="danger">
+          Cadastre-se
+          </Button>
+        </Link>
       </div>
     </nav>
   );

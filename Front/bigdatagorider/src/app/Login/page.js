@@ -4,6 +4,8 @@ import styles from "./login.module.css";
 import { useState } from "react";
 import Header from "@/components/header";
 import Footer from "@/components/footer";
+import { Input } from '@heroui/input';
+import { Button } from '@heroui/button';
 
 export default function Cadastro() {
   const [showPassword, setShowPassword] = useState(false);
@@ -74,76 +76,92 @@ export default function Cadastro() {
             </div>
 
             <div className={styles.loginBox}>
-              <h2 className={styles.loginBoxTitle}>Acessar minha conta</h2>
-              
-              <button className={styles.googleBtn}>
-                <Image 
-                  src="/assets/login/Logo-Google-G.png" 
-                  alt="Google"
-                  width={50}
-                  height={50}
-                  className={styles.googleBtnImg}
-                />
-                Continue com o Google
-              </button>
+      <h2 className={styles.loginBoxTitle}>Acessar minha conta</h2>
 
-              <input 
-                type="email" 
-                placeholder="E-mail"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                aria-invalid={!!errors.email}
-                aria-describedby="email-error"
-                className={styles.loginInput}
-              />
-              {errors.email && <span id="email-error" className={styles.errorMessage}>{errors.email}</span>}
-              
-              <div className={styles.passwordWrapper}>
-                <input 
-                  type={showPassword ? "text" : "password"} 
-                  placeholder="Senha"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  aria-invalid={!!errors.password}
-                  aria-describedby="password-error"
-                  className={styles.loginInput}
-                />
-                <button 
-                  type="button" 
-                  className={styles.togglePassword}
-                  onClick={togglePasswordVisibility}
-                  aria-label={showPassword ? "Ocultar senha" : "Mostrar senha"}
-                >
-                  <Image 
-                    src={showPassword ? 
-                      "https://img.icons8.com/ios-glyphs/30/closed-eye.png" : 
-                      "https://img.icons8.com/ios-glyphs/30/visible--v1.png"}
-                    alt=""
-                    width={30}
-                    height={30}
-                  />
-                </button>
-              </div>
-              {errors.password && <span id="password-error" className={styles.errorMessage}>{errors.password}</span>}
+      <Button className={styles.googleBtn} type="button">
+        <Image
+          src="/assets/login/Logo-Google-G.png"
+          alt="Google"
+          width={24}
+          height={24}
+          className={styles.googleBtnImg}
+        />
+        Continue com o Google
+      </Button>
 
-              <div className={styles.forgot}>
-                <a href="#" className={styles.forgotLink} aria-label="Recuperar senha">Esqueci minha senha</a>
-              </div>
-              
-              <button 
-                className={`${styles.loginBtn} ${loading ? styles.loginBtnLoading : ""}`}
-                onClick={handleLogin}
-                disabled={loading}
-                aria-busy={loading}
-              >
-                {loading ? 'Carregando...' : 'Entrar'}
-              </button>
-              
-              <div className={styles.signupLink}>
-                Ainda não criou sua conta na GoRide? <a href="#" className={styles.signupLinkA} aria-label="Cadastre-se">Cadastre-se</a><br/>
-                <a href="#" className={styles.signupLinkA} aria-label="Ajuda">Preciso de ajuda</a>
-              </div>
-            </div>
+      <Input
+        type="email"
+        label="E-mail"
+        placeholder="E-mail"
+        value={email}
+        onValueChange={setEmail}
+        isInvalid={!!errors.email}
+        errorMessage={errors.email}
+        className={styles.loginInput}
+        autoComplete="email"
+        required
+      />
+
+      <div className={styles.passwordWrapper}>
+        <Input
+          type={showPassword ? 'text' : 'password'}
+          label="Senha"
+          placeholder="Senha"
+          value={password}
+          onValueChange={setPassword}
+          isInvalid={!!errors.password}
+          errorMessage={errors.password}
+          className={styles.loginInput}
+          autoComplete="current-password"
+          required
+        />
+        <Button
+          type="button"
+          className={styles.togglePassword}
+          onClick={togglePasswordVisibility}
+          aria-label={showPassword ? "Ocultar senha" : "Mostrar senha"}
+          variant="light"
+        >
+          <Image
+            src={
+              showPassword
+                ? "https://img.icons8.com/ios-glyphs/30/closed-eye.png"
+                : "https://img.icons8.com/ios-glyphs/30/visible--v1.png"
+            }
+            alt=""
+            width={24}
+            height={24}
+          />
+        </Button>
+      </div>
+
+      <div className={styles.forgot}>
+        <a href="#" className={styles.forgotLink} aria-label="Recuperar senha">
+          Esqueci minha senha
+        </a>
+      </div>
+
+      <Button
+        className={`${styles.loginBtn} ${loading ? styles.loginBtnLoading : ""}`}
+        onClick={handleLogin}
+        disabled={loading}
+        aria-busy={loading}
+        fullWidth
+      >
+        {loading ? 'Carregando...' : 'Entrar'}
+      </Button>
+
+      <div className={styles.signupLink}>
+        Ainda não criou sua conta na GoRide?{' '}
+        <a href="#" className={styles.signupLinkA} aria-label="Cadastre-se">
+          Cadastre-se
+        </a>
+        <br />
+        <a href="#" className={styles.signupLinkA} aria-label="Ajuda">
+          Preciso de ajuda
+        </a>
+      </div>
+    </div>
           </div>
         </div>
 
