@@ -3,7 +3,6 @@ import Image from "next/image";
 import styles from "./login.module.css";
 import { useState } from "react";
 import Header from "@/components/header";
-import Footer from "@/components/footer";
 import { Input } from '@heroui/input';
 import { Button } from '@heroui/button';
 
@@ -164,8 +163,6 @@ export default function Cadastro() {
     </div>
           </div>
         </div>
-
-        <Footer />
       </div>
     </main>
   );

@@ -1,5 +1,6 @@
 import "./styles/globals.css"
 import { HeroUIProvider } from "@heroui/react";
+import Footer from "@/components/footer";
 
 export const metadata = {
   title: 'Next.js',
@@ -12,6 +13,7 @@ export default function RootLayout({ children }) {
       <body>
         <HeroUIProvider>
           {children}
+          <Footer />
         </HeroUIProvider>
       </body>
     </html>
