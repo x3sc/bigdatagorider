@@ -3,6 +3,7 @@ import styles from "../app/Login/login.module.css"; // Altere o caminho se seu C
 import Image from "next/image";
 import Link from "next/link";
 
+
 export default function Footer() {
   return (
     <footer className={styles.footer}>

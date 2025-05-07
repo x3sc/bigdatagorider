@@ -4,7 +4,7 @@ import React from 'react';
 import styles from './cadastro.module.css';
 import { useRouter } from 'next/navigation';
 import Header from '@/components/header';
-import Footer from '@/components/footer';
+
 
 function Cadastro() {
   const router = useRouter();
@@ -50,7 +50,7 @@ function Cadastro() {
           </div>
         </div>
       </div>
-      <Footer />
+
       </main>
   );
 }
