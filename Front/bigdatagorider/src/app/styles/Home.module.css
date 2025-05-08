@@ -11,6 +11,20 @@
     align-items: center;
 }
 
+.section {
+    color:white;
+    height: 400px;
+    width: auto;
+    background-image: url('/assets/home/banner-home 1.png');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    padding: 30px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
 .logo {
     padding-left: 20px;
     width: 170px;
@@ -24,7 +38,13 @@
 
 .mobilidade {
     display: flex;
-    justify-content: space-evenly;
+   justify-content: center;
+    gap:80px;
+    padding:40px;
+}
+
+.mobilidade h1 {
+    font-size: 30px;
 }
 
 .aviao {
@@ -70,13 +90,6 @@
     background-color: #E90000;
 }
 
-.section {
-    padding: 30px;
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-}
-
 .prioridade {
     font-size: 40px;
 }
@@ -87,15 +100,23 @@
     text-align: center;
 }
 
+.escolher h1 {
+    font-size: 32px;
+}
+
 .rectangle {
     width: 150px;
     height: auto;
     border-radius: 10px;
+    margin-left: auto;
+    margin-right: auto;
+    padding-top:15px;
 }
 
 .container {
     display: flex;
-    justify-content: space-between;
+    justify-content: center;
+    gap:20px;
     margin-top: 40px;
     text-align: center;
 }
@@ -103,6 +124,8 @@
 .circulo {
     width: 100px;
     height: auto;
+    margin-left: auto;
+    margin-right:auto;
 }
 
 .experimente {
@@ -113,24 +136,55 @@
     gap: 10px;
 }
 
+.esquerda {
+ padding: 50px;
+ text-align: center;
+ font-size: 32px;
+}
+
 .meio {
     padding: 50px;
     text-align: center;
 }
 
+.meio h1 {
+    font-size: 32px;
+}
+
 .quadrado {
     display: flex;
-    justify-content: space-evenly;
+    justify-content: center;
+    gap:100px;
+}
+
+.quadrado h1 {
+    font-size: 60px;
+}
+
+.quadrado h2 {
+    padding-top:10px;
+    font-size: 25px;
+}
+
+.quadrado p {
+    padding-top: 15px;
 }
 
 .square {
-    border-radius: 15px;
-    width: 200px;
-    height: 230px;
+    border-radius: 30px;
+    width: 300px;
+    height: 330px;
     background-color: black;
     padding: 30px;
     text-align: center;
     color: white;
+}
+
+.usuario {
+    width: 100px;
+    height: 100px;
+    margin-left: auto;
+    margin-right: auto;
 }
 
 .pronto {
@@ -144,20 +198,44 @@
     display: flex;
     flex-direction: column;
     gap: 30px;
+    justify-content: center;
+}
+
+.comeco h1 {
+    font-size: 32px;
+}
+
+.rapaznocarro {
+    width: 300px;
+    height: 300px;
 }
 
 .antesdafaq {
+    padding: 120px;
+  }
+  
+  .fila {
     display: flex;
-    flex-direction: column;
-    justify-content: space-evenly;
-}
+    align-items: flex-start;
+    justify-content: center;
+    gap: 40px;
+    flex-wrap: wrap;
+  }
+  
+  .imagem {
+    width: 600px;
 
-.faq {
-    width: 400px;
-    margin: 30px auto;
-    display: flex;
-    flex-direction: column;
-}
+  }
+  
+  .mulherajuda {
+    width: 100%;
+    height: auto;
+    object-fit: contain; 
+  }
+  
+  .faq {
+    width: 600px;
+  }
 
 .item {
     margin-bottom: 10px;
@@ -178,36 +256,4 @@
     border-radius: 6px;
     margin-top: 5px;
     transition: 1s ease;
-}
-
-.final {
-    display: flex;
-    justify-content: space-evenly;
-    padding: 30px;
-    width: auto;
-    height: 250px;
-    background-color: black;
-    color: white;
-}
-
-.links {
-    cursor: pointer;
-    display: flex;
-}
-
-.links:hover {
-    text-decoration: underline;
-}
-
-.redes {
-    gap: 10px;
-    width: 100%;
-    display: flex;
-    flex-direction: row;
-    justify-content: space-between;
-    cursor: pointer;
-}
-
-.redes img {
-    height: 25px;
 }

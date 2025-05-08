@@ -38,7 +38,7 @@ export default function Home() {
 
     <main>
       <div>
-        <Header />
+        <Header/>
       </div>
       <section className={styles.section}>
         <div className={styles.jornada}>
@@ -54,15 +54,15 @@ export default function Home() {
       <div className={styles.mobilidade}>
         <div>
           <Image
-            src="/assets/home/retangulo.png"
-            className={styles.logo}
-            width={1200}
-            height={630}
-            alt="Imagem de mobilidade"
+              src="/assets/home/art1 1.png"
+              className={styles.carro}
+              width={400}
+              height={400}
+              alt="Rapaz no carro"
           />
         </div>
         <div className={styles.aviaozao}>
-          <h1>Encontre a Mobilidade<br />Perfeita para você</h1>
+          <h1><b>Encontre a Mobilidade<br />Perfeita para você</b></h1>
           <p>Na <strong>Go Ride</strong>, conectamos você às <strong>melhores soluções</strong>
             de<br /><strong>transporte</strong>, seja para alugar,comprar, ou contratar serviços<br />com segurança e
             praticidade</p>
@@ -78,21 +78,21 @@ export default function Home() {
           </div>
           <div className={styles.aviaozinho}>
             <Image
-              src="/assets/home/logo-aviao 1.png"
+              src="/assets/home/Vector.png"
               className={styles.aviao}
               width={1200}
               height={630}
-              alt="Ícone de avião"
+              alt="Ícone de carrinho de compras"
             />
             <p>Compre com Confiança</p>
           </div>
           <div className={styles.aviaozinho}>
             <Image
-              src="/assets/home/logo-aviao 1.png"
+              src="/assets/home/maos.png"
               className={styles.aviao}
               width={1200}
               height={630}
-              alt="Ícone de avião"
+              alt="Ícone de aperto de mãos"
             />
             <p>Contrate serviços sob medida</p>
           </div>
@@ -104,7 +104,7 @@ export default function Home() {
       </div>
 
       <div className={styles.escolher}>
-        <h1>Por que escolher a Go Ride ?</h1>
+        <h1><b>Por que escolher a Go Ride ?</b></h1>
         <Image
           src="/assets/home/Rectangle 1018.png"
           className={styles.rectangle}
@@ -157,22 +157,54 @@ export default function Home() {
             alt="Ícone de suporte"
           />
           <p><b>Suporte<br />dedicado</b></p>
-          <p>Contratação digital com suporte especializado</p>
+          <p>Contratação digital com <br />suporte especializado</p>
+        </div>
+      </div>
+
+      <div className={styles.esquerda}>
+        <h1><b>Como Funciona</b></h1>
+      </div>
+      <div className={styles.quadrado}>
+        <div className={styles.square}> 
+          <h1>1</h1>
+          <Image
+          src="/assets/home/Rectangle 1018.png"
+          className={styles.rectangle}
+          width={1200}
+          height={630}
+          alt="Retângulo decorativo"
+        />
+          <h2>Cadastre-se</h2>
+          <p>Rápido, simples e gratuito.</p>
+        </div>
+        <div className={styles.square}>
+        <h1>2</h1>
+          <Image
+          src="/assets/home/Rectangle 1018.png"
+          className={styles.rectangle}
+          width={1200}
+          height={630}
+          alt="Retângulo decorativo"
+        />
+        <h2>Escolha seu serviço</h2>
+        <p>Aluguel, compra ou transporte.</p>
+        </div>
+        <div className={styles.square}>
+        <h1>3</h1>
+          <Image
+          src="/assets/home/Rectangle 1018.png"
+          className={styles.rectangle}
+          width={1200}
+          height={630}
+          alt="Retângulo decorativo"
+        />
+        <h2>Aproveite!</h2>
+        <p>Tudo resolvido em poucos cliques.</p>
         </div>
       </div>
 
       <div className={styles.meio}>
-        <h1>Como Funciona</h1>
-      </div>
-
-      <div className={styles.quadrado}>
-        <div className={styles.square}>1 - Cadastre-se<br />Rápido,simples e gratuito.</div>
-        <div className={styles.square}>2 - Escolha seu serviço<br />Aluguel, compra ou transporte.</div>
-        <div className={styles.square}>3 - Aproveite!<br />Tudo resolvido em poucos cliques.</div>
-      </div>
-
-      <div className={styles.meio}>
-        <h1>Depoimento de<br /> Quem Já Usa</h1>
+        <h1><b>Depoimento de<br /> Quem Já Usa</b></h1>
         <Image
           src="/assets/home/Rectangle 1018.png"
           className={styles.rectangle}
@@ -181,11 +213,40 @@ export default function Home() {
           alt="Retângulo decorativo"
         />
       </div>
-
       <div className={styles.quadrado}>
-        <div className={styles.square}></div>
-        <div className={styles.square}></div>
-        <div className={styles.square}></div>
+        <div className={styles.square}>
+        <Image
+          src="/assets/home/Rapaz.png"
+          className={styles.usuario}
+          width={1200}
+          height={600}
+          alt="Rapaz"
+        />
+        <h1>Carlos</h1>
+        <p>"Comprei meu carro seminovo com segurança e ótimo preço. Recomendo!"</p>
+        </div>
+        <div className={styles.square}>
+        <Image
+          src="/assets/home/Mulher.png"
+          className={styles.usuario}
+          width={1200}
+          height={600}
+          alt="Mulher"
+        />
+        <h1>Ana</h1>
+        <p>"Aluguei um carro para minha viagem e foi tão fácil que nunca mais usei outro app!"</p>
+        </div>
+        <div className={styles.square}>
+        <Image
+          src="/assets/home/Homem.png"
+          className={styles.usuario}
+          width={1200}
+          height={600}
+          alt="Homem"
+        />
+        <h1>Ricardo</h1>
+        <p>"Como prestador de serviços, aumento minha renda com total flexibilidade"</p>
+        </div>
       </div>
 
       <div className={styles.meio}>
@@ -201,8 +262,8 @@ export default function Home() {
         </div>
         <div>
           <Image
-            src="/assets/home/retangulo.png"
-            className={styles.logo}
+            src="/assets/home/art2 1.png"
+            className={styles.rapaznocarro}
             width={1200}
             height={630}
             alt="Imagem decorativa"
@@ -211,42 +272,41 @@ export default function Home() {
       </div>
 
       {/* Seção FAQ Corrigida */}
+  
       <div className={styles.antesdafaq}>
-        <div>
-          <div className={styles.retangulo}>
-            <Image
-              src="/assets/home/retangulo.png"
-              className={styles.logo}
-              width={1200}
-              height={630}
-              alt="Imagem decorativa"
-            />
+  <div className={styles.fila}>
+    <div className={styles.imagem}>
+      <Image
+        src="/assets/home/mulher-ajudal 1.png"
+        className={styles.mulherajuda}
+        width={1200}
+        height={630}
+        alt="Mulher GoRide"
+      />
+    </div>
+
+    <div className={styles.faq}>
+      <h1>FAQ</h1>
+      {faqItems.map((item, index) => (
+        <div className={styles.item} key={index}>
+          <div
+            className={`${styles.pergunta} ${activeIndex === index ? styles.active : ""}`}
+            onClick={() => toggleAnswer(index)}
+          >
+            <p>{item.pergunta}</p>
+            <span className="toggle-icon">
+              {activeIndex === index ? '−' : '+'}
+            </span>
           </div>
-          <div className={styles.faq}>
-            <h1>FAQ</h1>
-            {faqItems.map((item, index) => (
-              <div className={styles.item} key={index}>
-                <div
-                  className={`${styles.pergunta} ${activeIndex === index ? styles.active : ""}`}
-                  onClick={() => toggleAnswer(index)}
-                >
-                  <p>{item.pergunta}</p>
-                  <span className="toggle-icon">
-                    {activeIndex === index ? '−' : '+'}
-                  </span>
-                </div>
-                <div
-                  className={`${styles.resposta} ${activeIndex === index ? styles.show : ""}`}
-                >
-                  <p>{item.resposta}</p>
-                </div>
-              </div>
-            ))}
+          <div className={`${styles.resposta} ${activeIndex === index ? styles.show : ""}`}>
+            <p>{item.resposta}</p>
           </div>
         </div>
+       ))}
       </div>
+    </div>
+  </div>
+
     </main>
-
-
   );
 }
