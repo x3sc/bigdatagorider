@@ -128,7 +128,7 @@ export default function Home() {
         </div>
         <div className={styles.bola}>
           <Image
-            src="/assets/home/Group 1171275239.png"
+            src="/assets/home/computador.png"
             className={styles.circulo}
             width={1200}
             height={630}
@@ -139,7 +139,7 @@ export default function Home() {
         </div>
         <div className={styles.bola}>
           <Image
-            src="/assets/home/Group 1171275240.png"
+            src="/assets/home/computador.png"
             className={styles.circulo}
             width={1200}
             height={630}
@@ -150,7 +150,7 @@ export default function Home() {
         </div>
         <div className={styles.bola}>
           <Image
-            src="/assets/home/Group 1171275241.png"
+            src="/assets/home/computador.png"
             className={styles.circulo}
             width={1200}
             height={630}
@@ -164,45 +164,14 @@ export default function Home() {
       <div className={styles.esquerda}>
         <h1><b>Como Funciona</b></h1>
       </div>
-      <div className={styles.quadrado}>
-        <div className={styles.square}> 
-          <h1>1</h1>
-          <Image
-          src="/assets/home/Rectangle 1018.png"
-          className={styles.rectangle}
-          width={1200}
-          height={630}
-          alt="Retângulo decorativo"
-        />
-          <h2>Cadastre-se</h2>
-          <p>Rápido, simples e gratuito.</p>
-        </div>
-        <div className={styles.square}>
-        <h1>2</h1>
-          <Image
-          src="/assets/home/Rectangle 1018.png"
-          className={styles.rectangle}
-          width={1200}
-          height={630}
-          alt="Retângulo decorativo"
-        />
-        <h2>Escolha seu serviço</h2>
-        <p>Aluguel, compra ou transporte.</p>
-        </div>
-        <div className={styles.square}>
-        <h1>3</h1>
-          <Image
-          src="/assets/home/Rectangle 1018.png"
-          className={styles.rectangle}
-          width={1200}
-          height={630}
-          alt="Retângulo decorativo"
-        />
-        <h2>Aproveite!</h2>
-        <p>Tudo resolvido em poucos cliques.</p>
-        </div>
+      <div>
+        <img src="/assets/home/como-funciona.png"
+        className={styles.funciona}
+        width={1200}
+        height={600}
+        alt="Etapas para usar a GoRide"
+        />      
       </div>
-
       <div className={styles.meio}>
         <h1><b>Depoimento de<br /> Quem Já Usa</b></h1>
         <Image
@@ -213,40 +182,14 @@ export default function Home() {
           alt="Retângulo decorativo"
         />
       </div>
-      <div className={styles.quadrado}>
-        <div className={styles.square}>
-        <Image
-          src="/assets/home/Rapaz.png"
-          className={styles.usuario}
-          width={1200}
-          height={600}
-          alt="Rapaz"
+      
+      <div>
+        <img src="/assets/home/avaliacao.png"
+        className={styles.avaliacao}
+        width={1200}
+        height={630}
+        alt="Depoimentos de quem já usa"
         />
-        <h1>Carlos</h1>
-        <p>"Comprei meu carro seminovo com segurança e ótimo preço. Recomendo!"</p>
-        </div>
-        <div className={styles.square}>
-        <Image
-          src="/assets/home/Mulher.png"
-          className={styles.usuario}
-          width={1200}
-          height={600}
-          alt="Mulher"
-        />
-        <h1>Ana</h1>
-        <p>"Aluguei um carro para minha viagem e foi tão fácil que nunca mais usei outro app!"</p>
-        </div>
-        <div className={styles.square}>
-        <Image
-          src="/assets/home/Homem.png"
-          className={styles.usuario}
-          width={1200}
-          height={600}
-          alt="Homem"
-        />
-        <h1>Ricardo</h1>
-        <p>"Como prestador de serviços, aumento minha renda com total flexibilidade"</p>
-        </div>
       </div>
 
       <div className={styles.meio}>
