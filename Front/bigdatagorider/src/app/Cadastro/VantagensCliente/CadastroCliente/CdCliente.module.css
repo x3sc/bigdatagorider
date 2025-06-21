@@ -310,3 +310,24 @@
       gap: 40px;
     }
   }
+
+  /* Em CdCliente.module.css */
+.errorMessage {
+  color: #e53e3e; /* Vermelho */
+  background-color: #fef2f2;
+  border: 1px solid #e53e3e;
+  padding: 10px;
+  border-radius: 5px;
+  margin-top: 15px;
+  text-align: center;
+}
+
+.successMessage {
+  color: #38a169; /* Verde */
+  background-color: #f0fdf4;
+  border: 1px solid #38a169;
+  padding: 10px;
+  border-radius: 5px;
+  margin-top: 15px;
+  text-align: center;
+}
