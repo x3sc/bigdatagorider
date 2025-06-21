@@ -176,8 +176,6 @@ export default function CadastroCliente() {
                             <Button type="submit" className={styles.loginBtn} fullWidth disabled={loading}>
                                 {loading ? 'Aguarde...' : 'Criar Conta'}
                             </Button>
-                             {/* Opcional: exibe a mensagem de erro também na página */}
-                            {error && <p style={{ color: 'red', marginTop: '15px', textAlign: 'center' }}>{error}</p>}
                         </form>
                     </div>
                 </div>
