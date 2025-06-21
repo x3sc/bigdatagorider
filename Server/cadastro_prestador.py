@@ -2,8 +2,10 @@
 
 from fastapi import APIRouter, HTTPException, status
 from pydantic import BaseModel, EmailStr
-from utils import get_db_connection, sanitize_string
 import pymysql
+
+from .security import hash_password
+from .utils import get_db_connection, sanitize_string
 
 router = APIRouter()
 

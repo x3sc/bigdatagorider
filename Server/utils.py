@@ -4,10 +4,19 @@ import pymysql
 import os
 from dotenv import load_dotenv
 import re
+import html
 
 # Carrega as variáveis de ambiente do arquivo .env
 # Esta função procurará por um arquivo chamado '.env' na pasta atual.
 load_dotenv()
+
+def sanitize_input(data):
+    """
+    Limpa a entrada do usuário para prevenir XSS, removendo caracteres especiais de HTML.
+    """
+    if isinstance(data, str):
+        return html.escape(data)
+    return data
 
 def get_db_connection():
     """

@@ -1,90 +1,97 @@
 # Server/auth.py
 
 from fastapi import APIRouter, HTTPException, status
-from pydantic import BaseModel, EmailStr
-from typing import Literal
+from pydantic import BaseModel
+from .utils import get_db_connection, sanitize_input
+from .security import verify_password
+import pymysql
 
-from utils import get_db_connection, sanitize_string
+# Define o modelo de dados que a API espera receber no corpo da requisição de login
+class LoginData(BaseModel):
+    email: str
+    password: str
 
 router = APIRouter()
 
-# Modelo de dados para o corpo da requisição de login
-class LoginData(BaseModel):
-    email: EmailStr
-    senha: str
-    tipo_usuario: Literal['cliente', 'prestador']
-
-# Modelo de dados para a resposta de login bem-sucedido
-class LoginResponse(BaseModel):
-    message: str
-    user_id: int
-    user_type: str
-
-
-@router.post("/login", response_model=LoginResponse)
-def login_user(login_data: LoginData):
+@router.post("/login")
+def login(login_data: LoginData):
     """
-    Endpoint para autenticar um usuário (cliente ou prestador).
-    Verifica as credenciais no banco de dados.
+    Endpoint para autenticar um usuário.
+    Verifica as credenciais em ambas as tabelas 'cliente' e 'prestador'.
     """
+    email = sanitize_input(login_data.email)
+    senha = login_data.password # A senha não é sanitizada, pois será comparada com o hash
+
     conn = None
     cursor = None
-    
-    # Define a tabela e o campo de ID com base no tipo de usuário
-    if login_data.tipo_usuario == 'cliente':
-        table_name = "Clientes"
-        id_field = "ID_Cliente"
-    elif login_data.tipo_usuario == 'prestador':
-        table_name = "Prestadores"
-        id_field = "ID_Prestador"
-    else:
-        # Isso não deve acontecer devido à validação do Pydantic, mas é uma segurança extra
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail="Tipo de usuário inválido."
-        )
-
     try:
         conn = get_db_connection()
-        cursor = conn.cursor(dictionary=True)
-
-        # Sanitiza os inputs para previnir SQL Injection
-        email = sanitize_string(str(login_data.email))
-        
-        # Query para buscar o usuário pelo email
-        # ATENÇÃO: A senha deve ser verificada após a busca, e idealmente usando hash.
-        # Por simplicidade, estamos comparando a senha em texto plano aqui.
-        query = f"SELECT {id_field}, Senha FROM {table_name} WHERE Email = %s"
-        cursor.execute(query, (email,))
-        user = cursor.fetchone()
-
-        # Verifica se o usuário foi encontrado e se a senha corresponde
-        if user and user['Senha'] == login_data.senha:
-            return {
-                "message": "Login bem-sucedido!",
-                "user_id": user[id_field],
-                "user_type": login_data.tipo_usuario
-            }
-        else:
-            # Se não encontrar ou a senha estiver errada, retorna erro 401
+        if conn is None:
+            # Lança uma exceção se a conexão com o banco de dados falhar
             raise HTTPException(
-                status_code=status.HTTP_401_UNAUTHORIZED,
-                detail="Email ou senha incorretos."
+                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                detail="Não foi possível conectar ao banco de dados.",
+            )
+        
+        cursor = conn.cursor(pymysql.cursors.DictCursor)
+
+        # 1. Tenta encontrar o usuário na tabela de clientes
+        cursor.execute("SELECT * FROM cliente WHERE email_cliente = %s", (email,))
+        user = cursor.fetchone()
+        user_type = "cliente"
+
+        # 2. Se não encontrar, tenta na tabela de prestadores
+        if not user:
+            cursor.execute("SELECT * FROM prestador WHERE email_prestador = %s", (email,))
+            user = cursor.fetchone()
+            user_type = "prestador"
+
+        # 3. Se o usuário não foi encontrado em nenhuma tabela
+        if not user:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail="Email não cadastrado.",
             )
 
-    except HTTPException as http_exc:
-        # Re-levanta a exceção HTTP para que o FastAPI a manipule
-        raise http_exc
-    except Exception as e:
-        # Log do erro seria ideal aqui
-        print(f"Erro no servidor: {e}")
+        # 4. Verifica a senha
+        stored_password_hash = user.get(f'senha_{user_type}')
+        if not stored_password_hash or not verify_password(senha, stored_password_hash):
+            raise HTTPException(
+                status_code=status.HTTP_401_UNAUTHORIZED,
+                detail="Senha incorreta.",
+            )
+        
+        # 5. Se tudo estiver correto, retorna sucesso com os dados do usuário
+        # Remove a senha do objeto de usuário antes de enviar a resposta
+        user.pop(f'senha_{user_type}', None)
+
+        return {
+            "success": True,
+            "message": "Login bem-sucedido!",
+            "user": user,
+            "user_type": user_type
+        }
+
+    except pymysql.MySQLError as e:
+        # Captura erros específicos do MySQL
+        print(f"Erro no banco de dados: {e}")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail="Ocorreu um erro interno ao tentar fazer o login."
+            detail=f"Erro no servidor de banco de dados: {e}"
+        )
+    except Exception as e:
+        # Captura qualquer outro erro inesperado
+        print(f"Erro inesperado no servidor: {e}")
+        # Re-levanta exceções HTTP que já foram tratadas (como 404 e 401)
+        if isinstance(e, HTTPException):
+            raise e
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Ocorreu um erro inesperado no servidor."
         )
     finally:
         if cursor:
             cursor.close()
-        if conn and conn.is_connected():
+        if conn:
             conn.close()
 

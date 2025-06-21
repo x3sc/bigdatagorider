@@ -4,12 +4,12 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 # Importando as rotas (routers) dos outros arquivos
-from auth import router as auth_router
-from cadastro_cliente import router as cadastro_cliente_router
-from cadastro_prestador import router as cadastro_prestador_router
-from clientes import router as clientes_router
-from usuarios import router as usuarios_router
-from servicos import router as servicos_router
+from .auth import router as auth_router
+from .cadastro_cliente import router as cadastro_cliente_router
+from .cadastro_prestador import router as cadastro_prestador_router
+from .clientes import router as clientes_router
+from .usuarios import router as usuarios_router
+from .servicos import router as servicos_router
 
 # Cria a instância principal da aplicação FastAPI
 app = FastAPI()

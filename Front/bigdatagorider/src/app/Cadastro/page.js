@@ -1,4 +1,3 @@
-
 'use client';
 import React from 'react';
 import styles from './cadastro.module.css';
@@ -8,9 +7,14 @@ import Header from '@/components/header';
 
 function Cadastro() {
   const router = useRouter();
-  const CadastroCliente = () => {
-    router.push('/Cadastro/VantagensCliente/CadastroCliente');
+  const cadastroCliente = () => {
+    router.push('/Cadastro/VantagensCliente');
   };
+
+  const cadastroPrestador = () => {
+    router.push('/Cadastro/VantagensPrestador');
+  };
+
   return (
     <main>
       <Header />
@@ -32,7 +36,7 @@ function Cadastro() {
               <strong>aquisição de veículos seminovos</strong>,{" "}
               <strong>serviços de transporte sob demanda</strong>.
             </p>
-            <button className={styles.opcaoBotao} onClick={CadastroCliente}>Quero ser cliente</button>
+            <button className={styles.opcaoBotao} onClick={cadastroCliente}>Quero ser cliente</button>
           </div>
           <div className={styles.opcaoCadastro}>
             <h3 className={styles.opcaoTitulo}>Quero oferecer meus serviços</h3>
@@ -46,7 +50,7 @@ function Cadastro() {
               <strong>ferramentas profissionais de gestão</strong>,{" "}
               <strong>acesso a clientes qualificados</strong>.
             </p>
-            <button className={styles.opcaoBotao}>Quero trabalhar</button>
+            <button className={styles.opcaoBotao} onClick={cadastroPrestador}>Quero trabalhar</button>
           </div>
         </div>
       </div>
