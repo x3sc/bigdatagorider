@@ -36,13 +36,15 @@ def login(login_data: LoginData):
         cursor = conn.cursor(pymysql.cursors.DictCursor)
 
         # 1. Tenta encontrar o usuário na tabela de clientes
-        cursor.execute("SELECT * FROM cliente WHERE email_cliente = %s", (email,))
+        # CORREÇÃO: Alterado de 'email_cliente' para 'Email'
+        cursor.execute("SELECT * FROM Clientes WHERE Email = %s", (email,))
         user = cursor.fetchone()
         user_type = "cliente"
 
         # 2. Se não encontrar, tenta na tabela de prestadores
         if not user:
-            cursor.execute("SELECT * FROM prestador WHERE email_prestador = %s", (email,))
+            # CORREÇÃO: Alterado de 'prestador' para 'Prestadores' e 'email_prestador' para 'Email'
+            cursor.execute("SELECT * FROM Prestadores WHERE Email = %s", (email,))
             user = cursor.fetchone()
             user_type = "prestador"
 
@@ -54,7 +56,8 @@ def login(login_data: LoginData):
             )
 
         # 4. Verifica a senha
-        stored_password_hash = user.get(f'senha_{user_type}')
+        # CORREÇÃO: Alterado de f'senha_{user_type}' para 'Senha'
+        stored_password_hash = user.get('Senha')
         if not stored_password_hash or not verify_password(senha, stored_password_hash):
             raise HTTPException(
                 status_code=status.HTTP_401_UNAUTHORIZED,
@@ -63,7 +66,8 @@ def login(login_data: LoginData):
         
         # 5. Se tudo estiver correto, retorna sucesso com os dados do usuário
         # Remove a senha do objeto de usuário antes de enviar a resposta
-        user.pop(f'senha_{user_type}', None)
+        # CORREÇÃO: Alterado de f'senha_{user_type}' para 'Senha'
+        user.pop('Senha', None)
 
         return {
             "success": True,

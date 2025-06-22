@@ -32,8 +32,8 @@ app.add_middleware(
 # Inclusão dos routers na aplicação principal
 # Cada router adiciona os endpoints definidos no seu respectivo arquivo.
 app.include_router(auth_router, prefix="/api", tags=["Autenticação"])
-app.include_router(cadastro_cliente_router, prefix="/api", tags=["Cadastro"])
-app.include_router(cadastro_prestador_router, prefix="/api", tags=["Cadastro"])
+app.include_router(cadastro_cliente_router, prefix="/api", tags=["CadastroCliente"])
+app.include_router(cadastro_prestador_router, prefix="/api", tags=["CadastroPrestador"])
 app.include_router(clientes_router, prefix="/api", tags=["Clientes"])
 app.include_router(usuarios_router, prefix="/api", tags=["Usuários"])
 app.include_router(servicos_router, prefix="/api", tags=["Serviços"])
