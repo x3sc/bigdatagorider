@@ -12,46 +12,35 @@ router = APIRouter()
 # Modelo de dados para o cadastro de prestador
 class Prestador(BaseModel):
     nome: str
+    sobrenome: str # Adicionado para corresponder ao formulário
     email: EmailStr
     senha: str
-    cpf: str
+    cnpj: str # Alterado de cpf para cnpj
     telefone: str
-    # Adicione outros campos que forem específicos para o prestador
-    # Ex: cnh: str, tipo_veiculo: str
 
 @router.post("/cadastro-prestador", status_code=status.HTTP_201_CREATED)
 def create_prestador(prestador: Prestador):
     """
     Endpoint para registrar um novo prestador de serviço.
     """
-    # Lembre-se de criar a tabela 'Prestadores' no seu banco de dados
-    # CREATE TABLE Prestadores (
-    #     ID_Prestador INT AUTO_INCREMENT PRIMARY KEY,
-    #     Nome VARCHAR(100) NOT NULL,
-    #     Email VARCHAR(100) NOT NULL UNIQUE,
-    #     Senha VARCHAR(255) NOT NULL,
-    #     CPF VARCHAR(14) NOT NULL UNIQUE,
-    #     Telefone VARCHAR(20),
-    #     DataCadastro TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-    # );
-    
     conn = None
     cursor = None
     try:
         conn = get_db_connection()
         cursor = conn.cursor()
 
-        nome = sanitize_string(prestador.nome)
+        # Combina nome e sobrenome para o nome da empresa, ou pode ajustar conforme a lógica de negócio
+        nome_completo = f"{sanitize_string(prestador.nome)} {sanitize_string(prestador.sobrenome)}"
         email = sanitize_string(str(prestador.email))
-        cpf = sanitize_string(prestador.cpf)
+        cnpj = sanitize_string(prestador.cnpj)
         telefone = sanitize_string(prestador.telefone)
-        senha = prestador.senha # Lembre-se de hashear a senha
+        senha_hashed = hash_password(prestador.senha)
 
         query = """
-            INSERT INTO Prestadores (Nome, Email, Senha, CPF, Telefone)
+            INSERT INTO Prestadores (Nome, Email, Senha, CNPJ, Telefone)
             VALUES (%s, %s, %s, %s, %s)
         """
-        cursor.execute(query, (nome, email, senha, cpf, telefone))
+        cursor.execute(query, (nome_completo, email, senha_hashed, cnpj, telefone))
         conn.commit()
 
         return {"message": "Prestador cadastrado com sucesso!"}
@@ -60,7 +49,7 @@ def create_prestador(prestador: Prestador):
         if e.args[0] == 1062:
             raise HTTPException(
                 status_code=status.HTTP_409_CONFLICT,
-                detail="Email ou CPF já cadastrado."
+                detail="Email ou CNPJ já cadastrado."
             )
         else:
             raise HTTPException(
@@ -76,5 +65,5 @@ def create_prestador(prestador: Prestador):
     finally:
         if cursor:
             cursor.close()
-        if conn and conn.is_connected():
+        if conn:
             conn.close()

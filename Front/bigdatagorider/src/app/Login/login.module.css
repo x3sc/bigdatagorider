@@ -83,6 +83,39 @@
   color: #1f2937;
 }
 
+.userTypeSelector {
+  display: flex;
+  justify-content: center;
+  gap: 2rem; /* Aumenta o espaço entre os botões de rádio */
+  margin-bottom: 1.5rem; /* Adiciona mais espaço abaixo */
+  padding: 0.5rem;
+  border-radius: 8px;
+  background-color: #f3f4f6; /* Um fundo sutil para destacar a seleção */
+}
+
+.radioLabel {
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  font-size: 1rem; /* Tamanho de fonte legível */
+  font-weight: 500;
+  color: #374151; /* Cor de texto padrão */
+  padding: 0.5rem 1rem; /* Preenchimento para uma área de clique maior */
+  border-radius: 6px;
+  transition: all 0.2s ease-in-out;
+}
+
+.radioInput {
+  display: none; /* Esconde o botão de rádio padrão */
+}
+
+.radioLabel:has(.radioInput:checked) {
+  background-color: #ef4444; /* Cor de fundo quando selecionado */
+  color: #ffffff; /* Cor do texto quando selecionado */
+  box-shadow: 0 2px 8px rgba(239, 68, 68, 0.3); /* Sombra sutil */
+}
+
+
 .formSubtitle {
   margin-bottom: 1.5rem;
   text-align: center;

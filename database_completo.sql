@@ -237,43 +237,45 @@ WHERE v.Status = 'Disponivel';
 -- ====================================================================
 
 -- Trigger para atualizar nota média do prestador
-CREATE TRIGGER tr_atualizar_nota_prestador 
-AFTER INSERT ON Avaliacoes
+DELIMITER $$
+CREATE TRIGGER tr_atualizar_nota_prestador AFTER INSERT ON Avaliacoes
 FOR EACH ROW
-UPDATE Sobre_Prestador sp
-SET 
-    sp.Nota_Media = (
-        SELECT AVG(a.Nota) 
-        FROM Avaliacoes a 
-        WHERE a.ID_Prestador_Avaliado = NEW.ID_Prestador_Avaliado
-    ),
-    sp.Total_Avaliacoes = (
-        SELECT COUNT(*) 
-        FROM Avaliacoes a 
-        WHERE a.ID_Prestador_Avaliado = NEW.ID_Prestador_Avaliado
-    )
-WHERE sp.ID_Prestador = NEW.ID_Prestador_Avaliado;
+BEGIN
+    DECLARE nova_media DECIMAL(3,2);
+    DECLARE total_avaliacoes INT;
+    
+    SELECT AVG(Nota), COUNT(*) INTO nova_media, total_avaliacoes
+    FROM Avaliacoes 
+    WHERE ID_Prestador_Avaliado = NEW.ID_Prestador_Avaliado;
+    
+    INSERT INTO Sobre_Prestador (ID_Prestador, Nota_Media, Total_Avaliacoes)
+    VALUES (NEW.ID_Prestador_Avaliado, nova_media, total_avaliacoes)
+    ON DUPLICATE KEY UPDATE 
+        Nota_Media = nova_media,
+        Total_Avaliacoes = total_avaliacoes;
+END$$
 
 -- Trigger para atualizar status do veículo quando alocado
-CREATE TRIGGER tr_atualizar_status_veiculo_alocado 
-AFTER INSERT ON ServicoVeiculos
+CREATE TRIGGER tr_atualizar_status_veiculo_alocado AFTER INSERT ON ServicoVeiculos
 FOR EACH ROW
-UPDATE Veiculos 
-SET Status = 'Em Servico' 
-WHERE ID_Veiculo = NEW.ID_Veiculo;
+BEGIN
+    UPDATE Veiculos 
+    SET Status = 'Em Servico' 
+    WHERE ID_Veiculo = NEW.ID_Veiculo;
+END$$
 
 -- Trigger para liberar veículo quando serviço é concluído
-CREATE TRIGGER tr_liberar_veiculo_concluido 
-AFTER UPDATE ON ServicoVeiculos
+CREATE TRIGGER tr_liberar_veiculo_concluido AFTER UPDATE ON ServicoVeiculos
 FOR EACH ROW
-UPDATE Veiculos 
-SET Status = CASE 
-    WHEN NEW.Status = 'Concluido' AND OLD.Status != 'Concluido' THEN 'Disponivel'
-    ELSE Status
-END
-WHERE ID_Veiculo = NEW.ID_Veiculo 
-AND NEW.Status = 'Concluido' 
-AND OLD.Status != 'Concluido';
+BEGIN
+    IF NEW.Status = 'Concluido' AND OLD.Status != 'Concluido' THEN
+        UPDATE Veiculos 
+        SET Status = 'Disponivel' 
+        WHERE ID_Veiculo = NEW.ID_Veiculo;
+    END IF;
+END$$
+
+DELIMITER ;
 
 -- ====================================================================
 -- 11. DADOS INICIAIS PARA TESTE (OPCIONAL)

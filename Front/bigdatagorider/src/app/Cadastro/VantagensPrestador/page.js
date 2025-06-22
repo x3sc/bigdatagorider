@@ -11,7 +11,7 @@ export default function VantagensPrestador() {
   const router = useRouter();
 
   const handleCadastro = () => {
-    router.push('/Cadastro/Prestador');
+    router.push('/Cadastro/VantagensPrestador/CadastroPrestador');
   };
 
   return (

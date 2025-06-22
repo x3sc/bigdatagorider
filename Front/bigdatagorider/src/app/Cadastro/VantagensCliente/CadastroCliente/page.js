@@ -16,7 +16,7 @@ export default function CadastroCliente() {
         nome: '',
         sobrenome: '',
         email: '',
-        cpf: '',
+        documento: '',
         telefone: '',
         data_nascimento: '',
         senha: '',
@@ -49,8 +49,9 @@ export default function CadastroCliente() {
         setLoading(true);
 
         try {
-            const apiUrl = 'http://127.0.0.1:5000/api/cadastro-cliente';
-            const { confirmarSenha, ...dataToSend } = formData;
+            const apiUrl = 'http://127.0.0.1:5000/api/cadastro';
+            const { confirmarSenha, ...data } = formData;
+            const dataToSend = { ...data, tipo: 0 }; // 0 para cliente
 
             const response = await fetch(apiUrl, {
                 method: 'POST',
@@ -103,7 +104,7 @@ export default function CadastroCliente() {
                             </div>
 
                             <Input placeholder="E-mail" type="email" name="email" value={formData.email} onValueChange={(val) => handleChange("email", val)} required className={styles.inputField} />
-                            <Input placeholder="CPF" name="cpf" value={formData.cpf} onValueChange={(val) => handleChange("cpf", val)} required className={styles.inputField} />
+                            <Input placeholder="CPF ou CNPJ" name="documento" value={formData.documento} onValueChange={(val) => handleChange("documento", val)} required className={styles.inputField} />
                             <Input placeholder="Telefone" name="telefone" value={formData.telefone} onValueChange={(val) => handleChange("telefone", val)} required className={styles.inputField} />
                             <Input placeholder="Data de Nascimento" type="date" name="data_nascimento" value={formData.data_nascimento} onValueChange={(val) => handleChange("data_nascimento", val)} required className={styles.inputField} />
                             <Input placeholder="Senha" type="password" name="senha" value={formData.senha} onValueChange={(val) => handleChange("senha", val)} required className={styles.inputField} />
