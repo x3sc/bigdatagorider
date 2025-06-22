@@ -41,7 +41,16 @@ export default function Login() { // Renomeado para Login para clareza
 
       if (response.ok && data.success) {
         alert("Logado com sucesso!");
-        router.push("/dashboard"); // Redireciona para o dashboard
+        
+        // Lógica de redirecionamento com base no tipo de usuário
+        if (data.tipo_usuario === 'cliente') {
+          router.push('/Servicos'); // Rota para clientes
+        } else if (data.tipo_usuario === 'prestador') {
+          router.push('/Prestador/servicos'); // Rota para prestadores
+        } else {
+          // Fallback para a página inicial se o tipo não for reconhecido
+          router.push('/');
+        }
       } else {
         // Exibe a mensagem de erro específica vinda do servidor
         alert(data.detail || "Usuário ou senha incorretos.");

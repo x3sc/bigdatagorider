@@ -1,5 +1,6 @@
 # Server/cadastro_cliente.py
 
+import logging
 from fastapi import APIRouter, HTTPException, status
 from pydantic import BaseModel, EmailStr
 from datetime import date, datetime
@@ -7,6 +8,9 @@ import pymysql
 
 from .security import hash_password
 from .utils import get_db_connection, sanitize_string
+
+# Configuração básica do logging para exibir informações detalhadas no terminal
+logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 
 router = APIRouter()
 
@@ -20,12 +24,15 @@ class Cliente(BaseModel):
     telefone: str
     data_nascimento: str # Recebe como string do formulário
 
-@router.post("/api/cadastro-cliente", status_code=status.HTTP_201_CREATED)
+@router.post("/cadastro-cliente", status_code=status.HTTP_201_CREATED)
 def create_cliente(cliente: Cliente):
     """
     Endpoint para registrar um novo cliente.
     Recebe os dados do formulário, valida, e insere no banco de dados.
     """
+    logging.info(f"Recebida requisição de cadastro para o e-mail: {cliente.email}")
+    logging.info(f"Dados recebidos: {cliente.model_dump_json()}") # Loga todos os dados recebidos
+
     conn = None
     cursor = None
     try:
@@ -78,8 +85,8 @@ def create_cliente(cliente: Cliente):
             detail=detail
         )
     except Exception as e:
-        # Captura outros erros inesperados
-        print(f"Erro no servidor: {e}")
+        # Captura outros erros inesperados e loga o traceback completo para depuração
+        logging.exception("Ocorreu um erro inesperado ao processar o cadastro do cliente:")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail="Ocorreu um erro inesperado ao tentar cadastrar o cliente."
