@@ -2,25 +2,29 @@
 
 from fastapi import APIRouter, HTTPException, status
 from pydantic import BaseModel, EmailStr
+from datetime import date, datetime
 import pymysql
 
-from security import hash_password
-from utils import get_db_connection, sanitize_string
+from .security import hash_password
+from .utils import get_db_connection, sanitize_string
 
 router = APIRouter()
 
-# ATUALIZAÇÃO: O modelo agora espera 'nomeCompleto' para corresponder ao formulário do frontend.
+# Modelo de dados para o cadastro de cliente, alinhado com o formulário do frontend
 class Cliente(BaseModel):
-    nomeCompleto: str
+    nome: str
+    sobrenome: str
     email: EmailStr
     senha: str
-    cpf: str
+    cpf: str  # Corrigido de constr para str
     telefone: str
+    data_nascimento: str # Recebe como string do formulário
 
-@router.post("/cadastro-cliente", status_code=status.HTTP_201_CREATED)
+@router.post("/api/cadastro-cliente", status_code=status.HTTP_201_CREATED)
 def create_cliente(cliente: Cliente):
     """
-    Endpoint para registrar um novo cliente, adaptado para receber 'nomeCompleto'.
+    Endpoint para registrar um novo cliente.
+    Recebe os dados do formulário, valida, e insere no banco de dados.
     """
     conn = None
     cursor = None
@@ -28,57 +32,60 @@ def create_cliente(cliente: Cliente):
         conn = get_db_connection()
         cursor = conn.cursor()
 
+        # Validação e conversão da data de nascimento
+        try:
+            # Converte a string 'YYYY-MM-DD' para um objeto date
+            data_nascimento_obj = datetime.strptime(cliente.data_nascimento, '%Y-%m-%d').date()
+        except ValueError:
+            # Se o formato for inválido, retorna um erro claro
+            raise HTTPException(
+                status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+                detail=[{"loc": ["body", "data_nascimento"], "msg": "Formato de data inválido. Use YYYY-MM-DD."}]
+            )
+
+        # Criptografa a senha antes de salvar
         hashed_password = hash_password(cliente.senha)
 
-        # ATUALIZAÇÃO: Divide o nomeCompleto em nome e sobrenome.
-        # O primeiro nome é a primeira parte, e o sobrenome é todo o resto.
-        # .strip() remove espaços extras no início ou fim.
-        nome_parts = cliente.nomeCompleto.strip().split(" ", 1)
-        nome = nome_parts[0]
-        # Garante que o sobrenome seja uma string vazia se não houver segundo nome.
-        sobrenome = nome_parts[1] if len(nome_parts) > 1 else ""
-
-        # A query continua a inserir em 'nome' e 'sobrenome' no banco.
+        # Query para inserir o novo cliente na tabela
         query = """
-            INSERT INTO Clientes (nome, sobrenome, email, senha, cpf, telefone)
-            VALUES (%s, %s, %s, %s, %s, %s)
+            INSERT INTO Clientes (Nome, Sobrenome, Email, Senha, CPF, Telefone, DataNascimento)
+            VALUES (%s, %s, %s, %s, %s, %s, %s)
         """
         cursor.execute(query, (
-            sanitize_string(nome),
-            sanitize_string(sobrenome),
+            sanitize_string(cliente.nome),
+            sanitize_string(cliente.sobrenome),
             sanitize_string(str(cliente.email)),
             hashed_password,
             sanitize_string(cliente.cpf),
-            sanitize_string(cliente.telefone)
+            sanitize_string(cliente.telefone),
+            data_nascimento_obj  # Usa o objeto de data convertido
         ))
         conn.commit()
         
         return {"message": "Cliente cadastrado com sucesso!"}
 
     except pymysql.err.IntegrityError as e:
+        # Trata erros de duplicação de chave (email ou CPF)
         error_message = str(e).lower()
+        detail = "Erro de dados duplicados. Verifique o e-mail e o CPF."
         if "duplicate entry" in error_message:
             if "email" in error_message:
-                raise HTTPException(
-                    status_code=status.HTTP_409_CONFLICT,
-                    detail="Este endereço de e-mail já está em uso."
-                )
+                detail = "Este endereço de e-mail já está em uso."
             elif "cpf" in error_message:
-                raise HTTPException(
-                    status_code=status.HTTP_409_CONFLICT,
-                    detail="Este CPF já pertence a outra conta."
-                )
+                detail = "Este CPF já pertence a outra conta."
         raise HTTPException(
             status_code=status.HTTP_409_CONFLICT,
-            detail="Erro de dados duplicados. Verifique o e-mail e o CPF."
+            detail=detail
         )
     except Exception as e:
+        # Captura outros erros inesperados
         print(f"Erro no servidor: {e}")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail="Ocorreu um erro inesperado ao tentar cadastrar o cliente."
         )
     finally:
+        # Garante que a conexão com o banco seja fechada
         if cursor:
             cursor.close()
         if conn:

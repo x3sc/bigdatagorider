@@ -3,7 +3,7 @@ import findspark
 from fastapi import APIRouter, HTTPException
 from pyspark.sql import SparkSession
 from dotenv import load_dotenv
-from utils import sanitize_email, sanitize_string
+from .utils import sanitize_email, sanitize_string
 
 load_dotenv("server.env")
 findspark.init()

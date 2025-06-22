@@ -1,0 +1,36 @@
+.main {
+    padding: 4rem 2rem;
+    background-color: #f9f9f9;
+}
+
+.container {
+    max-width: 800px;
+    margin: 0 auto;
+    background-color: #fff;
+    padding: 2rem;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.title {
+    font-size: 2.5rem;
+    font-weight: bold;
+    margin-bottom: 1.5rem;
+    color: #333;
+    text-align: center;
+}
+
+.content h2 {
+    font-size: 1.5rem;
+    font-weight: bold;
+    margin-top: 2rem;
+    margin-bottom: 1rem;
+    color: #444;
+}
+
+.content p {
+    font-size: 1rem;
+    line-height: 1.6;
+    color: #666;
+    margin-bottom: 1rem;
+}

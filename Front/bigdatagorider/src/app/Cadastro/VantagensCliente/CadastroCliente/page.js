@@ -2,87 +2,75 @@
 
 "use client";
 import React, { useState } from 'react';
-import { useRouter } from 'next/navigation'; // Hook para redirecionamento
-import styles from './CdCliente.module.css';
+import { useRouter } from 'next/navigation';
+import styles from '../../../Login/login.module.css'; // Usando o CSS do Login
 import Header from '@/components/header';
 import { Input } from '@heroui/input';
 import { Button } from '@heroui/button';
+import Image from 'next/image';
 
 export default function CadastroCliente() {
-    const router = useRouter(); // Instância do router para navegar entre páginas
+    const router = useRouter();
 
-    // Estado para os dados do formulário, com o campo de confirmação de senha
     const [formData, setFormData] = useState({
-        nomeCompleto: '',
+        nome: '',
+        sobrenome: '',
         email: '',
         cpf: '',
         telefone: '',
+        data_nascimento: '',
         senha: '',
-        confirmarSenha: '', // Campo adicionado para validação
+        confirmarSenha: '',
     });
-
-    // Estados para gerir o feedback visual durante a submissão
+    const [agreedToTerms, setAgreedToTerms] = useState(false);
     const [loading, setLoading] = useState(false);
-    const [error, setError] = useState(null); // Para exibir mensagens de erro no HTML se desejar
+    const [error, setError] = useState(null);
 
-    // Função para atualizar o estado do formulário
     const handleChange = (name, value) => {
-        setFormData({ ...formData, [name]: value });
+        setFormData((prev) => ({ ...prev, [name]: value }));
     };
 
-    // Função assíncrona para lidar com o envio do formulário para o backend
     const handleSubmit = async (e) => {
-        e.preventDefault(); // Previne o comportamento padrão de recarregar a página
+        e.preventDefault();
         setError(null);
 
-        // 1. Validação: Verifica se as senhas coincidem
         if (formData.senha !== formData.confirmarSenha) {
-            const errorMessage = 'As senhas não coincidem. Por favor, tente novamente.';
-            setError(errorMessage);
-            window.alert(errorMessage); // Exibe o alerta para o utilizador
+            const errorMessage = 'As senhas não coincidem.';
+            window.alert(errorMessage);
             return;
         }
 
-        setLoading(true); // Ativa o estado de carregamento
+        if (!agreedToTerms) {
+            const errorMessage = 'Você precisa aceitar os Termos de Uso.';
+            window.alert(errorMessage);
+            return;
+        }
+
+        setLoading(true);
 
         try {
-            // 2. Envio dos Dados: Faz a chamada para a API
-            const apiUrl = 'http://127.0.0.1:8000/api/cadastro-cliente';
-
-            // Prepara o objeto de dados a ser enviado, removendo a confirmação da senha
-            const dataToSend = { ...formData };
-            delete dataToSend.confirmarSenha;
+            const apiUrl = 'http://127.0.0.1:5000/api/cadastro-cliente';
+            const { confirmarSenha, ...dataToSend } = formData;
 
             const response = await fetch(apiUrl, {
                 method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
+                headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(dataToSend),
             });
 
             const result = await response.json();
 
-            // Se a resposta da API não for de sucesso, lança um erro
             if (!response.ok) {
-                // Usa a mensagem de erro específica vinda do backend
-                throw new Error(result.detail || 'Ocorreu um erro ao tentar o cadastro.');
+                throw new Error(result.detail || 'Ocorreu um erro no cadastro.');
             }
 
-            // 3. Sucesso: Se tudo correu bem
-            window.alert("Cadastro realizado com sucesso! Você será redirecionado para a página de login.");
-            
-            // Redireciona para a página de login após 2 segundos
-            setTimeout(() => {
-                router.push('/Login');
-            }, 2000);
+            window.alert("Cadastro realizado com sucesso! Redirecionando para o login.");
+            setTimeout(() => router.push('/Login'), 2000);
 
         } catch (err) {
-            // 4. Erro: Captura qualquer erro (de rede ou da API)
             setError(err.message);
-            window.alert(`Erro: ${err.message}`); // Exibe a mensagem de erro no alerta
+            window.alert(`Erro: ${err.message}`);
         } finally {
-            // Garante que o estado de carregamento é desativado no final
             setLoading(false);
         }
     };
@@ -92,92 +80,45 @@ export default function CadastroCliente() {
             <Header />
             <div className={styles.container}>
                 <div className={styles.contentWrapper}>
-                    <div className={styles.left}>
-                        <img
-                            src="/assets/login/homem 1 (1).png"
-                            alt="Homem a mexer no telemóvel junto a um carro"
+                    <div className={styles.imageContainer}>
+                        <Image
+                            src="/assets/login/homem 1 (1).png" // Imagem padrão
+                            alt="Homem ao lado de um carro"
                             className={styles.leftImg}
+                            width={500}
+                            height={500}
+                            priority
                         />
-                        <div className={styles.redArrows}>
-                            {/* Pode adicionar as setas aqui se necessário */}
-                        </div>
                     </div>
                     <div className={styles.loginBox}>
-                        <h2 className={styles.loginBoxTitle}>Criando sua conta</h2>
-                        <Button className={styles.googleBtn} type="button">
-                            <img
-                                src="/assets/login/Logo-Google-G.png"
-                                alt="Google"
-                                className={styles.googleBtnImg}
-                            />
-                            Continue com o Google
-                        </Button>
-                        <form onSubmit={handleSubmit}>
-                            <Input
-                                type="text"
-                                name="nomeCompleto"
-                                label="Nome completo"
-                                placeholder="Nome completo"
-                                value={formData.nomeCompleto}
-                                onValueChange={value => handleChange('nomeCompleto', value)}
-                                className={styles.loginInput}
-                                required
-                            />
-                            <Input
-                                type="email"
-                                name="email"
-                                label="E-mail"
-                                placeholder="E-mail"
-                                value={formData.email}
-                                onValueChange={value => handleChange('email', value)}
-                                className={styles.loginInput}
-                                required
-                            />
-                            <Input
-                                type="password"
-                                name="senha"
-                                label="Senha"
-                                placeholder="Senha"
-                                value={formData.senha}
-                                onValueChange={value => handleChange('senha', value)}
-                                className={styles.loginInput}
-                                required
-                            />
-                             <Input
-                                type="password"
-                                name="confirmarSenha"
-                                label="Confirmar Senha"
-                                placeholder="Confirme sua Senha"
-                                value={formData.confirmarSenha}
-                                onValueChange={value => handleChange('confirmarSenha', value)}
-                                className={styles.loginInput}
-                                required
-                            />
-                            <Input
-                                type="text"
-                                name="cpf"
-                                label="CPF"
-                                placeholder="CPF"
-                                value={formData.cpf}
-                                onValueChange={value => handleChange('cpf', value)}
-                                className={styles.loginInput}
-                                required
-                            />
-                            <Input
-                                type="tel"
-                                name="telefone"
-                                label="Número de telefone"
-                                placeholder="Número de telefone"
-                                value={formData.telefone}
-                                onValueChange={value => handleChange('telefone', value)}
-                                className={styles.loginInput}
-                                required
-                            />
-                            <Button type="submit" className={styles.loginBtn} fullWidth disabled={loading}>
-                                {loading ? 'Aguarde...' : 'Criar Conta'}
+                        <form className={styles.form} onSubmit={handleSubmit}>
+                            <h2 className={styles.loginBoxTitle}>Crie sua Conta</h2>
+                            <p className={styles.formSubtitle}>
+                                Já tem uma conta? <a href="/Login" className={styles.loginLink}>Faça login</a>
+                            </p>
+
+                            <div className={styles.inputGroup}>
+                                <Input placeholder="Nome" name="nome" value={formData.nome} onValueChange={(val) => handleChange("nome", val)} required />
+                                <Input placeholder="Sobrenome" name="sobrenome" value={formData.sobrenome} onValueChange={(val) => handleChange("sobrenome", val)} required />
+                            </div>
+
+                            <Input placeholder="E-mail" type="email" name="email" value={formData.email} onValueChange={(val) => handleChange("email", val)} required className={styles.inputField} />
+                            <Input placeholder="CPF" name="cpf" value={formData.cpf} onValueChange={(val) => handleChange("cpf", val)} required className={styles.inputField} />
+                            <Input placeholder="Telefone" name="telefone" value={formData.telefone} onValueChange={(val) => handleChange("telefone", val)} required className={styles.inputField} />
+                            <Input placeholder="Data de Nascimento" type="date" name="data_nascimento" value={formData.data_nascimento} onValueChange={(val) => handleChange("data_nascimento", val)} required className={styles.inputField} />
+                            <Input placeholder="Senha" type="password" name="senha" value={formData.senha} onValueChange={(val) => handleChange("senha", val)} required className={styles.inputField} />
+                            <Input placeholder="Confirmar Senha" type="password" name="confirmarSenha" value={formData.confirmarSenha} onValueChange={(val) => handleChange("confirmarSenha", val)} required className={styles.inputField} />
+
+                            <div className={styles.termsContainer}>
+                                <input type="checkbox" id="terms" checked={agreedToTerms} onChange={(e) => setAgreedToTerms(e.target.checked)} />
+                                <label htmlFor="terms">
+                                    Eu li e concordo com os <a href="/termos" target="_blank" rel="noopener noreferrer" className={styles.loginLink}>Termos de Uso</a>
+                                </label>
+                            </div>
+
+                            <Button type="submit" className={styles.loginBtn} disabled={loading || !agreedToTerms}>
+                                {loading ? 'Aguarde...' : 'Cadastrar'}
                             </Button>
-                             {/* Opcional: exibe a mensagem de erro também na página */}
-                            {error && <p style={{ color: 'red', marginTop: '15px', textAlign: 'center' }}>{error}</p>}
                         </form>
                     </div>
                 </div>

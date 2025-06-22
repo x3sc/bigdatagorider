@@ -3,7 +3,7 @@
 from fastapi import APIRouter, HTTPException, status
 from pydantic import BaseModel, EmailStr
 from typing import Literal, Optional
-from utils import get_db_connection, sanitize_string
+from .utils import get_db_connection, sanitize_string
 
 router = APIRouter()
 

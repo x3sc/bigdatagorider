@@ -1,13 +1,51 @@
 "use client";
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import './abas-de-navegacao.module.css';
 import Image from 'next/image';
 import Header from "@/components/header";
 import Footer from "@/components/footer";
 
 
-const ConteudoTransportes = () => <div><h2>Transportes Disponíveis</h2><p>Lista de transportes disponíveis...</p></div>;
+const ConteudoTransportes = () => {
+    const [servicos, setServicos] = useState([]);
+
+    useEffect(() => {
+        const fetchServicos = async () => {
+            try {
+                const response = await fetch('http://localhost:5000/api/servicos');
+                if (!response.ok) {
+                    throw new Error('Erro ao buscar serviços');
+                }
+                const data = await response.json();
+                setServicos(data);
+            } catch (error) {
+                console.error(error);
+            }
+        };
+
+        fetchServicos();
+    }, []);
+
+    return (
+        <div>
+            <h2>Transportes Disponíveis</h2>
+            {servicos.length > 0 ? (
+                <ul>
+                    {servicos.map((servico) => (
+                        <li key={servico.id}>
+                            <h3>{servico.nome}</h3>
+                            <p>{servico.descricao}</p>
+                            <p>Preço Estimado: R$ {servico.preco_estimado.toFixed(2)}</p>
+                        </li>
+                    ))}
+                </ul>
+            ) : (
+                <p>Nenhum serviço disponível no momento.</p>
+            )}
+        </div>
+    );
+};
 const ConteudoServicos = () => 
 <div>
     <div>

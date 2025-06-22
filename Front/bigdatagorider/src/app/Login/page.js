@@ -2,11 +2,13 @@
 import Image from "next/image";
 import styles from "./login.module.css";
 import { useState } from "react";
+import { useRouter } from "next/navigation"; // Importa o useRouter
 import Header from "@/components/header";
 import { Input } from '@heroui/input';
 import { Button } from '@heroui/button';
 
-export default function Cadastro() {
+export default function Login() { // Renomeado para Login para clareza
+  const router = useRouter(); // Inicializa o router
   const [showPassword, setShowPassword] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -27,7 +29,7 @@ export default function Cadastro() {
 
     setLoading(true);
     try {
-      const response = await fetch("http://127.0.0.1:8000/login", {
+      const response = await fetch("http://127.0.0.1:5000/api/login", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -37,11 +39,12 @@ export default function Cadastro() {
 
       const data = await response.json();
 
-      if (data.success) {
+      if (response.ok && data.success) {
         alert("Logado com sucesso!");
-        // window.location.href = "/dashboard";
+        router.push("/dashboard"); // Redireciona para o dashboard
       } else {
-        alert("Usuário ou senha incorretos.");
+        // Exibe a mensagem de erro específica vinda do servidor
+        alert(data.detail || "Usuário ou senha incorretos.");
       }
     } catch (error) {
       alert("Erro ao conectar com o servidor. Tente novamente.");
@@ -135,7 +138,7 @@ export default function Cadastro() {
       </div>
 
       <div className={styles.forgot}>
-        <a href="#" className={styles.forgotLink} aria-label="Recuperar senha">
+        <a href="/recuperar-senha" className={styles.forgotLink} aria-label="Recuperar senha">
           Esqueci minha senha
         </a>
       </div>
@@ -152,11 +155,11 @@ export default function Cadastro() {
 
       <div className={styles.signupLink}>
         Ainda não criou sua conta na GoRide?{' '}
-        <a href="#" className={styles.signupLinkA} aria-label="Cadastre-se">
+        <a href="/Cadastro" className={styles.signupLinkA} aria-label="Cadastre-se">
           Cadastre-se
         </a>
         <br />
-        <a href="#" className={styles.signupLinkA} aria-label="Ajuda">
+        <a href="/ajuda" className={styles.signupLinkA} aria-label="Ajuda">
           Preciso de ajuda
         </a>
       </div>
