@@ -1,0 +1,78 @@
+.bodyPage {
+  width: 90%;
+  height: auto;
+  display: flex;
+  flex-direction: row;
+  padding: 60px 30px;
+  gap: 10vw;
+
+  & .elementosDir {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  & .barraPesquisar {
+    width: 100%;
+    height: 40px;
+    border: 2px solid #000;
+    border-radius: 30px;
+  }
+
+  & .ofertas {
+    background-color: #d9d9d9;
+    border-radius: 40px;
+    margin-top: 40px;
+    padding: 30px;
+
+    & .textoTopo {
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+      font-weight: bold;
+      gap: 50px;
+
+      & h1 {
+        font-size: 28px;
+      }
+
+      & .tagPreco {
+        width: 150px;
+        height: 50px;
+        font-weight: bold;
+        border-radius: 40px;
+        padding: 10px;
+        background-color: #000;
+        align-items: center;
+        text-align: center;
+        color: #fff;
+        font-size: 20px;
+        margin-left: 12vw;
+      }
+    }
+
+    & .infos {
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+      gap: 50px;
+      font-weight: 700;
+      margin-top: 20px;
+    }
+
+    & .descricao {
+      margin-top: 30px;
+      padding-right: 67px;
+    }
+
+    & button {
+      width: 150px;
+      height: 40px;
+      background-color: rgb(255, 0, 0);
+      color: #fff;
+      border-radius: 40px;
+      padding: 5px 10px;
+      margin-top: 40px;
+    }
+  }
+}

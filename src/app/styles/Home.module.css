@@ -1,0 +1,273 @@
+/* Estilos específicos da Home */
+.header {
+    height: 90px;
+    display: flex;
+    justify-items: center;
+    justify-content: space-between;
+    padding: 20px;
+    background-color: black;
+    color: white;
+    position: relative;
+    align-items: center;
+}
+
+.section {
+    color:white;
+    height: 400px;
+    width: auto;
+    background-image: url('/assets/home/banner-home 1.png');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    padding: 30px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.logo {
+    padding-left: 20px;
+    width: 170px;
+    height: auto;
+}
+
+.logo1 {
+    width: 250px;
+    height: auto;
+}
+
+.mobilidade {
+    display: flex;
+   justify-content: center;
+    gap:80px;
+    padding:40px;
+}
+
+.mobilidade h1 {
+    font-size: 30px;
+}
+
+.aviao {
+    width: 30px;
+    height: auto;
+}
+
+.aviaozao {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.aviaozinho {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.li {
+    display: flex;
+    gap: 20px;
+    list-style: none;
+    cursor: pointer;
+}
+
+.ref:hover {
+    text-decoration: underline;
+}
+
+.botao {
+    border: 0px;
+    border-radius: 10px;
+    padding: 6px;
+    width: fit-content;
+    transition: background-color 0.5s ease;
+    cursor: pointer;
+    background-color: #ff0000;
+    color: white;
+}
+
+.botao:hover {
+    background-color: #E90000;
+}
+
+.prioridade {
+    font-size: 40px;
+}
+
+.escolher {
+    margin-top: 150px;
+    padding: 15px;
+    text-align: center;
+}
+
+.escolher h1 {
+    font-size: 32px;
+}
+
+.rectangle {
+    width: 150px;
+    height: auto;
+    border-radius: 10px;
+    margin-left: auto;
+    margin-right: auto;
+    padding-top:15px;
+}
+
+.container {
+    display: flex;
+    justify-content: center;
+    gap:120px;
+    margin-top: 40px;
+    text-align: center;
+}
+
+.circulo {
+    width: 100px;
+    height: auto;
+    margin-left: auto;
+    margin-right:auto;
+}
+
+.experimente {
+    margin-top: 10px;
+    display: flex;
+    flex-direction: column;
+    align-items: left;
+    gap: 10px;
+}
+
+.esquerda {
+ padding: 30px;
+ text-align: center;
+ font-size: 32px;
+}
+
+.funciona {
+    margin-left: auto;
+    margin-right: auto;
+    width: 1200px;
+    height: auto;
+}
+
+.avaliacao {
+    margin-left: auto;
+    margin-right: auto;
+    width: 1200px;
+    height: auto;
+}
+
+.meio {
+    padding: 50px;
+    text-align: center;
+}
+
+.meio h1 {
+    font-size: 32px;
+}
+
+.quadrado {
+    display: flex;
+    justify-content: center;
+    gap:100px;
+}
+
+.quadrado h1 {
+    font-size: 60px;
+}
+
+.quadrado h2 {
+    padding-top:10px;
+    font-size: 25px;
+}
+
+.quadrado p {
+    padding-top: 15px;
+}
+
+.square {
+    border-radius: 30px;
+    width: 300px;
+    height: 330px;
+    background-color: black;
+    padding: 30px;
+    text-align: center;
+    color: white;
+}
+
+.usuario {
+    width: 100px;
+    height: 100px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.pronto {
+    padding: 10px;
+    display: flex;
+    justify-content: space-evenly;
+    gap: 15px;
+}
+
+.comeco {
+    display: flex;
+    flex-direction: column;
+    gap: 30px;
+    justify-content: center;
+}
+
+.comeco h1 {
+    font-size: 32px;
+}
+
+.rapaznocarro {
+    width: 300px;
+    height: 300px;
+}
+
+.antesdafaq {
+    padding: 120px;
+  }
+  
+  .fila {
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
+    gap: 40px;
+    flex-wrap: wrap;
+  }
+  
+  .imagem {
+    width: 600px;
+
+  }
+  
+  .mulherajuda {
+    width: 100%;
+    height: auto;
+    object-fit: contain; 
+  }
+  
+  .faq {
+    width: 600px;
+  }
+
+.item {
+    margin-bottom: 10px;
+}
+
+.pergunta {
+    background-color: red;
+    color: white;
+    padding: 10px;
+    cursor: pointer;
+    border-radius: 6px;
+}
+
+.resposta {
+    background-color: #ecf0f1;
+    padding: 10px;
+    display: none;
+    border-radius: 6px;
+    margin-top: 5px;
+    transition: 1s ease;
+}
