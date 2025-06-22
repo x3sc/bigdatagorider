@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Teste Frontend - Big Data Go Rider</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        .teste { margin: 20px 0; padding: 15px; border: 1px solid #ddd; border-radius: 5px; }
+        .sucesso { background-color: #d4edda; border-color: #c3e6cb; }
+        .erro { background-color: #f8d7da; border-color: #f5c6cb; }
+        button { padding: 10px 15px; margin: 5px; background: #007bff; color: white; border: none; border-radius: 3px; cursor: pointer; }
+        button:hover { background: #0056b3; }
+        input, select, textarea { margin: 5px; padding: 8px; border: 1px solid #ddd; border-radius: 3px; }
+        .formulario { background: #f8f9fa; padding: 15px; border-radius: 5px; margin: 10px 0; }
+    </style>
+</head>
+<body>
+    <h1>🧪 Teste Frontend - Big Data Go Rider</h1>
+    <p>Esta página testa diretamente a comunicação com a API.</p>
+    
+    <div class="formulario">
+        <h3>🔑 1. Teste de Login</h3>
+        <input type="email" id="email" placeholder="E-mail" value="frontend.teste@exemplo.com">
+        <input type="password" id="senha" placeholder="Senha" value="123456">
+        <select id="tipo">
+            <option value="0">Cliente</option>
+            <option value="1">Prestador</option>
+        </select>
+        <button onclick="testarLogin()">Fazer Login</button>
+    </div>
+    
+    <div class="formulario">
+        <h3>🚚 2. Teste de Criação de Serviço</h3>
+        <input type="text" id="nomeServico" placeholder="Nome do Serviço" value="Teste Direto">
+        <input type="text" id="descricao" placeholder="Descrição" value="Teste via HTML">
+        <input type="text" id="origem" placeholder="Origem" value="Local A">
+        <input type="text" id="destino" placeholder="Destino" value="Local B">
+        <input type="number" id="valor" placeholder="Valor" value="100">
+        <input type="number" id="quantidadeVeiculos" placeholder="Quantidade Veículos" value="1">
+        <input type="date" id="dataServico" value="2025-01-30">
+        <select id="tipoVeiculo">
+            <option value="Carro">Carro</option>
+            <option value="Caminhão">Caminhão</option>
+            <option value="Van">Van</option>
+        </select>
+        <button onclick="criarServico()">Criar Serviço</button>
+    </div>
+    
+    <div id="resultados"></div>
+    
+    <script>
+        let token = null;
+        const API_BASE = 'http://127.0.0.1:5000/api';
+        
+        function log(mensagem, tipo = 'info') {
+            const div = document.createElement('div');
+            div.className = `teste ${tipo}`;
+            div.innerHTML = `<strong>[${new Date().toLocaleTimeString()}]</strong> ${mensagem}`;
+            document.getElementById('resultados').appendChild(div);
+            console.log(mensagem);
+        }
+        
+        async function testarLogin() {
+            try {
+                log('🔄 Iniciando teste de login...');
+                
+                const email = document.getElementById('email').value;
+                const senha = document.getElementById('senha').value;
+                const tipo = parseInt(document.getElementById('tipo').value);
+                
+                const response = await fetch(`${API_BASE}/login`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        email: email,
+                        password: senha,
+                        tipo: tipo
+                    })
+                });
+                
+                log(`Status da resposta: ${response.status}`);
+                
+                if (response.ok) {
+                    const data = await response.json();
+                    token = data.access_token;
+                    log('✅ Login realizado com sucesso! Token obtido.', 'sucesso');
+                } else {
+                    const errorData = await response.text();
+                    log(`❌ Erro no login: ${errorData}`, 'erro');
+                }
+                
+            } catch (error) {
+                log(`❌ Erro de conexão: ${error.message}`, 'erro');
+            }
+        }
+        
+        async function criarServico() {
+            if (!token) {
+                log('⚠️ Faça login primeiro!', 'erro');
+                return;
+            }
+            
+            try {
+                log('🔄 Criando serviço...');
+                
+                const servicoData = {
+                    nome: document.getElementById('nomeServico').value,
+                    descricao: document.getElementById('descricao').value,
+                    origem: document.getElementById('origem').value,
+                    destino: document.getElementById('destino').value,
+                    valor: parseFloat(document.getElementById('valor').value),
+                    tipo_veiculo_requerido: document.getElementById('tipoVeiculo').value,
+                    data_servico: document.getElementById('dataServico').value,
+                    quantidade_veiculos: parseInt(document.getElementById('quantidadeVeiculos').value)
+                };
+                
+                log(`Dados enviados: ${JSON.stringify(servicoData, null, 2)}`);
+                
+                const response = await fetch(`${API_BASE}/servicos`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify(servicoData)
+                });
+                
+                log(`Status da resposta: ${response.status}`);
+                
+                if (response.ok) {
+                    const data = await response.json();
+                    log(`✅ Serviço criado com sucesso! ID: ${data.id_servico}`, 'sucesso');
+                } else {
+                    const errorData = await response.text();
+                    log(`❌ Erro ao criar serviço: ${errorData}`, 'erro');
+                }
+                
+            } catch (error) {
+                log(`❌ Erro de conexão: ${error.message}`, 'erro');
+            }
+        }
+        
+        // Testar conectividade básica
+        async function testarConectividade() {
+            try {
+                log('🔄 Testando conectividade com a API...');
+                const response = await fetch('http://127.0.0.1:5000/');
+                if (response.ok) {
+                    log('✅ API está respondendo!', 'sucesso');
+                } else {
+                    log('❌ API não está respondendo', 'erro');
+                }
+            } catch (error) {
+                log(`❌ Erro de conectividade: ${error.message}`, 'erro');
+            }
+        }
+        
+        // Executar teste básico ao carregar
+        window.onload = () => {
+            testarConectividade();
+        };
+    </script>
+</body>
+</html>

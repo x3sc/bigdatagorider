@@ -1,6 +1,15 @@
 # Server/security.py
 
 from passlib.context import CryptContext
+from datetime import datetime, timedelta
+from typing import Optional
+import jwt
+
+# Chave secreta para assinar o JWT. Em um ambiente de produção, isso deve ser
+# uma string longa e aleatória, e deve ser mantida em segredo.
+SECRET_KEY = "uma-chave-secreta-muito-segura-e-dificil-de-adivinhar" # Troque por uma chave segura em produção
+ALGORITHM = "HS256"
+ACCESS_TOKEN_EXPIRE_MINUTES = 30
 
 # Configura o contexto do passlib, especificando o algoritmo de hash a ser usado.
 # "bcrypt" é uma escolha forte e amplamente recomendada.
@@ -32,4 +41,24 @@ def hash_password(password: str) -> str:
         A string do hash da senha.
     """
     return pwd_context.hash(password)
+
+def create_access_token(data: dict, expires_delta: Optional[timedelta] = None):
+    """
+    Cria um token JWT com os dados fornecidos.
+
+    Args:
+        data: Os dados a serem incluídos no token (ex: user_id, email).
+        expires_delta: Tempo de expiração personalizado.
+
+    Returns:
+        O token JWT como string.
+    """
+    to_encode = data.copy()
+    if expires_delta:
+        expire = datetime.utcnow() + expires_delta
+    else:
+        expire = datetime.utcnow() + timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
+    to_encode.update({"exp": expire})
+    encoded_jwt = jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
+    return encoded_jwt
 

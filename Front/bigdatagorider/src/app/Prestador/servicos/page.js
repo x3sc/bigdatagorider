@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import './abas-de-navegacao.module.css';
 import Image from 'next/image';
-import Header from "@/components/header";
+import HeaderPrestador from "@/components/headerPrestador";
 import Footer from "@/components/footer";
 
 

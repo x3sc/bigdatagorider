@@ -18,31 +18,19 @@ class ServicoCreate(BaseModel):
     destino: str
     valor: float
     tipo_veiculo_requerido: str
-    data_servico: str  # Data no formato 'YYYY-MM-DD'
-    quantidade_veiculos: int = 1  # NOVO CAMPO
 
 # Modelo para criar uma proposta
 class PropostaCreate(BaseModel):
-    veiculos_ids: List[int]  # MODIFICADO: Lista de veículos
+    id_veiculo: int
     valor_proposto: float
     mensagem: Optional[str] = None
 
 # Modelo para exibir uma proposta
-class Proposta(BaseModel):
+class Proposta(PropostaCreate):
     id_proposta: int
     id_prestador: int
     nome_prestador: str
-    valor_proposto: float
-    mensagem: Optional[str] = None
     status: str
-    veiculos: List[Dict[str, Any]] = []  # NOVO: Lista de veículos
-
-# Modelo para criar veículo
-class VeiculoCreate(BaseModel):
-    placa: str
-    tipo: str
-    ano_fabricacao: int
-    capacidade_toneladas: float
 
 @router.post("/servicos", status_code=201)
 def create_servico(servico_data: ServicoCreate, current_user: dict = Depends(get_current_user)):
@@ -55,11 +43,11 @@ def create_servico(servico_data: ServicoCreate, current_user: dict = Depends(get
     cliente_id = current_user['id']
     conn = get_db_connection()
     cursor = conn.cursor()
-    
+
     # O status do serviço agora é 'Aberto'
     query = """
-        INSERT INTO Servicos (ID_Cliente, Descricao, ValorInicialCliente, EnderecoOrigem, EnderecoDestino, Status, DataSolicitacao, Nome, TipoVeiculoRequerido, DataServico, QuantidadeVeiculos)
-        VALUES (%s, %s, %s, %s, %s, 'Aberto', %s, %s, %s, %s, %s)
+        INSERT INTO Servicos (ID_Cliente, Descricao, ValorInicialCliente, EnderecoOrigem, EnderecoDestino, Status, DataSolicitacao, Nome, TipoVeiculoRequerido)
+        VALUES (%s, %s, %s, %s, %s, 'Aberto', %s, %s, %s)
     """
     
     try:
@@ -72,9 +60,7 @@ def create_servico(servico_data: ServicoCreate, current_user: dict = Depends(get
             servico_data.destino,
             datetime.now(),
             servico_data.nome,
-            servico_data.tipo_veiculo_requerido,
-            servico_data.data_servico,
-            servico_data.quantidade_veiculos)  # NOVO CAMPO
+            servico_data.tipo_veiculo_requerido)
         )
         new_service_id = cursor.lastrowid
         conn.commit()
@@ -99,43 +85,16 @@ def create_proposta(servico_id: int, proposta_data: PropostaCreate, current_user
 
     try:
         # Verifica se o serviço existe e está 'Aberto'
-        cursor.execute("SELECT ID_Servico, QuantidadeVeiculos FROM Servicos WHERE ID_Servico = %s AND Status = 'Aberto'", (servico_id,))
-        servico = cursor.fetchone()
-        if not servico:
+        cursor.execute("SELECT ID_Servico FROM Servicos WHERE ID_Servico = %s AND Status = 'Aberto'", (servico_id,))
+        if not cursor.fetchone():
             raise HTTPException(status_code=404, detail="Serviço não encontrado ou não está aberto para propostas.")
-        
-        quantidade_necessaria = servico[1]
-        
-        # Verifica se a quantidade de veículos oferecidos é suficiente
-        if len(proposta_data.veiculos_ids) < quantidade_necessaria:
-            raise HTTPException(status_code=400, detail=f"Este serviço requer pelo menos {quantidade_necessaria} veículo(s).")
-
-        # Verifica se todos os veículos pertencem ao prestador e estão disponíveis
-        placeholders = ','.join(['%s'] * len(proposta_data.veiculos_ids))
-        cursor.execute(f"""
-            SELECT ID_Veiculo, Placa, Tipo FROM Veiculos 
-            WHERE ID_Veiculo IN ({placeholders}) AND ID_Prestador = %s AND Status = 'Disponivel'
-        """, proposta_data.veiculos_ids + [prestador_id])
-        
-        veiculos_disponiveis = cursor.fetchall()
-        if len(veiculos_disponiveis) != len(proposta_data.veiculos_ids):
-            raise HTTPException(status_code=400, detail="Um ou mais veículos não estão disponíveis ou não pertencem a você.")
 
         # Insere a nova proposta
-        query_proposta = """
-            INSERT INTO PropostasServico (ID_Servico, ID_Prestador, ValorProposto, Mensagem, Status)
-            VALUES (%s, %s, %s, %s, 'Pendente')
+        query = """
+            INSERT INTO PropostasServico (ID_Servico, ID_Prestador, ID_Veiculo, ValorProposto, Mensagem, Status)
+            VALUES (%s, %s, %s, %s, %s, 'Pendente')
         """
-        cursor.execute(query_proposta, (servico_id, prestador_id, proposta_data.valor_proposto, proposta_data.mensagem))
-        proposta_id = cursor.lastrowid
-
-        # Insere os veículos da proposta
-        for veiculo_id in proposta_data.veiculos_ids:
-            cursor.execute("""
-                INSERT INTO PropostaVeiculos (ID_Proposta, ID_Veiculo)
-                VALUES (%s, %s)
-            """, (proposta_id, veiculo_id))
-
+        cursor.execute(query, (servico_id, prestador_id, proposta_data.id_veiculo, proposta_data.valor_proposto, proposta_data.mensagem))
         conn.commit()
     except pymysql.MySQLError as e:
         conn.rollback()
@@ -161,34 +120,23 @@ def get_propostas_for_servico(servico_id: int, current_user: dict = Depends(get_
         if not servico_owner or servico_owner['ID_Cliente'] != current_user['id']:
             raise HTTPException(status_code=403, detail="Você não tem permissão para ver propostas para este serviço.")
 
-        # Busca propostas com informações do prestador
         query = """
-            SELECT p.ID_Proposta, p.ID_Prestador, u.Nome, p.ValorProposto, p.Mensagem, p.Status
+            SELECT p.ID_Proposta, p.ID_Prestador, u.Nome, p.ID_Veiculo, p.ValorProposto, p.Mensagem, p.Status
             FROM PropostasServico p
             JOIN Usuarios u ON p.ID_Prestador = u.ID_Usuario
             WHERE p.ID_Servico = %s
         """
         cursor.execute(query, (servico_id,))
-        propostas_rows = cursor.fetchall()
-        
-        for proposta_row in propostas_rows:
-            # Busca veículos da proposta
-            cursor.execute("""
-                SELECT v.ID_Veiculo, v.Placa, v.Tipo, v.CapacidadeToneladas, v.AnoFabricacao
-                FROM PropostaVeiculos pv
-                JOIN Veiculos v ON pv.ID_Veiculo = v.ID_Veiculo
-                WHERE pv.ID_Proposta = %s
-            """, (proposta_row['ID_Proposta'],))
-            veiculos = cursor.fetchall()
-            
+        rows = cursor.fetchall()
+        for row in rows:
             propostas.append(Proposta(
-                id_proposta=proposta_row['ID_Proposta'],
-                id_prestador=proposta_row['ID_Prestador'],
-                nome_prestador=proposta_row['Nome'],
-                valor_proposto=proposta_row['ValorProposto'],
-                mensagem=proposta_row['Mensagem'],
-                status=proposta_row['Status'],
-                veiculos=veiculos
+                id_proposta=row['ID_Proposta'],
+                id_prestador=row['ID_Prestador'],
+                nome_prestador=row['Nome'],
+                id_veiculo=row['ID_Veiculo'],
+                valor_proposto=row['ValorProposto'],
+                mensagem=row['Mensagem'],
+                status=row['Status']
             ))
     except pymysql.MySQLError as e:
         raise HTTPException(status_code=500, detail=f"Erro de banco de dados: {e}")
@@ -208,7 +156,7 @@ def aceitar_proposta(proposta_id: int, current_user: dict = Depends(get_current_
     try:
         # Pega os detalhes da proposta e verifica se o cliente é o dono do serviço
         query_prop = """
-            SELECT p.ID_Servico, p.ID_Prestador, p.ValorProposto, s.ID_Cliente
+            SELECT p.ID_Servico, p.ID_Prestador, p.ID_Veiculo, p.ValorProposto, s.ID_Cliente
             FROM PropostasServico p
             JOIN Servicos s ON p.ID_Servico = s.ID_Servico
             WHERE p.ID_Proposta = %s
@@ -221,28 +169,21 @@ def aceitar_proposta(proposta_id: int, current_user: dict = Depends(get_current_
         
         id_servico = proposta['ID_Servico']
         id_prestador = proposta['ID_Prestador']
+        id_veiculo = proposta['ID_Veiculo']
         valor_proposto = proposta['ValorProposto']
         id_cliente = proposta['ID_Cliente']
         
         if id_cliente != current_user['id']:
             raise HTTPException(status_code=403, detail="Você não tem permissão para aceitar esta proposta.")
 
-        # Busca os veículos da proposta
-        cursor.execute("""
-            SELECT pv.ID_Veiculo 
-            FROM PropostaVeiculos pv
-            WHERE pv.ID_Proposta = %s
-        """, (proposta_id,))
-        veiculos_proposta = [row['ID_Veiculo'] for row in cursor.fetchall()]
-
-        # Transação: Atualiza serviço, aceita uma proposta, recusa as outras e aloca veículos
+        # Transação: Atualiza serviço, aceita uma proposta e recusa as outras
         # 1. Atualiza o serviço
         query_update_servico = """
             UPDATE Servicos
-            SET ID_Prestador_Aceito = %s, Status = 'Em Andamento'
+            SET ID_Prestador_Aceito = %s, ID_Veiculo_Alocado = %s, ValorFinalAcordado = %s, Status = 'Em Andamento'
             WHERE ID_Servico = %s AND Status = 'Aberto'
         """
-        cursor.execute(query_update_servico, (id_prestador, id_servico))
+        cursor.execute(query_update_servico, (id_prestador, id_veiculo, valor_proposto, id_servico))
 
         if cursor.rowcount == 0:
             raise HTTPException(status_code=409, detail="Este serviço não está mais aberto para aceitação.")
@@ -251,12 +192,7 @@ def aceitar_proposta(proposta_id: int, current_user: dict = Depends(get_current_
         cursor.execute("UPDATE PropostasServico SET Status = 'Aceita' WHERE ID_Proposta = %s", (proposta_id,))
 
         # 3. Recusa as outras propostas para o mesmo serviço
-        cursor.execute("UPDATE PropostasServico SET Status = 'Recusada' WHERE ID_Servico = %s AND ID_Proposta != %s", (id_servico, proposta_id))        # 4. Aloca os veículos da proposta aceita ao serviço
-        for veiculo_id in veiculos_proposta:
-            cursor.execute("""
-                INSERT INTO ServicoVeiculos (ID_Servico, ID_Veiculo, ID_Prestador, Status)
-                VALUES (%s, %s, %s, 'Alocado')
-            """, (id_servico, veiculo_id, id_prestador))
+        cursor.execute("UPDATE PropostasServico SET Status = 'Recusada' WHERE ID_Servico = %s AND ID_Proposta != %s", (id_servico, proposta_id))
 
         conn.commit()
 
@@ -290,22 +226,18 @@ def get_prestador_servicos_por_status(status: str, current_user: dict = Depends(
     try:
         if db_status == 'Aberto':
             query = """
-                SELECT s.ID_Servico, s.Nome, s.Descricao, u.Nome as cliente_nome, s.DataServico, 
-                       s.EnderecoOrigem, s.EnderecoDestino, s.ValorInicialCliente, s.TipoVeiculoRequerido,
-                       s.QuantidadeVeiculos
+                SELECT s.ID_Servico, s.Nome, s.Descricao, u.Nome as cliente_nome, s.DataSolicitacao as data_criacao, s.EnderecoOrigem, s.EnderecoDestino, s.ValorInicialCliente, s.TipoVeiculoRequerido
                 FROM Servicos s
                 JOIN Usuarios u ON s.ID_Cliente = u.ID_Usuario
                 WHERE s.Status = 'Aberto'
-                ORDER BY s.DataSolicitacao DESC
             """
             cursor.execute(query)
         else:
             query = """
-                SELECT s.ID_Servico, s.Nome, u.Nome as cliente_nome, s.DataServico, s.Status
+                SELECT s.ID_Servico, s.Nome, u.Nome as cliente_nome, s.DataSolicitacao, s.Status
                 FROM Servicos s
                 JOIN Usuarios u ON s.ID_Cliente = u.ID_Usuario
                 WHERE s.ID_Prestador_Aceito = %s AND s.Status = %s
-                ORDER BY s.DataSolicitacao DESC
             """
             cursor.execute(query, (prestador_id, db_status))
         
@@ -315,7 +247,7 @@ def get_prestador_servicos_por_status(status: str, current_user: dict = Depends(
                 "id": row['ID_Servico'],
                 "nome": row['Nome'],
                 "cliente_nome": row['cliente_nome'],
-                "data_servico": str(row['DataServico']),
+                "data_servico": str(row['DataSolicitacao'] if 'DataSolicitacao' in row else row['data_criacao']),
                 "status": db_status
             }
             if db_status == 'Aberto':
@@ -324,8 +256,7 @@ def get_prestador_servicos_por_status(status: str, current_user: dict = Depends(
                     "origem": row['EnderecoOrigem'],
                     "destino": row['EnderecoDestino'],
                     "valor": row['ValorInicialCliente'],
-                    "tipo_veiculo_requerido": row['TipoVeiculoRequerido'],
-                    "quantidade_veiculos": row['QuantidadeVeiculos']
+                    "tipo_veiculo": row['TipoVeiculoRequerido']
                 })
             servicos.append(servico_item)
             
@@ -333,9 +264,9 @@ def get_prestador_servicos_por_status(status: str, current_user: dict = Depends(
         print(f"Erro no banco de dados: {e}")
         raise HTTPException(status_code=500, detail="Erro ao buscar serviços do prestador.")
     finally:
-        conn.close()        
+        conn.close()
+        
     return servicos
-
 
 @router.get("/cliente/servicos/{status}", response_model=List[Dict[str, Any]])
 def get_cliente_servicos_por_status(status: str, current_user: dict = Depends(get_current_user)):
@@ -359,7 +290,7 @@ def get_cliente_servicos_por_status(status: str, current_user: dict = Depends(ge
     try:
         placeholders = ','.join(['%s'] * len(db_statuses))
         query = f"""
-            SELECT s.ID_Servico, s.Nome, u.Nome as prestador_nome, s.DataServico, s.Status
+            SELECT s.ID_Servico, s.Nome, u.Nome as prestador_nome, s.DataSolicitacao, s.Status
             FROM Servicos s
             LEFT JOIN Usuarios u ON s.ID_Prestador_Aceito = u.ID_Usuario
             WHERE s.ID_Cliente = %s AND s.Status IN ({placeholders})
@@ -376,7 +307,7 @@ def get_cliente_servicos_por_status(status: str, current_user: dict = Depends(ge
                 "id": row['ID_Servico'],
                 "nome": row['Nome'],
                 "prestador_nome": row['prestador_nome'] or "Aguardando propostas",
-                "data_servico": str(row['DataServico']),
+                "data_servico": str(row['DataSolicitacao']),
                 "status": row['Status']
             })
             
@@ -450,70 +381,3 @@ def confirmar_servico_cliente(servico_id: int, current_user: dict = Depends(get_
         conn.close()
 
     return {"message": "Serviço confirmado com sucesso! Agora você pode avaliá-lo."}
-
-@router.get("/prestador/veiculos", response_model=List[Dict[str, Any]])
-def get_prestador_veiculos(current_user: dict = Depends(get_current_user)):
-    """
-    Busca todos os veículos do prestador logado.
-    """
-    if current_user.get('tipo') != 'prestador':
-        raise HTTPException(status_code=403, detail="Acesso negado. Apenas para prestadores.")
-
-    prestador_id = current_user['id']
-    conn = get_db_connection()
-    cursor = conn.cursor(pymysql.cursors.DictCursor)
-    
-    try:
-        query = """
-            SELECT ID_Veiculo as id, Placa as placa, Tipo as tipo, 
-                   AnoFabricacao as ano_fabricacao, CapacidadeToneladas as capacidade_toneladas, 
-                   Status as status
-            FROM Veiculos 
-            WHERE ID_Prestador = %s AND Status = 'Disponivel'
-            ORDER BY Tipo, Placa
-        """
-        cursor.execute(query, (prestador_id,))
-        veiculos = cursor.fetchall()
-        
-        return veiculos
-    except pymysql.MySQLError as e:
-        raise HTTPException(status_code=500, detail=f"Erro de banco de dados: {e}")
-    finally:
-        conn.close()
-
-@router.post("/prestador/veiculos", status_code=201)
-def create_veiculo(veiculo_data: VeiculoCreate, current_user: dict = Depends(get_current_user)):
-    """
-    Cria um novo veículo para o prestador logado.
-    """
-    if current_user.get('tipo') != 'prestador':
-        raise HTTPException(status_code=403, detail="Apenas prestadores podem cadastrar veículos.")
-
-    prestador_id = current_user['id']
-    conn = get_db_connection()
-    cursor = conn.cursor()
-    
-    try:
-        query = """
-            INSERT INTO Veiculos (ID_Prestador, Placa, Tipo, AnoFabricacao, CapacidadeToneladas, Status)
-            VALUES (%s, %s, %s, %s, %s, 'Disponivel')
-        """
-        cursor.execute(query, (
-            prestador_id,
-            veiculo_data.placa,
-            veiculo_data.tipo,
-            veiculo_data.ano_fabricacao,
-            veiculo_data.capacidade_toneladas
-        ))
-        new_veiculo_id = cursor.lastrowid
-        conn.commit()
-    except pymysql.MySQLError as e:
-        conn.rollback()
-        if e.args[0] == 1062:  # Duplicate entry error
-            raise HTTPException(status_code=400, detail="Esta placa já está cadastrada.")
-        print(f"Erro no banco de dados: {e}")
-        raise HTTPException(status_code=500, detail="Erro ao cadastrar o veículo.")
-    finally:
-        conn.close()
-
-    return {"message": "Veículo cadastrado com sucesso!", "id_veiculo": new_veiculo_id}

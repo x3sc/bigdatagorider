@@ -8,9 +8,12 @@
     padding: 0 40px;
     background-color: #000000;
     color: #FFFFFF;
-    position: relative;
-    z-index: 10;
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 1000;
     gap: 30px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 .logo {

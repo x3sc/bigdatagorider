@@ -12,6 +12,7 @@ export default function Login() { // Renomeado para Login para clareza
   const [showPassword, setShowPassword] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [userType, setUserType] = useState('cliente'); // Estado para o tipo de usuário
   const [errors, setErrors] = useState({});
   const [loading, setLoading] = useState(false);
 
@@ -34,22 +35,20 @@ export default function Login() { // Renomeado para Login para clareza
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ email, password }),
+        body: JSON.stringify({ email, password, tipo: userType === 'cliente' ? 0 : 1 }),
       });
 
       const data = await response.json();
 
-      if (response.ok && data.success) {
+      if (response.ok && data.access_token) {
+        localStorage.setItem('token', data.access_token);
+        localStorage.setItem('userType', userType);
+
         alert("Logado com sucesso!");
-        
-        // Lógica de redirecionamento com base no tipo de usuário
-        if (data.tipo_usuario === 'cliente') {
-          router.push('/Servicos'); // Rota para clientes
-        } else if (data.tipo_usuario === 'prestador') {
-          router.push('/Prestador/servicos'); // Rota para prestadores
+        if (userType === 'cliente') {
+          router.push('/Cliente/Dashboard');
         } else {
-          // Fallback para a página inicial se o tipo não for reconhecido
-          router.push('/');
+          router.push('/Prestador/Dashboard');
         }
       } else {
         // Exibe a mensagem de erro específica vinda do servidor
@@ -88,6 +87,31 @@ export default function Login() { // Renomeado para Login para clareza
 
             <div className={styles.loginBox}>
       <h2 className={styles.loginBoxTitle}>Acessar minha conta</h2>
+
+      <div className={styles.userTypeSelector}>
+        <label className={styles.radioLabel}>
+          <input
+            type="radio"
+            name="userType"
+            value="cliente"
+            checked={userType === 'cliente'}
+            onChange={(e) => setUserType(e.target.value)}
+            className={styles.radioInput}
+          />
+          Cliente
+        </label>
+        <label className={styles.radioLabel}>
+          <input
+            type="radio"
+            name="userType"
+            value="prestador"
+            checked={userType === 'prestador'}
+            onChange={(e) => setUserType(e.target.value)}
+            className={styles.radioInput}
+          />
+          Prestador
+        </label>
+      </div>
 
       <Button className={styles.googleBtn} type="button">
         <Image

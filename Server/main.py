@@ -5,8 +5,9 @@ from fastapi.middleware.cors import CORSMiddleware
 
 # Importando as rotas (routers) dos outros arquivos
 from .auth import router as auth_router
-from .cadastro_cliente import router as cadastro_cliente_router
-from .cadastro_prestador import router as cadastro_prestador_router
+from .cadastro import router as cadastro_router # Rota unificada
+from .perfil_prestador import router as perfil_prestador_router # Rota de perfil
+from .avaliacoes import router as avaliacoes_router # Rota de avaliações
 from .clientes import router as clientes_router
 from .usuarios import router as usuarios_router
 from .servicos import router as servicos_router
@@ -15,10 +16,12 @@ from .servicos import router as servicos_router
 app = FastAPI()
 
 # Configuração do CORS (Cross-Origin Resource Sharing)
-# Isso permite que o seu frontend (rodando em http://localhost:3000)
-# se comunique com o backend.
+# Isso permite que o seu frontend se comunique com o backend.
 origins = [
     "http://localhost:3000",
+    "http://127.0.0.1:3000",
+    "http://localhost:3001",
+    "http://127.0.0.1:3001",
 ]
 
 app.add_middleware(
@@ -32,8 +35,9 @@ app.add_middleware(
 # Inclusão dos routers na aplicação principal
 # Cada router adiciona os endpoints definidos no seu respectivo arquivo.
 app.include_router(auth_router, prefix="/api", tags=["Autenticação"])
-app.include_router(cadastro_cliente_router, prefix="/api", tags=["CadastroCliente"])
-app.include_router(cadastro_prestador_router, prefix="/api", tags=["CadastroPrestador"])
+app.include_router(cadastro_router, prefix="/api", tags=["Cadastro"])
+app.include_router(perfil_prestador_router, prefix="/api", tags=["Perfil Prestador"])
+app.include_router(avaliacoes_router, prefix="/api", tags=["Avaliações"])
 app.include_router(clientes_router, prefix="/api", tags=["Clientes"])
 app.include_router(usuarios_router, prefix="/api", tags=["Usuários"])
 app.include_router(servicos_router, prefix="/api", tags=["Serviços"])
