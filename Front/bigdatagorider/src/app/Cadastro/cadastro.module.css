@@ -3,7 +3,7 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding: 10px;
+  padding: 210px 10px;
   font-family: sans-serif;
 }
 
@@ -14,12 +14,13 @@
   color: #000;
   margin-bottom: 20px;
   text-align: center;
+  font-weight: bold;
 }
 
 /* Subtítulo do formulário */
 .formSubtitle {
-  font-size: 16px;
-  margin-bottom: 20px;
+  font-size: 26px;
+  margin: 40px 0px;
   color: #666;
   text-align: center;
 }
@@ -28,17 +29,21 @@
 .opcaoCadastroContainer {
   display: flex;
   justify-content: center;
-  gap: 20px;
+  gap: 130px;
   margin-top: 20px;
   width: 100%;
   max-width: 800px;
   flex-wrap: wrap;
 }
 
+.ImagemHomemCadastro {
+  border-radius: 40px;
+}
+
 /* Cada opção/quadrado */
 .opcaoCadastro {
-  background-color: #f0f0f0;
-  border-radius: 8px;
+  background-color: #e0e0e0;
+  border-radius: 40px;
   padding: 20px;
   text-align: center;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
@@ -49,9 +54,15 @@
   justify-content: space-between;
   min-height: 150px;
   margin-bottom: 20px;
+
+  & .imagem {
+    border-radius: 40px;
+  }
 }
 
 .opcaoCadastro h3 {
+  margin-top: 30px;
+  font-weight: bold;
   margin-bottom: 10px;
   font-size: 1.2em;
 }
@@ -65,7 +76,7 @@
 .opcaoTitulo {
   font-size: 18px;
   margin-bottom: 10px;
-  color: #333;
+  color: #000000;
 }
 
 /* Descrição da opção */
@@ -79,7 +90,12 @@
 .opcaoIdeal {
   font-size: 14px;
   margin-bottom: 15px;
-  color: #555;
+  color: #000000;
+  font-weight: bold;
+
+  & strong {
+    font-size: 12px;
+  }
 }
 
 /* Botão */
@@ -88,11 +104,12 @@
   color: #fff;
   padding: 10px 15px;
   border: none;
-  border-radius: 5px;
+  border-radius: 15px;
   font-size: 16px;
   cursor: pointer;
   transition: background-color 0.3s ease;
   align-self: center;
+  margin-top: 10px;
 }
 
 .opcaoBotao:hover {
