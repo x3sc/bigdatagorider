@@ -60,6 +60,9 @@ next-env.d.ts
 # Jupyter Notebooks
 .ipynb_checkpoints/
 
+# Testes e documentação de desenvolvimento
+tests_and_docs/
+
 # Outros arquivos temporários
 *.log
 *.tmp

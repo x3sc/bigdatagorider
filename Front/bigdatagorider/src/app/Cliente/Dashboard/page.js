@@ -1,8 +1,30 @@
 "use client";
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import styles from './dashboard.module.css';
+import { 
+    Button, 
+    Card, 
+    CardBody, 
+    CardHeader, 
+    Table, 
+    TableHeader, 
+    TableColumn, 
+    TableBody, 
+    TableRow, 
+    TableCell,
+    Chip,
+    Modal,
+    ModalContent,
+    ModalHeader,
+    ModalBody,
+    ModalFooter,
+    Spinner,
+    Tabs,
+    Tab
+} from '@heroui/react';
 import Header from '@/components/header';
+import SecondaryNavigation from '@/components/SecondaryNavigation';
+import styles from './dashboardCliente.module.css';
 
 const DashboardCliente = () => {
     const [servicos, setServicos] = useState([]);
@@ -54,13 +76,32 @@ const DashboardCliente = () => {
         fetchServicos();
     }, [router, activeTab]);
 
+    const getStatusColor = (status) => {
+        switch (status?.toLowerCase()) {
+            case 'aberto':
+                return 'primary';
+            case 'em andamento':
+            case 'andamento':
+                return 'warning';
+            case 'concluido':
+            case 'finalizado':
+                return 'success';
+            case 'aguardando confirmação':
+                return 'secondary';
+            default:
+                return 'default';
+        }
+    };
+
     const handleNavigateToCreateService = () => {
         router.push('/Cliente/CriarServico');
     };
 
     const handleNavigateToAvaliacao = (servicoId) => {
-        router.push(`/Avaliacao/${servicoId}`);
-    };    const handleConfirmFinalization = async (servicoId) => {
+        router.push(`/Cliente/Avaliar/${servicoId}`);
+    };
+
+    const handleConfirmFinalization = async (servicoId) => {
         const token = localStorage.getItem('token');
         try {
             const response = await fetch(`http://127.0.0.1:5000/api/servicos/${servicoId}/confirmar`, {
@@ -71,11 +112,11 @@ const DashboardCliente = () => {
             });
 
             if (!response.ok) {
-                throw new Error('Falha ao confirmar a finalização do serviço.');
+                throw new Error('Falha ao confirmar finalização.');
             }
 
-            // Atualiza a lista de serviços para refletir a mudança de status
-            setActiveTab('Finalizados'); 
+            // Recarrega os serviços
+            setActiveTab('Finalizados');
         } catch (err) {
             setError(err.message);
         }
@@ -134,166 +175,248 @@ const DashboardCliente = () => {
         setServicoSelecionado(null);
         setPropostas([]);
     };
-
-
     const renderServicos = () => {
-        if (loading) return <p className={styles.message}>Carregando serviços...</p>;
-        if (error) return <p className={`${styles.message} ${styles.error}`}>Erro: {error}</p>;
+        if (loading) return (
+            <div className={styles.loadingContainer}>
+                <Spinner size="lg" color="danger" />
+                <p className={styles.loadingText}>Carregando serviços...</p>
+            </div>
+        );
+        
+        if (error) return (
+            <Card className={styles.errorCard}>
+                <CardBody>
+                    <p className={styles.errorText}>❌ Erro: {error}</p>
+                </CardBody>
+            </Card>
+        );
+        
         if (servicos.length === 0) {
             return (
-                <div className={styles.noServicesContainer}>
-                    <p className={styles.message}>Nenhum serviço encontrado para esta categoria.</p>
-                    {activeTab === 'Abertos' && (
-                         <button onClick={handleNavigateToCreateService} className={styles.mainButton}>
-                            Solicitar Novo Serviço
-                         </button>
-                    )}
-                </div>
+                <Card className={styles.emptyStateCard}>
+                    <CardBody className={styles.emptyStateBody}>
+                        <div className={styles.emptyStateIcon}>📋</div>
+                        <h3>Nenhum serviço encontrado</h3>
+                        <p>Não há serviços nesta categoria no momento.</p>
+                        {activeTab === 'Abertos' && (
+                            <Button 
+                                color="danger" 
+                                size="lg"
+                                onPress={handleNavigateToCreateService}
+                                className={styles.ctaButton}
+                            >
+                                Criar Novo Serviço
+                            </Button>
+                        )}
+                    </CardBody>
+                </Card>
             );
         }
 
         return (
-            <table className={styles.table}>
-                <thead>
-                    <tr>
-                        <th>SERVIÇO</th>
-                        <th>PRESTADOR</th>
-                        <th>DATA</th>
-                        <th>STATUS</th>
-                        <th>AÇÃO</th>
-                    </tr>
-                </thead>
-                <tbody>
+            <Table 
+                aria-label="Tabela de serviços"
+                className={styles.servicesTable}
+                selectionMode="none"
+            >
+                <TableHeader>
+                    <TableColumn>SERVIÇO</TableColumn>
+                    <TableColumn>PRESTADOR</TableColumn>
+                    <TableColumn>DATA</TableColumn>
+                    <TableColumn>STATUS</TableColumn>
+                    <TableColumn>AÇÃO</TableColumn>
+                </TableHeader>
+                <TableBody>
                     {servicos.map(servico => (
-                        <tr key={servico.id}>
-                            <td>{servico.nome}</td>
-                            <td>{servico.prestador_nome || 'Aguardando Proposta'}</td>
-                            <td>{new Date(servico.data_servico).toLocaleDateString()}</td>
-                            <td>
-                                <span className={`${styles.status} ${styles[servico.status.toLowerCase().replace(/ /g, '-')]}`}>
+                        <TableRow key={servico.id}>
+                            <TableCell>
+                                <div className={styles.serviceInfo}>
+                                    <strong>{servico.nome}</strong>
+                                    <small className={styles.serviceDescription}>
+                                        {servico.descricao}
+                                    </small>
+                                </div>
+                            </TableCell>
+                            <TableCell>
+                                {servico.prestador_nome || (
+                                    <span className={styles.noPrestador}>
+                                        Aguardando Proposta
+                                    </span>
+                                )}
+                            </TableCell>
+                            <TableCell>
+                                {new Date(servico.data_servico).toLocaleDateString('pt-BR')}
+                            </TableCell>
+                            <TableCell>
+                                <Chip 
+                                    color={getStatusColor(servico.status)}
+                                    variant="flat"
+                                    size="sm"
+                                >
                                     {servico.status}
-                                </span>
-                            </td>                            <td>
+                                </Chip>
+                            </TableCell>
+                            <TableCell>
                                 {servico.status === 'Aberto' && (
-                                    <button 
-                                        className={styles.actionButton}
-                                        onClick={() => handleViewPropostas(servico)}
+                                    <Button 
+                                        size="sm"
+                                        color="primary"
+                                        variant="bordered"
+                                        onPress={() => handleViewPropostas(servico)}
                                     >
                                         Ver Propostas
-                                    </button>
+                                    </Button>
                                 )}
                                 {servico.status === 'Aguardando Confirmação' && (
-                                    <button 
-                                        className={styles.actionButton}
-                                        onClick={() => handleConfirmFinalization(servico.id)}
+                                    <Button 
+                                        size="sm"
+                                        color="success"
+                                        onPress={() => handleConfirmFinalization(servico.id)}
                                     >
                                         Confirmar Finalização
-                                    </button>
+                                    </Button>
                                 )}
                                 {servico.status === 'Concluido' && (
-                                    <button 
-                                        className={styles.actionButton}
-                                        onClick={() => handleNavigateToAvaliacao(servico.id)}
+                                    <Button 
+                                        size="sm"
+                                        color="warning"
+                                        variant="bordered"
+                                        onPress={() => handleNavigateToAvaliacao(servico.id)}
                                     >
                                         Avaliar
-                                    </button>
+                                    </Button>
                                 )}
-                            </td>
-                        </tr>
+                            </TableCell>
+                        </TableRow>
                     ))}
-                </tbody>
-            </table>
+                </TableBody>
+            </Table>
         );
-    };
-
-    return (
+    };    return (
         <div className={styles.pageContainer}>
             <Header />
+            <SecondaryNavigation 
+                currentPage="Dashboard"
+                userType="cliente"
+                userName="Cliente Demo"
+            />
+            
             <main className={styles.main}>
-                <div className={styles.mainTabs}>
-                    <button
-                        onClick={handleNavigateToCreateService}
-                    >
-                        Criar nova solicitação
-                    </button>
-                    <button className={styles.activeMainTab}>
-                        Meus Serviços
-                    </button>
-                    <button onClick={() => alert('Planos de assinatura em breve!')}>
-                        Planos de assinatura
-                    </button>
-                </div>
+                {/* Área de Conteúdo Principal */}
+                <Card className={styles.contentCard}>
+                    <CardHeader className={styles.cardHeader}>
+                        <h2>📋 Meus Serviços</h2>
+                    </CardHeader>
+                    <CardBody>
+                        {/* Tabs de Status */}
+                        <Tabs 
+                            selectedKey={activeTab}
+                            onSelectionChange={setActiveTab}
+                            color="danger"
+                            variant="underlined"
+                            classNames={{
+                                tabList: styles.tabList,
+                                cursor: styles.tabCursor,
+                                tab: styles.tab,
+                                tabContent: styles.tabContent
+                            }}
+                        >
+                            <Tab key="Abertos" title="🔓 Abertos">
+                                <div className={styles.tabContent}>
+                                    {renderServicos()}
+                                </div>
+                            </Tab>
+                            <Tab key="Em Andamento" title="⚡ Em Andamento">
+                                <div className={styles.tabContent}>
+                                    {renderServicos()}
+                                </div>
+                            </Tab>
+                            <Tab key="Finalizados" title="✅ Finalizados">
+                                <div className={styles.tabContent}>
+                                    {renderServicos()}
+                                </div>
+                            </Tab>
+                        </Tabs>
+                    </CardBody>
+                </Card>
 
-                <div className={styles.content}>
-                    <div className={styles.tabContainer}>
-                        <button
-                            className={`${styles.tabButton} ${activeTab === 'Abertos' ? styles.activeTab : ''}`}
-                            onClick={() => setActiveTab('Abertos')}
-                        >
-                            Abertos
-                        </button>
-                        <button
-                            className={`${styles.tabButton} ${activeTab === 'Em Andamento' ? styles.activeTab : ''}`}
-                            onClick={() => setActiveTab('Em Andamento')}
-                        >
-                            Em Andamento
-                        </button>
-                        <button
-                            className={`${styles.tabButton} ${activeTab === 'Finalizados' ? styles.activeTab : ''}`}
-                            onClick={() => setActiveTab('Finalizados')}
-                        >
-                            Finalizados
-                        </button>
-                    </div>                    {renderServicos()}
-                </div>
-
-                {/* Modal de Propostas */}
-                {showPropostasModal && (
-                    <div className={styles.modalOverlay} onClick={closeModal}>
-                        <div className={styles.modal} onClick={(e) => e.stopPropagation()}>
-                            <div className={styles.modalHeader}>
-                                <h3>Propostas para: {servicoSelecionado?.nome}</h3>
-                                <button className={styles.closeButton} onClick={closeModal}>×</button>
-                            </div>
-                            <div className={styles.modalContent}>
-                                {loadingPropostas ? (
+                {/* Modal de Propostas com Hero UI */}
+                <Modal 
+                    isOpen={showPropostasModal} 
+                    onClose={closeModal}
+                    size="2xl"
+                    classNames={{
+                        backdrop: styles.modalBackdrop,
+                        base: styles.modalBase,
+                        header: styles.modalHeader,
+                        body: styles.modalBody,
+                        footer: styles.modalFooter
+                    }}
+                >
+                    <ModalContent>
+                        <ModalHeader className={styles.modalHeaderContent}>
+                            <h3>💼 Propostas para: {servicoSelecionado?.nome}</h3>
+                        </ModalHeader>
+                        <ModalBody>
+                            {loadingPropostas ? (
+                                <div className={styles.modalLoading}>
+                                    <Spinner size="md" color="danger" />
                                     <p>Carregando propostas...</p>
-                                ) : propostas.length === 0 ? (
-                                    <p>Nenhuma proposta recebida ainda.</p>
-                                ) : (
-                                    <div className={styles.propostasList}>
-                                        {propostas.map(proposta => (
-                                            <div key={proposta.id_proposta} className={styles.propostaItem}>
-                                                <div className={styles.propostaInfo}>
-                                                    <h4>{proposta.nome_prestador}</h4>
-                                                    <p><strong>Valor:</strong> R$ {proposta.valor_proposto}</p>
-                                                    {proposta.mensagem && (
-                                                        <p><strong>Mensagem:</strong> {proposta.mensagem}</p>
-                                                    )}
+                                </div>
+                            ) : propostas.length === 0 ? (
+                                <Card className={styles.emptyPropostas}>
+                                    <CardBody className={styles.emptyPropostasBody}>
+                                        <div className={styles.emptyIcon}>📭</div>
+                                        <h4>Nenhuma proposta recebida</h4>
+                                        <p>Aguarde, os prestadores podem enviar propostas a qualquer momento.</p>
+                                    </CardBody>
+                                </Card>
+                            ) : (
+                                <div className={styles.propostasList}>
+                                    {propostas.map(proposta => (
+                                        <Card key={proposta.id_proposta} className={styles.propostaCard}>
+                                            <CardBody>
+                                                <div className={styles.propostaContent}>
+                                                    <div className={styles.propostaInfo}>
+                                                        <h4>👤 {proposta.nome_prestador}</h4>
+                                                        <div className={styles.propostaDetails}>
+                                                            <Chip color="success" variant="flat" size="sm">
+                                                                R$ {proposta.valor_proposto}
+                                                            </Chip>
+                                                        </div>
+                                                        {proposta.mensagem && (
+                                                            <div className={styles.mensagemProposta}>
+                                                                <strong>💬 Mensagem:</strong>
+                                                                <p>{proposta.mensagem}</p>
+                                                            </div>
+                                                        )}
+                                                    </div>
+                                                    <Button 
+                                                        color="success"
+                                                        size="md"
+                                                        onPress={() => handleAcceptProposta(proposta.id_proposta)}
+                                                        className={styles.acceptButton}
+                                                    >
+                                                        ✅ Aceitar
+                                                    </Button>
                                                 </div>
-                                                <button 
-                                                    className={styles.acceptButton}
-                                                    onClick={() => handleAcceptProposta(proposta.id_proposta)}
-                                                >
-                                                    Aceitar
-                                                </button>
-                                            </div>
-                                        ))}
-                                    </div>
-                                )}
-                            </div>
-                        </div>
-                    </div>
-                )}
-
-                {/* O botão de solicitar novo serviço pode ser removido daqui se já estiver na navegação principal */}
-                {/* {servicos.length > 0 && (
-                    <div className={styles.actions}>
-                        <button onClick={handleNavigateToCreateService} className={styles.mainButton}>
-                            Solicitar Novo Serviço
-                        </button>
-                    </div>
-                )} */}
+                                            </CardBody>
+                                        </Card>
+                                    ))}
+                                </div>
+                            )}
+                        </ModalBody>
+                        <ModalFooter>
+                            <Button 
+                                color="danger" 
+                                variant="light" 
+                                onPress={closeModal}
+                            >
+                                Fechar
+                            </Button>
+                        </ModalFooter>
+                    </ModalContent>
+                </Modal>
             </main>
         </div>
     );

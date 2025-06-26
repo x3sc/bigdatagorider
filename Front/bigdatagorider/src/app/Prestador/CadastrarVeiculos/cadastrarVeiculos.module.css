@@ -1,147 +1,69 @@
-/* Estilos específicos para a página de Cadastrar Veículos */
+/* Cadastrar Veículos - Estilo moderno com Hero UI */
 
-.container {
+.pageContainer {
     min-height: 100vh;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    font-family: 'Inter', sans-serif;
+    background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%);
+    padding-top: 0;
 }
 
-.navPrincipal {
-    background: rgba(255, 255, 255, 0.95);
-    backdrop-filter: blur(10px);
-    padding: 1rem 2rem;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    box-shadow: 0 2px 20px rgba(0, 0, 0, 0.1);
-    position: sticky;
-    top: 0;
-    z-index: 100;
-}
-
-.logo img {
-    filter: brightness(0.8);
-}
-
-.menu {
-    display: flex;
-    gap: 2rem;
-}
-
-.menu a {
-    color: #4a5568;
-    text-decoration: none;
-    font-weight: 500;
-    padding: 0.5rem 1rem;
-    border-radius: 8px;
-    transition: all 0.3s ease;
-}
-
-.menu a:hover {
-    background: rgba(102, 126, 234, 0.1);
-    color: #667eea;
-}
-
-.menu a.active {
-    background: #667eea;
-    color: white;
-}
-
-.userActions {
-    display: flex;
-    align-items: center;
-    gap: 1rem;
-}
-
-.logoutBtn {
-    background: #e53e3e;
-    color: white;
-    border: none;
-    padding: 0.5rem 1rem;
-    border-radius: 8px;
-    cursor: pointer;
-    font-weight: 500;
-    transition: all 0.3s ease;
-}
-
-.logoutBtn:hover {
-    background: #c53030;
-    transform: translateY(-1px);
-}
-
-.content {
-    padding: 2rem;
-    max-width: 1200px;
+.main {
+    max-width: 1400px;
     margin: 0 auto;
+    padding: 2rem;
+    gap: 2rem;
+    display: flex;
+    flex-direction: column;
 }
 
-.content h1 {
-    color: white;
-    font-size: 2.5rem;
-    margin-bottom: 0.5rem;
-    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
-}
-
-.content > p {
-    color: rgba(255, 255, 255, 0.9);
-    font-size: 1.1rem;
-    margin-bottom: 2rem;
-    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
-}
-
-.error {
-    background: #fed7d7;
-    color: #c53030;
-    padding: 1rem;
-    border-radius: 8px;
-    margin-bottom: 1rem;
-    border-left: 4px solid #e53e3e;
-    animation: slideIn 0.3s ease;
-}
-
-.success {
-    background: #c6f6d5;
-    color: #2d7d32;
-    padding: 1rem;
-    border-radius: 8px;
-    margin-bottom: 1rem;
-    border-left: 4px solid #38a169;
-    animation: slideIn 0.3s ease;
-}
-
-@keyframes slideIn {
-    from {
-        opacity: 0;
-        transform: translateY(-10px);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
-}
-
-.formSection {
+/* Navegação Principal */
+.navigationCard {
     background: rgba(255, 255, 255, 0.95);
     backdrop-filter: blur(10px);
-    border-radius: 20px;
-    padding: 2rem;
-    margin-bottom: 2rem;
+    border: 1px solid rgba(229, 62, 62, 0.2);
+    box-shadow: 0 8px 32px rgba(229, 62, 62, 0.1);
+}
+
+.mainActions {
+    display: flex;
+    gap: 1.5rem;
+    justify-content: center;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+.primaryAction {
+    font-weight: 600;
+    font-size: 1.1rem;
+    padding: 1.5rem 2rem;
+    min-width: 200px;
+}
+
+/* Card de Conteúdo */
+.contentCard {
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(229, 62, 62, 0.1);
     box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
-    border: 1px solid rgba(255, 255, 255, 0.2);
 }
 
-.formSection h2 {
+.cardHeader {
+    border-bottom: 2px solid rgba(229, 62, 62, 0.1);
+    padding: 1.5rem 2rem;
+}
+
+.cardHeader h2 {
     color: #2d3748;
-    font-size: 1.5rem;
-    margin-bottom: 1.5rem;
-    border-bottom: 2px solid #667eea;
-    padding-bottom: 0.5rem;
+    font-size: 1.75rem;
+    font-weight: 700;
+    margin: 0;
 }
 
-.form {
+/* Formulário */
+.formContainer {
     display: flex;
     flex-direction: column;
     gap: 1.5rem;
+    margin-top: 1rem;
 }
 
 .formRow {
@@ -150,491 +72,236 @@
     gap: 1.5rem;
 }
 
-@media (max-width: 768px) {
+.inputWrapper {
+    border: 2px solid #e5e7eb !important;
+    border-radius: 12px !important;
+    background-color: #f9fafb !important;
+    transition: all 0.2s ease !important;
+}
+
+.inputWrapper:hover {
+    border-color: #dc2626 !important;
+    background-color: #fff !important;
+}
+
+.inputWrapper[data-focus="true"] {
+    border-color: #dc2626 !important;
+    background-color: #fff !important;
+    box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.1) !important;
+}
+
+.input {
+    font-size: 1rem !important;
+    color: #1f2937 !important;
+}
+
+.submitButton {
+    margin-top: 1rem;
+    padding: 1rem 2rem;
+    font-weight: 600;
+    font-size: 1.1rem;
+}
+
+/* Estados de Error e Success */
+.errorCard {
+    background: rgba(245, 101, 101, 0.1);
+    border: 1px solid rgba(245, 101, 101, 0.3);
+    margin-bottom: 1rem;
+}
+
+.errorText {
+    color: #e53e3e;
+    font-weight: 600;
+    text-align: center;
+    margin: 0;
+}
+
+.successCard {
+    background: rgba(72, 187, 120, 0.1);
+    border: 1px solid rgba(72, 187, 120, 0.3);
+    margin-bottom: 1rem;
+}
+
+.successText {
+    color: #38a169;
+    font-weight: 600;
+    text-align: center;
+    margin: 0;
+}
+
+/* Tabela de Veículos */
+.vehiclesTable {
+    background: transparent;
+}
+
+.vehiclesTable thead th {
+    background: rgba(229, 62, 62, 0.1);
+    color: #2d3748;
+    font-weight: 700;
+    border-bottom: 2px solid rgba(229, 62, 62, 0.2);
+}
+
+.vehiclesTable tbody td {
+    border-bottom: 1px solid rgba(229, 62, 62, 0.1);
+    padding: 1rem;
+}
+
+.vehicleInfo {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+}
+
+/* Empty State */
+.emptyStateCard {
+    background: rgba(255, 255, 255, 0.95);
+    border: 2px dashed rgba(229, 62, 62, 0.3);
+}
+
+.emptyStateBody {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
+    padding: 3rem;
+    text-align: center;
+}
+
+.emptyStateIcon {
+    font-size: 3rem;
+    margin-bottom: 0.5rem;
+}
+
+.emptyStateBody h3 {
+    color: #2d3748;
+    font-size: 1.5rem;
+    font-weight: 700;
+    margin: 0;
+}
+
+.emptyStateBody p {
+    color: #718096;
+    font-size: 1.1rem;
+    margin: 0;
+}
+
+/* Card de Dicas */
+.tipsCard {
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(72, 187, 120, 0.2);
+    box-shadow: 0 8px 32px rgba(72, 187, 120, 0.1);
+}
+
+.tipsList {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+.tipItem {
+    display: flex;
+    gap: 1rem;
+    align-items: flex-start;
+    padding: 1rem;
+    background: rgba(72, 187, 120, 0.05);
+    border-radius: 12px;
+    border-left: 4px solid rgba(72, 187, 120, 0.3);
+}
+
+.tipIcon {
+    font-size: 1.5rem;
+    flex-shrink: 0;
+}
+
+.tipItem strong {
+    color: #2d3748;
+    font-size: 1rem;
+    display: block;
+    margin-bottom: 0.25rem;
+}
+
+.tipItem p {
+    color: #4a5568;
+    font-size: 0.875rem;
+    margin: 0;
+    line-height: 1.4;
+}
+
+/* Responsive Design */
+@media (max-width: 1024px) {
+    .main {
+        padding: 1.5rem;
+    }
+    
+    .mainActions {
+        flex-direction: column;
+        gap: 1rem;
+    }
+    
+    .primaryAction {
+        width: 100%;
+        min-width: auto;
+    }
+    
     .formRow {
         grid-template-columns: 1fr;
     }
 }
 
-.inputGroup {
-    display: flex;
-    flex-direction: column;
-    gap: 0.5rem;
-}
-
-.inputGroup label {
-    color: #4a5568;
-    font-weight: 600;
-    font-size: 0.9rem;
-}
-
-.inputGroup input,
-.inputGroup select {
-    padding: 0.75rem;
-    border: 2px solid #e2e8f0;
-    border-radius: 8px;
-    font-size: 1rem;
-    transition: all 0.3s ease;
-    background: white;
-}
-
-.inputGroup input:focus,
-.inputGroup select:focus {
-    outline: none;
-    border-color: #667eea;
-    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
-}
-
-.submitBtn {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    color: white;
-    border: none;
-    padding: 1rem 2rem;
-    border-radius: 10px;
-    font-size: 1.1rem;
-    font-weight: 600;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    align-self: flex-start;
-}
-
-.submitBtn:hover:not(:disabled) {
-    transform: translateY(-2px);
-    box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
-}
-
-.submitBtn:disabled {
-    opacity: 0.6;
-    cursor: not-allowed;
-    transform: none;
-}
-
-.veiculosSection {
-    background: rgba(255, 255, 255, 0.95);
-    backdrop-filter: blur(10px);
-    border-radius: 20px;
-    padding: 2rem;
-    margin-bottom: 2rem;
-    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
-    border: 1px solid rgba(255, 255, 255, 0.2);
-}
-
-.veiculosSection h2 {
-    color: #2d3748;
-    font-size: 1.5rem;
-    margin-bottom: 1.5rem;
-    border-bottom: 2px solid #667eea;
-    padding-bottom: 0.5rem;
-}
-
-.emptyState {
-    text-align: center;
-    padding: 2rem;
-    color: #718096;
-}
-
-.emptyState p {
-    margin-bottom: 0.5rem;
-    font-size: 1.1rem;
-}
-
-.veiculosGrid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-    gap: 1.5rem;
-}
-
-.veiculoCard {
-    background: white;
-    border-radius: 12px;
-    padding: 1.5rem;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-    border: 1px solid #e2e8f0;
-    transition: all 0.3s ease;
-    position: relative;
-    overflow: hidden;
-}
-
-.veiculoCard::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    height: 4px;
-    background: linear-gradient(90deg, #667eea, #764ba2);
-}
-
-.veiculoCard:hover {
-    transform: translateY(-4px);
-    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
-}
-
-.veiculoHeader {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 1rem;
-}
-
-.veiculoHeader h3 {
-    color: #2d3748;
-    font-size: 1.2rem;
-    margin: 0;
-}
-
-.status {
-    padding: 0.25rem 0.75rem;
-    border-radius: 20px;
-    font-size: 0.8rem;
-    font-weight: 600;
-    text-transform: uppercase;
-}
-
-.status.disponivel {
-    background: #c6f6d5;
-    color: #2d7d32;
-}
-
-.status.ocupado {
-    background: #fed7d7;
-    color: #c53030;
-}
-
-.status.manutencao {
-    background: #feebc8;
-    color: #c05621;
-}
-
-.veiculoInfo {
-    display: flex;
-    flex-direction: column;
-    gap: 0.5rem;
-}
-
-.infoItem {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    color: #4a5568;
-    font-size: 0.95rem;
-}
-
-.infoItem strong {
-    color: #2d3748;
-    min-width: 100px;
-}
-
-.tipsSection {
-    background: rgba(255, 255, 255, 0.95);
-    backdrop-filter: blur(10px);
-    border-radius: 20px;
-    padding: 2rem;
-    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
-    border: 1px solid rgba(255, 255, 255, 0.2);
-}
-
-.tipsSection h3 {
-    color: #2d3748;
-    font-size: 1.3rem;
-    margin-bottom: 1rem;
-    border-bottom: 2px solid #f6ad55;
-    padding-bottom: 0.5rem;
-}
-
-.tipsSection ul {
-    list-style: none;
-    padding: 0;
-    margin: 0;
-}
-
-.tipsSection li {
-    background: rgba(246, 173, 85, 0.1);
-    padding: 1rem;
-    border-radius: 8px;
-    margin-bottom: 0.75rem;
-    border-left: 4px solid #f6ad55;
-    color: #4a5568;
-    line-height: 1.6;
-}
-
-.tipsSection li strong {
-    color: #2d3748;
-}
-
-/* Responsividade */
 @media (max-width: 768px) {
-    .navPrincipal {
+    .main {
+        padding: 1rem;
+    }
+    
+    .cardHeader {
+        padding: 1rem 1.5rem;
+    }
+    
+    .cardHeader h2 {
+        font-size: 1.5rem;
+    }
+    
+    .vehiclesTable {
+        font-size: 0.875rem;
+    }
+    
+    .emptyStateBody {
+        padding: 2rem 1rem;
+    }
+    
+    .tipItem {
         flex-direction: column;
-        gap: 1rem;
-        padding: 1rem;
+        gap: 0.5rem;
     }
-
-    .menu {
-        flex-wrap: wrap;
-        justify-content: center;
-        gap: 1rem;
-    }
-
-    .content {
-        padding: 1rem;
-    }
-
-    .content h1 {
-        font-size: 2rem;
-    }
-
-    .formSection,
-    .veiculosSection,
-    .tipsSection {
-        padding: 1.5rem;
-        margin-bottom: 1.5rem;
-    }
-
-    .veiculosGrid {
-        grid-template-columns: 1fr;
+    
+    .tipIcon {
+        align-self: flex-start;
     }
 }
 
-/* Estados de carregamento */
-.loading {
-    opacity: 0.6;
-    pointer-events: none;
-}
-
-.spinner {
-    display: inline-block;
-    width: 16px;
-    height: 16px;
-    border: 2px solid #ffffff;
-    border-radius: 50%;
-    border-top-color: transparent;
-    animation: spin 1s ease-in-out infinite;
-}
-
-@keyframes spin {
-    to { transform: rotate(360deg); }
-}
-
-/* Animações suaves */
-.veiculoCard {
-    animation: fadeInUp 0.5s ease;
-}
-
-@keyframes fadeInUp {
-    from {
-        opacity: 0;
-        transform: translateY(20px);
+@media (max-width: 480px) {
+    .main {
+        padding: 0.75rem;
     }
-    to {
-        opacity: 1;
-        transform: translateY(0);
+    
+    .cardHeader h2 {
+        font-size: 1.25rem;
     }
-}
-
-/* Melhorias visuais */
-.formSection,
-.veiculosSection,
-.tipsSection {
-    transition: transform 0.3s ease;
-}
-
-.formSection:hover,
-.veiculosSection:hover,
-.tipsSection:hover {
-    transform: translateY(-2px);
-}
-
-.inputGroup input:focus,
-.inputGroup select:focus {
-    outline: none;
-    border-color: #007bff;
-    box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.1);
-}
-
-.submitBtn {
-    background: linear-gradient(135deg, #007bff, #0056b3);
-    color: white;
-    border: none;
-    padding: 16px 32px;
-    border-radius: 8px;
-    font-size: 1.1rem;
-    font-weight: 600;
-    cursor: pointer;
-    transition: all 0.2s ease;
-    align-self: flex-start;
-}
-
-.submitBtn:hover {
-    transform: translateY(-1px);
-    box-shadow: 0 4px 12px rgba(0, 123, 255, 0.3);
-}
-
-.submitBtn:disabled {
-    opacity: 0.6;
-    cursor: not-allowed;
-    transform: none;
-}
-
-/* Seção de veículos */
-.veiculosSection {
-    margin: 32px 0;
-}
-
-.veiculosSection h2 {
-    color: #495057;
-    margin-bottom: 24px;
-    font-size: 1.4rem;
-    display: flex;
-    align-items: center;
-    gap: 8px;
-}
-
-.emptyState {
-    text-align: center;
-    padding: 48px 24px;
-    background: #f8f9fa;
-    border-radius: 8px;
-    border: 2px dashed #dee2e6;
-    color: #6c757d;
-}
-
-.emptyState p {
-    margin: 8px 0;
-    font-size: 1.1rem;
-}
-
-.veiculosGrid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-    gap: 20px;
-}
-
-.veiculoCard {
-    background: white;
-    border: 1px solid #e9ecef;
-    border-radius: 8px;
-    padding: 20px;
-    transition: all 0.2s ease;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-}
-
-.veiculoCard:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-}
-
-.veiculoHeader {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 16px;
-    padding-bottom: 12px;
-    border-bottom: 1px solid #e9ecef;
-}
-
-.veiculoHeader h3 {
-    color: #495057;
-    margin: 0;
-    font-size: 1.2rem;
-}
-
-.status {
-    padding: 4px 12px;
-    border-radius: 20px;
-    font-size: 0.8rem;
-    font-weight: 600;
-    text-transform: uppercase;
-}
-
-.status.disponivel {
-    background: #d4edda;
-    color: #155724;
-}
-
-.status.em_servico {
-    background: #fff3cd;
-    color: #856404;
-}
-
-.status.em_manutencao {
-    background: #f8d7da;
-    color: #721c24;
-}
-
-.veiculoInfo {
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-}
-
-.infoItem {
-    display: flex;
-    justify-content: space-between;
-    padding: 4px 0;
-    color: #495057;
-}
-
-.infoItem strong {
-    color: #343a40;
-}
-
-/* Seção de dicas */
-.tipsSection {
-    background: #e3f2fd;
-    border-radius: 8px;
-    padding: 24px;
-    margin: 32px 0;
-    border-left: 4px solid #2196f3;
-}
-
-.tipsSection h3 {
-    color: #1565c0;
-    margin-bottom: 16px;
-    font-size: 1.2rem;
-}
-
-.tipsSection ul {
-    list-style: none;
-    padding: 0;
-    margin: 0;
-}
-
-.tipsSection li {
-    padding: 8px 0;
-    color: #1565c0;
-    position: relative;
-    padding-left: 20px;
-}
-
-.tipsSection li::before {
-    content: "💡";
-    position: absolute;
-    left: 0;
-    top: 8px;
-}
-
-.tipsSection li strong {
-    color: #0d47a1;
-}
-
-/* Mensagens de erro e sucesso */
-.error {
-    background: #f8d7da;
-    color: #721c24;
-    padding: 12px 16px;
-    border-radius: 6px;
-    border: 1px solid #f5c6cb;
-    margin-bottom: 20px;
-    font-weight: 500;
-}
-
-.success {
-    background: #d4edda;
-    color: #155724;
-    padding: 12px 16px;
-    border-radius: 6px;
-    border: 1px solid #c3e6cb;
-    margin-bottom: 20px;
-    font-weight: 500;
+    
+    .emptyStateIcon {
+        font-size: 2.5rem;
+    }
+    
+    .emptyStateBody h3 {
+        font-size: 1.25rem;
+    }
+    
+    .emptyStateBody p {
+        font-size: 1rem;
+    }
+    
+    .tipItem {
+        padding: 0.75rem;
+    }
 }

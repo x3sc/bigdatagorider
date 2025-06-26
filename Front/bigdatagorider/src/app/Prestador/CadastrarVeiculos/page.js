@@ -1,8 +1,26 @@
 "use client";
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import Image from 'next/image';
-import HeaderPrestador from '@/components/headerPrestador';
+import { 
+    Button, 
+    Card, 
+    CardBody, 
+    CardHeader, 
+    Input,
+    Select,
+    SelectItem,
+    Chip,
+    Spinner,
+    Table,
+    TableHeader,
+    TableColumn,
+    TableBody,
+    TableRow,
+    TableCell
+} from '@heroui/react';
+import Header from '@/components/header';
+import SecondaryNavigation from '@/components/SecondaryNavigation';
+import { TIPOS_VEICULO } from '@/constants/vehicleTypes';
 import styles from './cadastrarVeiculos.module.css';
 
 const CadastrarVeiculos = () => {
@@ -15,11 +33,10 @@ const CadastrarVeiculos = () => {
     const [veiculos, setVeiculos] = useState([]);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState('');
-    const [success, setSuccess] = useState('');
-    const router = useRouter();
+    const [success, setSuccess] = useState('');    const router = useRouter();
 
     // Carregar veículos existentes ao inicializar
-    useState(() => {
+    useEffect(() => {
         const fetchVeiculos = async () => {
             const token = localStorage.getItem('token');
             if (!token) {
@@ -156,148 +173,231 @@ const CadastrarVeiculos = () => {
             ...prev,
             placa: placaFormatada
         }));
-    };    return (        <div className={styles.container}>
-            <HeaderPrestador />
+    };    return (
+        <div className={styles.pageContainer}>
+            <Header />
             
-            <div className={styles.content}>
-                <h1>🚛 Cadastrar Veículos</h1>
-                <p>Gerencie sua frota para poder fazer propostas para diferentes serviços</p>
-
-                {error && <div className={styles.error}>{error}</div>}
-                {success && <div className={styles.success}>{success}</div>}
+            <main className={styles.main}>
+                {/* Navegação Secundária */}
+                <SecondaryNavigation />
 
                 {/* Formulário de Cadastro */}
-                <div className={styles.formSection}>
-                    <h2>📝 Novo Veículo</h2>
-                    <form onSubmit={handleSubmit} className={styles.form}>
-                        <div className={styles.formRow}>
-                            <div className={styles.inputGroup}>
-                                <label htmlFor="placa">Placa *</label>
-                                <input
+                <Card className={styles.contentCard}>
+                    <CardHeader className={styles.cardHeader}>
+                        <h2>� Cadastrar Novo Veículo</h2>
+                    </CardHeader>
+                    <CardBody>
+                        {error && (
+                            <Card className={styles.errorCard}>
+                                <CardBody>
+                                    <p className={styles.errorText}>❌ {error}</p>
+                                </CardBody>
+                            </Card>
+                        )}
+                        
+                        {success && (
+                            <Card className={styles.successCard}>
+                                <CardBody>
+                                    <p className={styles.successText}>✅ {success}</p>
+                                </CardBody>
+                            </Card>
+                        )}
+
+                        <form onSubmit={handleSubmit} className={styles.formContainer}>
+                            <div className={styles.formRow}>
+                                <Input
                                     type="text"
-                                    id="placa"
-                                    name="placa"
-                                    value={formData.placa}
-                                    onChange={handlePlacaChange}
+                                    label="Placa *"
                                     placeholder="ABC-1234"
-                                    maxLength="8"
+                                    value={formData.placa}
+                                    onValueChange={(value) => setFormData(prev => ({
+                                        ...prev,
+                                        placa: formatarPlaca(value)
+                                    }))}
+                                    variant="bordered"
+                                    size="lg"
+                                    maxLength={8}
                                     required
+                                    classNames={{
+                                        input: styles.input,
+                                        inputWrapper: styles.inputWrapper
+                                    }}
                                 />
-                            </div>
 
-                            <div className={styles.inputGroup}>
-                                <label htmlFor="tipo">Tipo de Veículo *</label>
-                                <select
-                                    id="tipo"
-                                    name="tipo"
-                                    value={formData.tipo}
-                                    onChange={handleChange}
+                                <Select
+                                    label="Tipo de Veículo *"
+                                    placeholder="Selecione o tipo"
+                                    selectedKeys={[formData.tipo]}
+                                    onSelectionChange={(keys) => {
+                                        const value = Array.from(keys)[0];
+                                        setFormData(prev => ({ ...prev, tipo: value }));
+                                    }}
+                                    variant="bordered"
+                                    size="lg"
                                     required
+                                    classNames={{
+                                        trigger: styles.inputWrapper
+                                    }}
                                 >
-                                    <option value="Caminhão">Caminhão</option>
-                                    <option value="Caminhão Baú">Caminhão Baú</option>
-                                    <option value="Caminhão Graneleiro">Caminhão Graneleiro</option>
-                                    <option value="Caminhão Frigorífico">Caminhão Frigorífico</option>
-                                    <option value="Van">Van</option>
-                                    <option value="Van Refrigerada">Van Refrigerada</option>
-                                    <option value="Carreta">Carreta</option>
-                                    <option value="Bitrem">Bitrem</option>
-                                    <option value="Carro">Carro</option>
-                                    <option value="Moto">Moto</option>
-                                </select>
+                                    {TIPOS_VEICULO.map((tipo) => (
+                                        <SelectItem key={tipo.key} value={tipo.key}>
+                                            {tipo.label}
+                                        </SelectItem>
+                                    ))}
+                                </Select>
                             </div>
-                        </div>
 
-                        <div className={styles.formRow}>
-                            <div className={styles.inputGroup}>
-                                <label htmlFor="ano_fabricacao">Ano de Fabricação *</label>
-                                <input
+                            <div className={styles.formRow}>
+                                <Input
                                     type="number"
-                                    id="ano_fabricacao"
-                                    name="ano_fabricacao"
-                                    value={formData.ano_fabricacao}
-                                    onChange={handleChange}
-                                    min="1990"
-                                    max={new Date().getFullYear()}
+                                    label="Ano de Fabricação *"
                                     placeholder="2020"
+                                    value={formData.ano_fabricacao}
+                                    onValueChange={(value) => setFormData(prev => ({
+                                        ...prev,
+                                        ano_fabricacao: value
+                                    }))}
+                                    variant="bordered"
+                                    size="lg"
+                                    min={1990}
+                                    max={new Date().getFullYear()}
                                     required
+                                    classNames={{
+                                        input: styles.input,
+                                        inputWrapper: styles.inputWrapper
+                                    }}
                                 />
-                            </div>
 
-                            <div className={styles.inputGroup}>
-                                <label htmlFor="capacidade_toneladas">Capacidade (Toneladas) *</label>
-                                <input
+                                <Input
                                     type="number"
-                                    id="capacidade_toneladas"
-                                    name="capacidade_toneladas"
-                                    value={formData.capacidade_toneladas}
-                                    onChange={handleChange}
-                                    min="0.1"
-                                    step="0.1"
+                                    label="Capacidade (Toneladas) *"
                                     placeholder="5.5"
+                                    value={formData.capacidade_toneladas}
+                                    onValueChange={(value) => setFormData(prev => ({
+                                        ...prev,
+                                        capacidade_toneladas: value
+                                    }))}
+                                    variant="bordered"
+                                    size="lg"
+                                    min={0.1}
+                                    step={0.1}
                                     required
+                                    classNames={{
+                                        input: styles.input,
+                                        inputWrapper: styles.inputWrapper
+                                    }}
                                 />
                             </div>
-                        </div>
 
-                        <button 
-                            type="submit" 
-                            className={styles.submitBtn}
-                            disabled={loading}
-                        >
-                            {loading ? 'Cadastrando...' : '🚛 Cadastrar Veículo'}
-                        </button>
-                    </form>
-                </div>
+                            <Button
+                                type="submit"
+                                color="danger"
+                                size="lg"
+                                className={styles.submitButton}
+                                isLoading={loading}
+                                fullWidth
+                                startContent={!loading && <span>🚛</span>}
+                            >
+                                {loading ? 'Cadastrando...' : 'Cadastrar Veículo'}
+                            </Button>
+                        </form>
+                    </CardBody>
+                </Card>
 
-                {/* Lista de Veículos Cadastrados */}
-                <div className={styles.veiculosSection}>
-                    <h2>🚗 Meus Veículos ({veiculos.length})</h2>
-                    
-                    {veiculos.length === 0 ? (
-                        <div className={styles.emptyState}>
-                            <p>Você ainda não possui veículos cadastrados.</p>
-                            <p>Cadastre seus veículos para poder fazer propostas para serviços!</p>
-                        </div>
-                    ) : (
-                        <div className={styles.veiculosGrid}>
-                            {veiculos.map((veiculo) => (
-                                <div key={veiculo.id} className={styles.veiculoCard}>
-                                    <div className={styles.veiculoHeader}>
-                                        <h3>{veiculo.tipo}</h3>
-                                        <span className={`${styles.status} ${styles[veiculo.status?.toLowerCase()]}`}>
-                                            {veiculo.status}
-                                        </span>
-                                    </div>
-                                    
-                                    <div className={styles.veiculoInfo}>
-                                        <div className={styles.infoItem}>
-                                            <strong>📋 Placa:</strong> {veiculo.placa}
-                                        </div>
-                                        <div className={styles.infoItem}>
-                                            <strong>📅 Ano:</strong> {veiculo.ano_fabricacao}
-                                        </div>
-                                        <div className={styles.infoItem}>
-                                            <strong>⚖️ Capacidade:</strong> {veiculo.capacidade_toneladas}t
-                                        </div>
-                                    </div>
-                                </div>
-                            ))}
-                        </div>
-                    )}
-                </div>
+                {/* Lista de Veículos */}
+                <Card className={styles.contentCard}>
+                    <CardHeader className={styles.cardHeader}>
+                        <h2>🚗 Meus Veículos ({veiculos.length})</h2>
+                    </CardHeader>
+                    <CardBody>
+                        {veiculos.length === 0 ? (
+                            <Card className={styles.emptyStateCard}>
+                                <CardBody className={styles.emptyStateBody}>
+                                    <div className={styles.emptyStateIcon}>🚛</div>
+                                    <h3>Nenhum veículo cadastrado</h3>
+                                    <p>Cadastre seus veículos para poder fazer propostas para serviços!</p>
+                                </CardBody>
+                            </Card>
+                        ) : (
+                            <Table 
+                                aria-label="Tabela de veículos"
+                                className={styles.vehiclesTable}
+                                selectionMode="none"
+                            >
+                                <TableHeader>
+                                    <TableColumn>TIPO</TableColumn>
+                                    <TableColumn>PLACA</TableColumn>
+                                    <TableColumn>ANO</TableColumn>
+                                    <TableColumn>CAPACIDADE</TableColumn>
+                                    <TableColumn>STATUS</TableColumn>
+                                </TableHeader>
+                                <TableBody>
+                                    {veiculos.map(veiculo => (
+                                        <TableRow key={veiculo.id}>
+                                            <TableCell>
+                                                <div className={styles.vehicleInfo}>
+                                                    <strong>{veiculo.tipo}</strong>
+                                                </div>
+                                            </TableCell>
+                                            <TableCell>{veiculo.placa}</TableCell>
+                                            <TableCell>{veiculo.ano_fabricacao}</TableCell>
+                                            <TableCell>{veiculo.capacidade_toneladas}t</TableCell>
+                                            <TableCell>
+                                                <Chip 
+                                                    color={veiculo.status?.toLowerCase() === 'disponível' ? 'success' : 'warning'}
+                                                    variant="flat"
+                                                    size="sm"
+                                                >
+                                                    {veiculo.status || 'Disponível'}
+                                                </Chip>
+                                            </TableCell>
+                                        </TableRow>
+                                    ))}
+                                </TableBody>
+                            </Table>
+                        )}
+                    </CardBody>
+                </Card>
 
                 {/* Dicas */}
-                <div className={styles.tipsSection}>
-                    <h3>💡 Dicas Importantes</h3>
-                    <ul>
-                        <li><strong>Diversifique sua frota:</strong> Tenha veículos de diferentes tipos e capacidades para atender mais serviços</li>
-                        <li><strong>Mantenha informações atualizadas:</strong> Certifique-se de que as placas e capacidades estão corretas</li>
-                        <li><strong>Múltiplas propostas:</strong> Com mais veículos, você pode fazer propostas para serviços que exigem múltiplos veículos</li>
-                        <li><strong>Status dos veículos:</strong> Veículos em serviço não aparecem para novas propostas</li>
-                    </ul>
-                </div>
-            </div>
+                <Card className={styles.tipsCard}>
+                    <CardHeader className={styles.cardHeader}>
+                        <h2>💡 Dicas Importantes</h2>
+                    </CardHeader>
+                    <CardBody>
+                        <div className={styles.tipsList}>
+                            <div className={styles.tipItem}>
+                                <span className={styles.tipIcon}>🚛</span>
+                                <div>
+                                    <strong>Diversifique sua frota:</strong>
+                                    <p>Tenha veículos de diferentes tipos e capacidades para atender mais serviços</p>
+                                </div>
+                            </div>
+                            <div className={styles.tipItem}>
+                                <span className={styles.tipIcon}>📋</span>
+                                <div>
+                                    <strong>Mantenha informações atualizadas:</strong>
+                                    <p>Certifique-se de que as placas e capacidades estão corretas</p>
+                                </div>
+                            </div>
+                            <div className={styles.tipItem}>
+                                <span className={styles.tipIcon}>📈</span>
+                                <div>
+                                    <strong>Múltiplas propostas:</strong>
+                                    <p>Com mais veículos, você pode fazer propostas para serviços que exigem múltiplos veículos</p>
+                                </div>
+                            </div>
+                            <div className={styles.tipItem}>
+                                <span className={styles.tipIcon}>⚡</span>
+                                <div>
+                                    <strong>Status dos veículos:</strong>
+                                    <p>Veículos em serviço não aparecem para novas propostas</p>
+                                </div>
+                            </div>
+                        </div>
+                    </CardBody>
+                </Card>
+            </main>
         </div>
     );
 };

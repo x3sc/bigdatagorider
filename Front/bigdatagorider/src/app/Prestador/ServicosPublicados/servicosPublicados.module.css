@@ -1,13 +1,21 @@
-/* Página de Serviços Publicados - Prestador */
+/* Página de Serviços Publicados - Estilo moderno com Hero UI */
 .container {
     min-height: 100vh;
-    background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+    background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%);
+    padding: 2rem;
+    max-width: 1400px;
+    margin: 0 auto;
 }
 
-.content {
-    padding: 2rem;
-    max-width: 1200px;
-    margin: 0 auto;
+/* Loading Container */
+.loadingContainer {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 60vh;
+    gap: 1rem;
+    color: #e2e8f0;
 }
 
 .header {
@@ -15,36 +23,57 @@
     margin-bottom: 2rem;
 }
 
-.header h1 {
-    color: #2d3748;
+.title {
+    color: #ffffff;
     font-size: 2.5rem;
     font-weight: 700;
     margin-bottom: 0.5rem;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
 }
 
-.header p {
-    color: #718096;
+.subtitle {
+    color: #e2e8f0;
     font-size: 1.1rem;
 }
 
+/* Erro Card */
+.errorCard {
+    margin-bottom: 2rem;
+    background: rgba(239, 68, 68, 0.1);
+    border: 1px solid rgba(239, 68, 68, 0.3);
+}
+
+.errorMessage {
+    color: #fca5a5;
+    font-weight: 600;
+    margin-bottom: 1rem;
+}
+
+.retryButton {
+    background: #dc2626;
+}
+
 /* Filtros */
-.filtrosCard {
+.filterCard {
     margin-bottom: 2rem;
     background: rgba(255, 255, 255, 0.95);
     backdrop-filter: blur(10px);
-    border: 1px solid rgba(102, 126, 234, 0.1);
+    border: 1px solid rgba(229, 62, 62, 0.2);
+    box-shadow: 0 8px 32px rgba(229, 62, 62, 0.1);
 }
 
-.filtros {
+.filterGrid {
     display: grid;
     grid-template-columns: 2fr 1fr 1fr auto;
     gap: 1rem;
     align-items: end;
 }
 
-.filtroInput,
-.filtroSelect {
-    width: 100%;
+/* Contador de Resultados */
+.resultCount {
+    margin-bottom: 1rem;
+    color: #e2e8f0;
+    font-weight: 500;
 }
 
 /* Grid de Serviços */
@@ -80,22 +109,75 @@
     flex: 1;
 }
 
+.servicoTitleSection {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    flex: 1;
+}
+
+.servicoTitle {
+    color: #2d3748;
+    font-weight: 600;
+    font-size: 1.2rem;
+    margin: 0;
+}
+
+.tipoChip {
+    align-self: flex-start;
+}
+
+.servicoPrice {
+    display: flex;
+    align-items: baseline;
+    gap: 0.25rem;
+    color: #059669;
+    font-weight: 700;
+}
+
+.currencySymbol {
+    font-size: 0.9rem;
+}
+
+.priceValue {
+    font-size: 1.5rem;
+}
+
+.servicoBody {
+    padding-top: 0;
+}
+
 .servicoInfo {
     margin-bottom: 1.5rem;
 }
 
-.servicoInfo p {
-    margin: 0.5rem 0;
+.infoRow {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.5rem 0;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+.infoRow:last-child {
+    border-bottom: none;
+}
+
+.label {
+    font-weight: 500;
     color: #4a5568;
+    flex-shrink: 0;
 }
 
-.servicoInfo strong {
+.value {
     color: #2d3748;
+    text-align: right;
+    font-weight: 600;
 }
 
-.propostaBtn {
+.propostaButton {
+    width: 100%;
     background: linear-gradient(135deg, #667eea, #764ba2);
-    color: white;
     font-weight: 600;
 }
 
@@ -117,77 +199,182 @@
     margin-bottom: 1rem;
 }
 
-.veiculosDisponiveis h4 {
+.modalHeader {
     color: #2d3748;
-    margin-bottom: 1rem;
+    font-weight: 700;
+    font-size: 1.5rem;
 }
 
-.veiculosCheckboxGroup {
+.propostaContent {
     display: flex;
     flex-direction: column;
-    gap: 0.75rem;
-    max-height: 200px;
-    overflow-y: auto;
-    padding: 1rem;
+    gap: 1.5rem;
+}
+
+.servicoDetalhes {
     background: rgba(102, 126, 234, 0.05);
-    border-radius: 8px;
+    border: 1px solid rgba(102, 126, 234, 0.2);
 }
 
-.veiculoCheckbox {
-    padding: 0.5rem;
-    border-radius: 6px;
-    transition: background-color 0.2s ease;
+.detalhesGrid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.5rem;
 }
 
-.veiculoCheckbox:hover {
-    background: rgba(102, 126, 234, 0.1);
-}
-
-.veiculoInfo {
+.detalhesGrid p {
+    margin: 0.25rem 0;
     color: #4a5568;
 }
 
-.veiculoInfo strong {
-    color: #2d3748;
+.veiculosCard {
+    background: rgba(16, 185, 129, 0.05);
+    border: 1px solid rgba(16, 185, 129, 0.2);
 }
 
 .noVeiculos {
     text-align: center;
-    color: #718096;
-    font-style: italic;
+    color: #f59e0b;
     padding: 2rem;
+    background: rgba(245, 158, 11, 0.1);
+    border-radius: 8px;
 }
 
-/* Estados de loading e erro */
-.loading,
-.error {
+.veiculoCheckbox {
+    padding: 0.75rem;
+    border-radius: 8px;
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    margin-bottom: 0.5rem;
+    transition: all 0.2s ease;
+}
+
+.veiculoCheckbox:hover {
+    background: rgba(16, 185, 129, 0.1);
+    border-color: rgba(16, 185, 129, 0.3);
+}
+
+.veiculoOption {
+    width: 100%;
+}
+
+.veiculoInfo {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+}
+
+.veiculoTipo {
+    color: #059669;
+    font-size: 1.1rem;
+}
+
+.veiculoPlaca,
+.veiculoCapacidade,
+.veiculoAno {
+    color: #6b7280;
+    font-size: 0.9rem;
+}
+
+.propostaForm {
+    background: rgba(79, 70, 229, 0.05);
+    border: 1px solid rgba(79, 70, 229, 0.2);
+}
+
+/* Status de Propostas */
+.propostaStatus {
+    background: rgba(79, 70, 229, 0.05);
+    border: 1px solid rgba(79, 70, 229, 0.2);
+    border-radius: 8px;
+    padding: 1rem;
+    margin-top: 1rem;
+}
+
+.statusHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0.75rem;
+}
+
+.statusChip {
+    font-weight: 600;
+}
+
+.propostaValor {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: #059669;
+}
+
+.desistirButton {
+    width: 100%;
+    margin-bottom: 0.5rem;
+}
+
+.propostaAceita {
+    background: rgba(16, 185, 129, 0.1);
+    border-radius: 6px;
+    padding: 0.75rem;
+    margin-top: 0.5rem;
+}
+
+.sucessoMsg {
+    color: #059669;
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+}
+
+.propostaRejeitada {
+    background: rgba(239, 68, 68, 0.1);
+    border-radius: 6px;
+    padding: 0.75rem;
+    margin-top: 0.5rem;
+    color: #dc2626;
+}
+
+.respostaCliente,
+.mensagemProposta {
+    background: rgba(0, 0, 0, 0.05);
+    border-radius: 4px;
+    padding: 0.5rem;
+    margin-top: 0.5rem;
+}
+
+.respostaCliente p,
+.mensagemProposta p {
+    margin: 0.25rem 0;
+    font-style: italic;
+    color: #4a5568;
+}
+
+.semProposta {
+    background: rgba(245, 158, 11, 0.1);
+    border: 1px solid rgba(245, 158, 11, 0.3);
+    border-radius: 8px;
+    padding: 1rem;
+    margin-top: 1rem;
     text-align: center;
-    padding: 4rem 2rem;
-    font-size: 1.2rem;
 }
 
-.loading {
-    color: #667eea;
+.infoMsg {
+    color: #d97706;
+    font-weight: 500;
+    margin-bottom: 0.5rem;
 }
 
-.error {
-    color: #e53e3e;
-}
-
-.emptyState {
-    grid-column: 1 / -1;
-    text-align: center;
-    padding: 3rem;
-    color: #718096;
+.contactInfo {
+    color: #92400e;
+    font-size: 0.9rem;
+    font-style: italic;
 }
 
 /* Responsividade */
 @media (max-width: 768px) {
-    .content {
+    .container {
         padding: 1rem;
     }
 
-    .filtros {
+    .filterGrid {
         grid-template-columns: 1fr;
         gap: 1rem;
     }
@@ -199,19 +386,56 @@
     .servicoHeader {
         flex-direction: column;
         align-items: stretch;
+        gap: 1rem;
     }
 
-    .header h1 {
+    .servicoPrice {
+        align-self: flex-start;
+    }
+
+    .title {
         font-size: 2rem;
+    }
+
+    .detalhesGrid {
+        grid-template-columns: 1fr;
+    }
+
+    .infoRow {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.25rem;
+    }
+
+    .value {
+        text-align: left;
+    }
+
+    .statusHeader {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.5rem;
+    }
+
+    .propostaValor {
+        align-self: flex-end;
     }
 }
 
 @media (max-width: 480px) {
+    .container {
+        padding: 0.5rem;
+    }
+
     .servicoCard {
         margin-bottom: 1rem;
     }
 
-    .veiculosCheckboxGroup {
-        max-height: 150px;
+    .veiculoCheckbox {
+        padding: 0.5rem;
+    }
+
+    .title {
+        font-size: 1.5rem;
     }
 }

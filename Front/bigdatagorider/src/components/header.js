@@ -1,6 +1,6 @@
 "use client";
 import { useState, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
+import { useRouter, usePathname } from 'next/navigation';
 import Image from 'next/image';
 import Link from 'next/link';
 import styles from '../app/styles/Header.module.css';
@@ -8,17 +8,41 @@ import { Button } from "@heroui/react";
 
 export default function Header() {
     const [user, setUser] = useState(null);
+    const [isVisible, setIsVisible] = useState(true);
+    const [lastScrollY, setLastScrollY] = useState(0);
     const router = useRouter();
+    const pathname = usePathname(); // Hook do Next.js para path atual
 
     useEffect(() => {
         const token = localStorage.getItem('token');
         const userType = localStorage.getItem('userType');
+        
         if (token && userType) {
             setUser({ token, userType });
         } else {
             setUser(null);
         }
-    }, []); // Dependência vazia para rodar apenas no client-side
+    }, []);
+
+    useEffect(() => {
+        const handleScroll = () => {
+            const currentScrollY = window.scrollY;
+            
+            if (currentScrollY < lastScrollY || currentScrollY < 10) {
+                // Scrolling up or at the top
+                setIsVisible(true);
+            } else {
+                // Scrolling down
+                setIsVisible(false);
+            }
+            
+            setLastScrollY(currentScrollY);
+        };
+
+        window.addEventListener('scroll', handleScroll, { passive: true });
+        
+        return () => window.removeEventListener('scroll', handleScroll);
+    }, [lastScrollY]);
 
     const handleLogout = () => {
         localStorage.removeItem('token');
@@ -32,8 +56,46 @@ export default function Header() {
         return user.userType === 'cliente' ? '/Cliente/Dashboard' : '/Prestador/Dashboard';
     };
 
+    const getMenuItems = () => {
+        if (!user) {
+            return [
+                { href: "/", label: "Início" },
+                { href: "/sobre", label: "Sobre Nós" }
+            ];
+        }
+
+        // Menu específico para prestadores com ordem fixa
+        if (user.userType === 'prestador') {
+            return [
+                { href: "/", label: "Início" },
+                { href: "/Prestador/ServicosPublicados", label: "Buscar Serviços" },
+                { href: "/Prestador/Dashboard", label: "Meus Serviços" },
+                { href: "/Prestador/CadastrarVeiculos", label: "Meus Veículos" },
+                { href: "/Prestador/Assinatura", label: "Assinatura" },
+                { href: "/sobre", label: "Sobre Nós" }
+            ];
+        }
+
+        // Menu para cliente simplificado
+        if (user.userType === 'cliente') {
+            return [
+                { href: "/", label: "Início" },
+                { href: "/Cliente/CriarServico", label: "Criar Novo Serviço" },
+                { href: "/Cliente/Dashboard", label: "Meus Serviços" },
+                { href: "/Cliente/Assinatura", label: "Assinatura" },
+                { href: "/sobre", label: "Sobre Nós" }
+            ];
+        }
+
+        return [
+            { href: "/", label: "Início" },
+            { href: "/sobre", label: "Sobre Nós" }
+        ];
+    };
+
+
     return (
-        <nav className={styles.header}>
+        <nav className={`${styles.header} ${isVisible ? styles.visible : styles.hidden}`}>
             <div>
                 <Link href="/">
                     <Image 
@@ -45,21 +107,24 @@ export default function Header() {
                     />
                 </Link>
             </div>
+            
             <div>
                 <ul className={styles.menu}>
-                    <li><Link href="/" className={styles.menuItem}>Início</Link></li>
-                    {user && (
-                        <li><Link href={getDashboardLink()} className={styles.menuItem}>Dashboard</Link></li>
-                    )}
-                    <li><Link href="/sobre" className={styles.menuItem}>Sobre Nós</Link></li>
+                    {getMenuItems().map((item, index) => (
+                        <li key={`${item.href}-${index}`}>
+                            <Link 
+                                href={item.href} 
+                                className={`${styles.menuItem} ${pathname === item.href ? styles.menuItemActive : ''}`}
+                            >
+                                {item.label}
+                            </Link>
+                        </li>
+                    ))}
                 </ul>
             </div>
             <div className={styles.actions}>
                 {user ? (
                     <>
-                        <Link href="/Prestador/Perfil" passHref>
-                            <Button variant="outline" color="danger">Meu Perfil</Button>
-                        </Link>
                         <Button color="danger" onClick={handleLogout}>
                             Sair
                         </Button>

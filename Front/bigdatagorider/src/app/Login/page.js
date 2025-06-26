@@ -2,10 +2,9 @@
 import Image from "next/image";
 import styles from "./login.module.css";
 import { useState } from "react";
-import { useRouter } from "next/navigation"; // Importa o useRouter
+import { useRouter } from "next/navigation";
 import Header from "@/components/header";
-import { Input } from '@heroui/input';
-import { Button } from '@heroui/button';
+import { Input, Button, Card, CardBody, Divider, RadioGroup, Radio } from '@heroui/react';
 
 export default function Login() { // Renomeado para Login para clareza
   const router = useRouter(); // Inicializa o router
@@ -62,141 +61,162 @@ export default function Login() { // Renomeado para Login para clareza
   };
 
   const togglePasswordVisibility = () => setShowPassword(!showPassword);
-
-  return (
-    <main>
+  return (    <main className={styles.main}>
       <Header />
 
       <div className={styles.container}>
-        <div className={styles.mainContent}>
-          <div className={styles.contentWrapper}>
-            <div className={styles.left}>
-              <Image 
-                src="/assets/login/homem 1 (1).png"
-                alt="Homem apontando"
-                width={500}
-                height={400}
-                className={styles.leftImg}
-                style={{
-                  width: '100%',
-                  height: 'auto',
-                  maxWidth: '500px'
-                }}
-              />
-            </div>
+        <div className={styles.contentWrapper}>
+          <div className={styles.leftSection}>
+            <Image 
+              src="/assets/login/homem 1 (1).png"
+              alt="Homem apontando"
+              width={500}
+              height={400}
+              className={styles.heroImage}
+            />
+          </div>
 
-            <div className={styles.loginBox}>
-      <h2 className={styles.loginBoxTitle}>Acessar minha conta</h2>
+          <div className={styles.rightSection}>
+            <Card className={styles.loginCard}>
+              <CardBody className={styles.cardBody}>
+                <div className={styles.logoSection}>
+                  <Image
+                    src="/assets/login/LOGO 1.png"
+                    alt="GoRider Logo"
+                    width={120}
+                    height={60}
+                    className={styles.logo}
+                  />
+                </div>
 
-      <div className={styles.userTypeSelector}>
-        <label className={styles.radioLabel}>
-          <input
-            type="radio"
-            name="userType"
-            value="cliente"
-            checked={userType === 'cliente'}
-            onChange={(e) => setUserType(e.target.value)}
-            className={styles.radioInput}
-          />
-          Cliente
-        </label>
-        <label className={styles.radioLabel}>
-          <input
-            type="radio"
-            name="userType"
-            value="prestador"
-            checked={userType === 'prestador'}
-            onChange={(e) => setUserType(e.target.value)}
-            className={styles.radioInput}
-          />
-          Prestador
-        </label>
-      </div>
+                <h1 className={styles.title}>Acessar minha conta</h1>
 
-      <Button className={styles.googleBtn} type="button">
-        <Image
-          src="/assets/login/Logo-Google-G.png"
-          alt="Google"
-          width={24}
-          height={24}
-          className={styles.googleBtnImg}
-        />
-        Continue com o Google
-      </Button>
+                <RadioGroup
+                  value={userType}
+                  onValueChange={setUserType}
+                  orientation="horizontal"
+                  className={styles.userTypeSelector}
+                  color="danger"
+                >
+                  <Radio value="cliente" className={styles.radioOption}>
+                    Cliente
+                  </Radio>
+                  <Radio value="prestador" className={styles.radioOption}>
+                    Prestador
+                  </Radio>
+                </RadioGroup>
 
-      <Input
-        type="email"
-        label="E-mail"
-        placeholder="E-mail"
-        value={email}
-        onValueChange={setEmail}
-        isInvalid={!!errors.email}
-        errorMessage={errors.email}
-        className={styles.loginInput}
-        autoComplete="email"
-        required
-      />
+                <Button
+                  variant="bordered"
+                  startContent={
+                    <Image
+                      src="/assets/login/Logo-Google-G.png"
+                      alt="Google"
+                      width={20}
+                      height={20}
+                    />
+                  }
+                  className={styles.googleButton}
+                  size="lg"
+                >
+                  Continue com o Google
+                </Button>
 
-      <div className={styles.passwordWrapper}>
-        <Input
-          type={showPassword ? 'text' : 'password'}
-          label="Senha"
-          placeholder="Senha"
-          value={password}
-          onValueChange={setPassword}
-          isInvalid={!!errors.password}
-          errorMessage={errors.password}
-          className={styles.loginInput}
-          autoComplete="current-password"
-          required
-        />
-        <Button
-          type="button"
-          className={styles.togglePassword}
-          onClick={togglePasswordVisibility}
-          aria-label={showPassword ? "Ocultar senha" : "Mostrar senha"}
-          variant="light"
-        >
-          <Image
-            src={
-              showPassword
-                ? "https://img.icons8.com/ios-glyphs/30/closed-eye.png"
-                : "https://img.icons8.com/ios-glyphs/30/visible--v1.png"
-            }
-            alt=""
-            width={24}
-            height={24}
-          />
-        </Button>
-      </div>
+                <Divider className={styles.divider} />
 
-      <div className={styles.forgot}>
-        <a href="/recuperar-senha" className={styles.forgotLink} aria-label="Recuperar senha">
-          Esqueci minha senha
-        </a>
-      </div>
+                <div className={styles.inputGroup}>
+                  <Input
+                    type="email"
+                    label="E-mail"
+                    placeholder="Digite seu e-mail"
+                    value={email}
+                    onValueChange={setEmail}
+                    isInvalid={!!errors.email}
+                    errorMessage={errors.email}
+                    variant="bordered"
+                    size="lg"
+                    classNames={{
+                      input: styles.input,
+                      inputWrapper: styles.inputWrapper
+                    }}
+                  />
+                </div>
 
-      <Button
-        className={`${styles.loginBtn} ${loading ? styles.loginBtnLoading : ""}`}
-        onClick={handleLogin}
-        disabled={loading}
-        aria-busy={loading}
-        fullWidth
-      >
-        {loading ? 'Carregando...' : 'Entrar'}
-      </Button>
+                <div className={styles.inputGroup}>
+                  <Input
+                    type={showPassword ? 'text' : 'password'}
+                    label="Senha"
+                    placeholder="Digite sua senha"
+                    value={password}
+                    onValueChange={setPassword}
+                    isInvalid={!!errors.password}
+                    errorMessage={errors.password}
+                    variant="bordered"
+                    size="lg"
+                    endContent={                      <Button
+                        isIconOnly
+                        variant="light"
+                        onClick={togglePasswordVisibility}
+                        className={styles.eyeButton}
+                      >
+                        {showPassword ? "🙈" : "👁️"}
+                      </Button>
+                    }
+                    classNames={{
+                      input: styles.input,
+                      inputWrapper: styles.inputWrapper
+                    }}
+                  />
+                </div>
 
-      <div className={styles.signupLink}>
-        Ainda não criou sua conta na GoRide?{' '}
-        <a href="/Cadastro" className={styles.signupLinkA} aria-label="Cadastre-se">
-          Cadastre-se
-        </a>
-        <br />
-        <a href="/ajuda" className={styles.signupLinkA} aria-label="Ajuda">
-          Preciso de ajuda
-        </a>
-      </div>
-    </div>
+                <div className={styles.forgotPassword}>
+                  <Button
+                    as="a"
+                    href="/recuperar-senha"
+                    variant="light"
+                    size="sm"
+                    className={styles.forgotLink}
+                  >
+                    Esqueci minha senha
+                  </Button>
+                </div>
+
+                <Button
+                  color="danger"
+                  size="lg"
+                  className={styles.loginButton}
+                  onClick={handleLogin}
+                  isLoading={loading}
+                  fullWidth
+                >
+                  {loading ? 'Entrando...' : 'Entrar'}
+                </Button>
+
+                <div className={styles.signupSection}>
+                  <p className={styles.signupText}>
+                    Ainda não criou sua conta na GoRider?{' '}
+                    <Button
+                      as="a"
+                      href="/Cadastro"
+                      variant="light"
+                      size="sm"
+                      className={styles.signupLink}
+                    >
+                      Cadastre-se
+                    </Button>
+                  </p>
+                  <Button
+                    as="a"
+                    href="/ajuda"
+                    variant="light"
+                    size="sm"
+                    className={styles.helpLink}
+                  >
+                    Preciso de ajuda
+                  </Button>
+                </div>
+              </CardBody>
+            </Card>
           </div>
         </div>
       </div>

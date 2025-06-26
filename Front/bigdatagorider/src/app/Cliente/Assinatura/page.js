@@ -6,31 +6,27 @@ import Header from '@/components/header';
 import SecondaryNavigation from '@/components/SecondaryNavigation';
 import styles from './assinatura.module.css';
 
-const AssinaturaPrestador = () => {
-    const [planoAtual, setPlanoAtual] = useState('bronze'); // Simulando plano atual
+const AssinaturaCliente = () => {
+    const [planoAtual, setPlanoAtual] = useState('basico');
     const [showConfirmModal, setShowConfirmModal] = useState(false);
     const [planoSelecionado, setPlanoSelecionado] = useState(null);
-    const router = useRouter();    useEffect(() => {
+    const router = useRouter();
+
+    useEffect(() => {
         const token = localStorage.getItem('token');
-        if (!token) {
+        const userType = localStorage.getItem('userType');
+
+        if (!token || userType !== 'cliente') {
             router.push('/Login');
             return;
         }
-        // Aqui você pode buscar o plano atual do prestador
         buscarPlanoAtual();
     }, [router]);
 
     const buscarPlanoAtual = async () => {
         try {
-            const token = localStorage.getItem('token');
-            // Aqui seria a chamada para buscar o plano atual
-            // const response = await fetch('http://localhost:8000/prestador/plano', {
-            //     headers: {
-            //         'Authorization': `Bearer ${token}`,
-            //         'Content-Type': 'application/json'
-            //     }
-            // });
-            // Por agora, mantemos como bronze
+            // Simulação - aqui seria a chamada real para o backend
+            console.log('Plano atual:', 'basico');
         } catch (err) {
             console.error('Erro ao buscar plano atual:', err);
         }
@@ -38,60 +34,57 @@ const AssinaturaPrestador = () => {
 
     const planos = [
         {
-            id: 'bronze',
-            nome: 'Bronze',
+            id: 'basico',
+            nome: 'Básico',
             preco: 0,
-            cor: '#cd7f32',
+            cor: '#6B7280',
             popular: false,
             beneficios: [
-                'Até 5 propostas por mês',
-                'Acesso a serviços básicos',
+                'Até 3 serviços por mês',
                 'Suporte por email',
-                'Dashboard básico',
-                'Cadastro de até 2 veículos'
+                'Acesso básico à plataforma',
+                'Histórico de serviços básico'
             ],
             limitacoes: [
-                'Sem prioridade nas propostas',
-                'Sem acesso a relatórios avançados'
+                'Sem prioridade nos serviços',
+                'Sem desconto em serviços',
+                'Suporte limitado'
             ]
         },
         {
-            id: 'prata',
-            nome: 'Prata',
-            preco: 49.90,
-            cor: '#c0c0c0',
+            id: 'standard',
+            nome: 'Standard',
+            preco: 29.90,
+            cor: '#3B82F6',
             popular: true,
             beneficios: [
-                'Até 20 propostas por mês',
-                'Prioridade média nas propostas',
-                'Acesso a todos os tipos de serviços',
-                'Suporte por chat',
-                'Dashboard avançado',
-                'Cadastro de até 5 veículos',
-                'Relatórios mensais',
-                'Notificações em tempo real'
+                'Até 10 serviços por mês',
+                'Suporte por email e chat',
+                'Prioridade moderada nos serviços',
+                '5% de desconto em todos os serviços',
+                'Histórico detalhado',
+                'Notificações em tempo real',
+                'Relatórios mensais'
             ],
             limitacoes: [
                 'Suporte limitado aos horários comerciais'
             ]
         },
         {
-            id: 'gold',
-            nome: 'Gold',
-            preco: 99.90,
-            cor: '#ffd700',
+            id: 'premium',
+            nome: 'Premium',
+            preco: 49.90,
+            cor: '#F59E0B',
             popular: false,
             beneficios: [
-                'Propostas ilimitadas',
-                'Máxima prioridade nas propostas',
-                'Acesso exclusivo a serviços premium',
-                'Suporte 24/7 prioritário',
-                'Dashboard completo com analytics',
-                'Veículos ilimitados',
-                'Relatórios detalhados e exportação',
-                'API para integração',
-                'Notificações personalizadas',
-                'Gerente de conta dedicado'
+                'Serviços ilimitados',
+                'Suporte 24/7 (email, chat, telefone)',
+                'Máxima prioridade nos serviços',
+                '15% de desconto em todos os serviços',
+                'Relatórios avançados e analytics',
+                'Acesso antecipado a novas funcionalidades',
+                'Gerente de conta dedicado',
+                'API para integração personalizada'
             ],
             limitacoes: []
         }
@@ -99,7 +92,7 @@ const AssinaturaPrestador = () => {
 
     const confirmarMudancaPlano = (plano) => {
         if (plano.id === planoAtual) {
-            return; // Não faz nada se for o plano atual
+            return;
         }
         setPlanoSelecionado(plano);
         setShowConfirmModal(true);
@@ -107,20 +100,7 @@ const AssinaturaPrestador = () => {
 
     const processarMudancaPlano = async () => {
         try {
-            const token = localStorage.getItem('token');
-            // Aqui seria a chamada para alterar o plano
-            // const response = await fetch('http://localhost:8000/prestador/plano', {
-            //     method: 'PUT',
-            //     headers: {
-            //         'Authorization': `Bearer ${token}`,
-            //         'Content-Type': 'application/json'
-            //     },
-            //     body: JSON.stringify({
-            //         plano: planoSelecionado.id
-            //     })
-            // });
-
-            // Simulando sucesso
+            // Simulação da chamada API
             setPlanoAtual(planoSelecionado.id);
             setShowConfirmModal(false);
             alert(`Plano alterado para ${planoSelecionado.nome} com sucesso!`);
@@ -137,17 +117,22 @@ const AssinaturaPrestador = () => {
             return <Chip color="primary" variant="flat">Upgrade</Chip>;
         }
         return <Chip color="warning" variant="flat">Downgrade</Chip>;
-    };    return (
+    };
+
+    return (
         <div className={styles.pageContainer}>
             <Header />
             
             <div className={styles.content}>
-                {/* Navegação Secundária */}
-                <SecondaryNavigation />
+                <SecondaryNavigation 
+                    currentPage="Assinatura"
+                    userType="cliente"
+                    userName="Cliente Demo"
+                />
                 
                 <div className={styles.header}>
                     <h1>⭐ Planos de Assinatura</h1>
-                    <p>Escolha o plano ideal para seu negócio e maximize suas oportunidades</p>
+                    <p>Escolha o plano ideal para suas necessidades e aproveite ao máximo nossos serviços</p>
                 </div>
 
                 <div className={styles.planoAtualInfo}>
@@ -237,19 +222,20 @@ const AssinaturaPrestador = () => {
                         <CardBody>
                             <h3>📋 Informações Importantes</h3>
                             <ul>
-                                <li>• Todos os planos incluem acesso ao painel de controle básico</li>
+                                <li>• Todos os planos incluem acesso ao painel de controle</li>
                                 <li>• Você pode alterar seu plano a qualquer momento</li>
                                 <li>• Upgrades são aplicados imediatamente</li>
                                 <li>• Downgrades são aplicados no próximo ciclo de cobrança</li>
                                 <li>• Sem taxas de cancelamento ou multas</li>
                                 <li>• Suporte técnico disponível para todos os planos</li>
+                                <li>• Descontos são aplicados automaticamente nos serviços</li>
+                                <li>• Primeira semana grátis para novos assinantes Premium</li>
                             </ul>
                         </CardBody>
                     </Card>
                 </div>
             </div>
 
-            {/* Modal de Confirmação */}
             <Modal 
                 isOpen={showConfirmModal} 
                 onClose={() => setShowConfirmModal(false)}
@@ -304,4 +290,4 @@ const AssinaturaPrestador = () => {
     );
 };
 
-export default AssinaturaPrestador;
+export default AssinaturaCliente;

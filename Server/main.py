@@ -11,6 +11,7 @@ from .avaliacoes import router as avaliacoes_router # Rota de avaliações
 from .clientes import router as clientes_router
 from .usuarios import router as usuarios_router
 from .servicos import router as servicos_router
+from .prestador import router as prestador_router # Rotas específicas do prestador
 
 # Cria a instância principal da aplicação FastAPI
 app = FastAPI()
@@ -41,6 +42,7 @@ app.include_router(avaliacoes_router, prefix="/api", tags=["Avaliações"])
 app.include_router(clientes_router, prefix="/api", tags=["Clientes"])
 app.include_router(usuarios_router, prefix="/api", tags=["Usuários"])
 app.include_router(servicos_router, prefix="/api", tags=["Serviços"])
+app.include_router(prestador_router, prefix="/api", tags=["Prestador Dashboard"])
 
 
 @app.get("/")
