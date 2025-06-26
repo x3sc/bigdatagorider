@@ -36,7 +36,7 @@ const AssinaturaCliente = () => {
         {
             id: 'basico',
             nome: 'Básico',
-            preco: 0,
+            preco: 20.00,
             cor: '#6B7280',
             popular: false,
             beneficios: [
@@ -54,7 +54,7 @@ const AssinaturaCliente = () => {
         {
             id: 'standard',
             nome: 'Standard',
-            preco: 29.90,
+            preco: 50.00,
             cor: '#3B82F6',
             popular: true,
             beneficios: [
@@ -73,7 +73,7 @@ const AssinaturaCliente = () => {
         {
             id: 'premium',
             nome: 'Premium',
-            preco: 49.90,
+            preco: 100.00,
             cor: '#F59E0B',
             popular: false,
             beneficios: [

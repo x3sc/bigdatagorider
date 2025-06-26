@@ -1,0 +1,94 @@
+/* Estilos específicos para corrigir botões invisíveis no dashboard do prestador */
+
+/* Reset total para botões dentro da tabela */
+.action-btn-container button {
+    all: revert !important;
+    background-color: #f8f9fa !important;
+    color: #495057 !important;
+    border: 1px solid #dee2e6 !important;
+    border-radius: 6px !important;
+    padding: 0.375rem 0.75rem !important;
+    font-size: 0.875rem !important;
+    font-weight: 500 !important;
+    line-height: 1.25 !important;
+    text-align: center !important;
+    text-decoration: none !important;
+    vertical-align: middle !important;
+    cursor: pointer !important;
+    user-select: none !important;
+    transition: all 0.15s ease-in-out !important;
+    min-width: 60px !important;
+    height: 32px !important;
+    box-sizing: border-box !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    gap: 0.25rem !important;
+    opacity: 1 !important;
+    visibility: visible !important;
+    white-space: nowrap !important;
+    overflow: visible !important;
+    text-overflow: clip !important;
+    position: relative !important;
+    z-index: 10 !important;
+}
+
+/* Botão Desistir */
+.action-btn-container .btn-desistir {
+    background-color: rgba(229, 62, 62, 0.1) !important;
+    color: #e53e3e !important;
+    border-color: rgba(229, 62, 62, 0.4) !important;
+}
+
+.action-btn-container .btn-desistir:hover {
+    background-color: rgba(229, 62, 62, 0.2) !important;
+    color: #c53030 !important;
+    border-color: rgba(229, 62, 62, 0.6) !important;
+    transform: translateY(-1px) !important;
+}
+
+/* Botão Finalizar */
+.action-btn-container .btn-finalizar {
+    background-color: #38a169 !important;
+    color: white !important;
+    border-color: #38a169 !important;
+}
+
+.action-btn-container .btn-finalizar:hover {
+    background-color: #2f855a !important;
+    color: white !important;
+    border-color: #2f855a !important;
+    transform: translateY(-1px) !important;
+}
+
+/* Botão Ver Detalhes */
+.action-btn-container .btn-detalhes {
+    background-color: rgba(49, 130, 206, 0.1) !important;
+    color: #3182ce !important;
+    border-color: #3182ce !important;
+}
+
+.action-btn-container .btn-detalhes:hover {
+    background-color: rgba(49, 130, 206, 0.2) !important;
+    color: #2c5aa0 !important;
+    border-color: #2c5aa0 !important;
+    transform: translateY(-1px) !important;
+}
+
+/* Força visibilidade de todo conteúdo dos botões */
+.action-btn-container button *,
+.action-btn-container button span,
+.action-btn-container button::before,
+.action-btn-container button::after {
+    opacity: 1 !important;
+    visibility: visible !important;
+    color: inherit !important;
+    text-shadow: none !important;
+    -webkit-text-fill-color: inherit !important;
+    -webkit-text-stroke: none !important;
+    background: transparent !important;
+    text-decoration: none !important;
+    font-weight: inherit !important;
+    font-size: inherit !important;
+    line-height: inherit !important;
+}

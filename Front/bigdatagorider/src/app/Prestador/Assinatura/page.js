@@ -40,7 +40,7 @@ const AssinaturaPrestador = () => {
         {
             id: 'bronze',
             nome: 'Bronze',
-            preco: 0,
+            preco: 20.00,
             cor: '#cd7f32',
             popular: false,
             beneficios: [
@@ -58,7 +58,7 @@ const AssinaturaPrestador = () => {
         {
             id: 'prata',
             nome: 'Prata',
-            preco: 49.90,
+            preco: 50.00,
             cor: '#c0c0c0',
             popular: true,
             beneficios: [
@@ -78,7 +78,7 @@ const AssinaturaPrestador = () => {
         {
             id: 'gold',
             nome: 'Gold',
-            preco: 99.90,
+            preco: 100.00,
             cor: '#ffd700',
             popular: false,
             beneficios: [

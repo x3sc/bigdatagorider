@@ -11,7 +11,7 @@ export default function Header() {
     const [isVisible, setIsVisible] = useState(true);
     const [lastScrollY, setLastScrollY] = useState(0);
     const router = useRouter();
-    const pathname = usePathname(); // Hook do Next.js para path atual
+    const pathname = usePathname();
 
     useEffect(() => {
         const token = localStorage.getItem('token');
@@ -22,25 +22,16 @@ export default function Header() {
         } else {
             setUser(null);
         }
-    }, []);
+    }, [pathname]); // Re-check on route change
 
     useEffect(() => {
         const handleScroll = () => {
             const currentScrollY = window.scrollY;
-            
-            if (currentScrollY < lastScrollY || currentScrollY < 10) {
-                // Scrolling up or at the top
-                setIsVisible(true);
-            } else {
-                // Scrolling down
-                setIsVisible(false);
-            }
-            
+            setIsVisible(currentScrollY < lastScrollY || currentScrollY < 10);
             setLastScrollY(currentScrollY);
         };
 
         window.addEventListener('scroll', handleScroll, { passive: true });
-        
         return () => window.removeEventListener('scroll', handleScroll);
     }, [lastScrollY]);
 
@@ -51,11 +42,6 @@ export default function Header() {
         router.push('/Login');
     };
 
-    const getDashboardLink = () => {
-        if (!user) return "/";
-        return user.userType === 'cliente' ? '/Cliente/Dashboard' : '/Prestador/Dashboard';
-    };
-
     const getMenuItems = () => {
         if (!user) {
             return [
@@ -63,8 +49,6 @@ export default function Header() {
                 { href: "/sobre", label: "Sobre Nós" }
             ];
         }
-
-        // Menu específico para prestadores com ordem fixa
         if (user.userType === 'prestador') {
             return [
                 { href: "/", label: "Início" },
@@ -75,8 +59,6 @@ export default function Header() {
                 { href: "/sobre", label: "Sobre Nós" }
             ];
         }
-
-        // Menu para cliente simplificado
         if (user.userType === 'cliente') {
             return [
                 { href: "/", label: "Início" },
@@ -86,17 +68,15 @@ export default function Header() {
                 { href: "/sobre", label: "Sobre Nós" }
             ];
         }
-
         return [
             { href: "/", label: "Início" },
             { href: "/sobre", label: "Sobre Nós" }
         ];
     };
 
-
     return (
         <nav className={`${styles.header} ${isVisible ? styles.visible : styles.hidden}`}>
-            <div>
+            <div className={styles.logoContainer}>
                 <Link href="/">
                     <Image 
                         src="/assets/home/LOGO.png" 
@@ -108,7 +88,7 @@ export default function Header() {
                 </Link>
             </div>
             
-            <div>
+            <div className={styles.menuContainer}>
                 <ul className={styles.menu}>
                     {getMenuItems().map((item, index) => (
                         <li key={`${item.href}-${index}`}>
@@ -122,10 +102,16 @@ export default function Header() {
                     ))}
                 </ul>
             </div>
+
             <div className={styles.actions}>
                 {user ? (
                     <>
-                        <Button color="danger" onClick={handleLogout}>
+                        <Link href={user.userType === 'cliente' ? '/Cliente/Perfil' : '/Prestador/Perfil'} passHref>
+                            <div style={{ cursor: 'pointer' }}>
+                                <Image src="/assets/editar-perfil/foto.png" alt="Perfil" width={40} height={40} style={{ borderRadius: '50%' }} />
+                            </div>
+                        </Link>
+                        <Button onClick={handleLogout} variant="outline" color="danger">
                             Sair
                         </Button>
                     </>

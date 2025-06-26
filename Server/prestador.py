@@ -48,7 +48,7 @@ def get_propostas_pendentes(current_user: dict = Depends(get_current_user)):
                 uc.Nome as cliente_nome,
                 p.ValorProposto as valor_proposto,
                 s.TipoVeiculoRequerido as veiculo_tipo,
-                p.Status
+                p.Status as Status
             FROM PropostasServico p
             JOIN Servicos s ON p.ID_Servico = s.ID_Servico
             JOIN Usuarios uc ON s.ID_Cliente = uc.ID_Usuario
@@ -98,21 +98,18 @@ def get_servicos_aceitos(current_user: dict = Depends(get_current_user)):
                 s.DataServico as data_inicio,
                 uc.Nome as cliente_nome,
                 p.ValorProposto as valor_acordado,
-                s.Status
-            FROM Servicos s
-            JOIN PropostasServico p ON s.ID_Servico = p.ID_Servico AND p.Status = 'Aceita'
+                s.Status as Status
+            FROM PropostasServico p
+            JOIN Servicos s ON p.ID_Servico = s.ID_Servico
             JOIN Usuarios uc ON s.ID_Cliente = uc.ID_Usuario
-            WHERE s.ID_Prestador_Aceito = %s AND s.Status = 'Em Andamento'
+            WHERE p.ID_Prestador = %s AND p.Status = 'Aceita' AND s.Status = 'Em Andamento'
             ORDER BY s.DataServico DESC
         """
-        
-        print(f"DEBUG: Executando query: {query}")
-        print(f"DEBUG: Com prestador_id: {prestador_id}")
         
         cursor.execute(query, (prestador_id,))
         servicos = cursor.fetchall()
         
-        print(f"DEBUG: Encontrados {len(servicos)} serviços aceitos")
+        print(f"DEBUG: Serviços encontrados: {servicos}")
         
         return servicos
         
@@ -125,10 +122,107 @@ def get_servicos_aceitos(current_user: dict = Depends(get_current_user)):
         if conn:
             conn.close()
 
+# Novo endpoint para buscar o perfil do prestador
+@router.get("/perfil-prestador/{prestador_id}")
+def get_perfil_prestador(prestador_id: int):
+    conn = None
+    cursor = None
+    try:
+        conn = get_db_connection()
+        cursor = conn.cursor(pymysql.cursors.DictCursor)
+
+        # Query para buscar os dados do prestador
+        query = """
+            SELECT
+                u.ID_Usuario as id,
+                u.Nome as nome,
+                u.Email as email,
+                u.Telefone as telefone,
+                u.Foto_URL as fotoUrl,
+                p.CNH as cnh,
+                p.Disponibilidade as disponibilidade,
+                p.AvaliacaoMedia as avaliacaoMedia
+            FROM Usuarios u
+            JOIN Prestadores p ON u.ID_Usuario = p.ID_Usuario
+            WHERE u.ID_Usuario = %s AND u.TipoUsuario = 'prestador'
+        """
+        cursor.execute(query, (prestador_id,))
+        prestador = cursor.fetchone()
+
+        if not prestador:
+            raise HTTPException(status_code=404, detail="Prestador não encontrado")
+
+        # Query para buscar as avaliações do prestador
+        query_avaliacoes = """
+            SELECT
+                a.Estrelas as estrelas,
+                a.Comentario as comentario,
+                u.Nome as nome_cliente
+            FROM Avaliacoes a
+            JOIN Usuarios u ON a.ID_Cliente = u.ID_Usuario
+            WHERE a.ID_Prestador = %s
+            ORDER BY a.DataAvaliacao DESC
+        """
+        cursor.execute(query_avaliacoes, (prestador_id,))
+        avaliacoes = cursor.fetchall()
+
+        prestador['avaliacoes'] = avaliacoes
+
+        return prestador
+
+    except pymysql.MySQLError as e:
+        print(f"Erro de banco de dados: {e}")
+        raise HTTPException(status_code=500, detail="Erro ao buscar perfil do prestador")
+    except Exception as e:
+        print(f"Erro inesperado: {e}")
+        raise HTTPException(status_code=500, detail="Erro interno do servidor")
+    finally:
+        if cursor:
+            cursor.close()
+        if conn:
+            conn.close()
+
+# Endpoint para o prestador marcar um serviço como finalizado (aguardando confirmação)
+@router.put("/prestador/servicos/{servico_id}/finalizar")
+def finalizar_servico_prestador(servico_id: int, current_user: dict = Depends(get_current_user)):
+    if current_user.get('tipo') != 'prestador':
+        raise HTTPException(status_code=403, detail="Acesso negado.")
+
+    conn = None
+    cursor = None
+    try:
+        conn = get_db_connection()
+        cursor = conn.cursor()
+
+        # Verifica se o serviço pertence ao prestador e está em andamento
+        cursor.execute("SELECT Status FROM Servicos WHERE ID_Servico = %s AND ID_Prestador_Aceito = %s", (servico_id, current_user['id']))
+        servico = cursor.fetchone()
+
+        if not servico:
+            raise HTTPException(status_code=404, detail="Serviço não encontrado ou não pertence a este prestador.")
+
+        if servico[0] != 'Em Andamento':
+            raise HTTPException(status_code=400, detail=f"Serviço não pode ser finalizado pois seu status é '{servico[0]}'")
+
+        # Atualiza o status do serviço para "Aguardando Confirmação"
+        cursor.execute("UPDATE Servicos SET Status = 'Aguardando Confirmação' WHERE ID_Servico = %s", (servico_id,))
+        conn.commit()
+
+        return {"message": "Serviço marcado como finalizado. Aguardando confirmação do cliente."}
+
+    except pymysql.MySQLError as e:
+        print(f"Erro de banco de dados: {e}")
+        raise HTTPException(status_code=500, detail="Erro ao finalizar serviço.")
+    finally:
+        if cursor:
+            cursor.close()
+        if conn:
+            conn.close()
+
 @router.get("/prestador/servicos/finalizados")
 def get_servicos_finalizados(current_user: dict = Depends(get_current_user)):
     """
-    Busca todos os serviços finalizados pelo prestador
+    Busca todos os serviços que foram finalizados pelo prestador
     """
     conn = None
     cursor = None
@@ -402,6 +496,57 @@ def desistir_proposta(proposta_id: int, current_user: dict = Depends(get_current
         print(f"Erro ao cancelar proposta: {str(e)}")
         if isinstance(e, HTTPException):
             raise e
+        raise HTTPException(status_code=500, detail=f"Erro interno do servidor: {str(e)}")
+    finally:
+        if cursor:
+            cursor.close()
+        if conn:
+            conn.close()
+
+@router.get("/prestador/servicos/cancelados")
+def get_servicos_cancelados(current_user: dict = Depends(get_current_user)):
+    """
+    Busca todos os serviços que foram cancelados pelo prestador
+    """
+    conn = None
+    cursor = None
+    try:
+        if current_user.get('tipo') != 'prestador':
+            raise HTTPException(status_code=403, detail="Acesso negado.")
+        
+        prestador_id = current_user['id']
+        
+        conn = get_db_connection()
+        cursor = conn.cursor(pymysql.cursors.DictCursor)
+        
+        # Busca serviços cancelados com informações do cliente
+        query = """
+            SELECT 
+                s.ID_Servico as id,
+                s.Nome as descricao,
+                s.EnderecoOrigem as origem,
+                s.EnderecoDestino as destino,
+                s.TipoVeiculoRequerido as tipo_veiculo,
+                s.DataServico as data_inicio,
+                uc.Nome as cliente_nome,
+                p.ValorProposto as valor_acordado,
+                s.Status as Status,
+                s.CanceladoPor as cancelado_por,
+                s.MotivoCancelamento as motivo_cancelamento
+            FROM PropostasServico p
+            JOIN Servicos s ON p.ID_Servico = s.ID_Servico
+            JOIN Usuarios uc ON s.ID_Cliente = uc.ID_Usuario
+            WHERE p.ID_Prestador = %s AND s.Status = 'Cancelado'
+            ORDER BY s.DataServico DESC
+        """
+        
+        cursor.execute(query, (prestador_id,))
+        servicos_cancelados = cursor.fetchall()
+        
+        return servicos_cancelados
+        
+    except Exception as e:
+        print(f"Erro ao buscar serviços cancelados: {str(e)}")
         raise HTTPException(status_code=500, detail=f"Erro interno do servidor: {str(e)}")
     finally:
         if cursor:

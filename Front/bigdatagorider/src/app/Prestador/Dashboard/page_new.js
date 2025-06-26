@@ -28,74 +28,11 @@ const DashboardPrestador = () => {
     const [error, setError] = useState(null);
     const [activeTab, setActiveTab] = useState('Espera');
     const [desistindoProposta, setDesistindoProposta] = useState(null);
-    const [cancelandoServico, setCancelandoServico] = useState(null);
     const router = useRouter();
-
-    // Função para normalizar os dados da API
-    const normalizeServiceData = (servicos) => {
-        return servicos.map(servico => ({
-            ...servico,
-            // Garante que o campo Status sempre existe
-            Status: servico.Status || servico.status || servico.status_servico || 'Indefinido',
-            // Normaliza outros campos que podem ter nomes diferentes
-            tipo_veiculo: servico.tipo_veiculo || servico.veiculo_tipo || servico.TipoVeiculoRequerido || '',
-            valor: servico.valor || servico.valor_proposto || servico.valor_acordado || 'N/A'
-        }));
-    };
 
     useEffect(() => {
         const token = localStorage.getItem('token');
         const userType = localStorage.getItem('userType');
-
-        const getSimulatedData = () => {
-            const baseServicos = [
-                {
-                    id: 1,
-                    nome: 'Transporte para Aeroporto',
-                    descricao: 'Viagem até Aeroporto Internacional',
-                    cliente_nome: 'João Silva',
-                    origem: 'Centro da Cidade',
-                    destino: 'Aeroporto Internacional',
-                    data_servico: '2024-12-27',
-                    valor: 'R$ 45,00',
-                    tipo_veiculo: 'Carro',
-                    Status: 'Pendente'
-                },
-                {
-                    id: 2,
-                    nome: 'Mudança Residencial',
-                    descricao: 'Transporte de móveis e utensílios',
-                    cliente_nome: 'Maria Santos',
-                    origem: 'Bairro A',
-                    destino: 'Bairro B',
-                    data_servico: '2024-12-28',
-                    valor: 'R$ 120,00',
-                    tipo_veiculo: 'Caminhão',
-                    Status: 'Em Andamento'
-                },
-                {
-                    id: 3,
-                    nome: 'Entrega de Documentos',
-                    descricao: 'Documentos urgentes',
-                    cliente_nome: 'Carlos Lima',
-                    origem: 'Escritório Central',
-                    destino: 'Cartório',
-                    data_servico: '2024-12-25',
-                    valor: 'R$ 25,00',
-                    tipo_veiculo: 'Moto',
-                    Status: 'Finalizado'
-                }
-            ];
-
-            if (activeTab === 'Espera') {
-                return baseServicos.filter(s => s.Status === 'Pendente');
-            } else if (activeTab === 'Em Andamento') {
-                return baseServicos.filter(s => s.Status === 'Em Andamento');
-            } else if (activeTab === 'Finalizado') {
-                return baseServicos.filter(s => s.Status === 'Finalizado');
-            }
-            return baseServicos;
-        };
 
         if (!token || userType !== 'prestador') {
             router.push('/Login');
@@ -110,13 +47,11 @@ const DashboardPrestador = () => {
                 let endpoint = '';
                 
                 if (activeTab === 'Espera') {
-                    endpoint = 'http://127.0.0.1:5000/api/prestador/propostas/pendentes';
+                    endpoint = 'http://localhost:5000/api/prestador/propostas/pendentes';
                 } else if (activeTab === 'Em Andamento') {
-                    endpoint = 'http://127.0.0.1:5000/api/prestador/servicos/aceitos';
+                    endpoint = 'http://localhost:5000/api/prestador/servicos/aceitos';
                 } else if (activeTab === 'Finalizado') {
-                    endpoint = 'http://127.0.0.1:5000/api/prestador/servicos/finalizados';
-                } else if (activeTab === 'Cancelado') {
-                    endpoint = 'http://127.0.0.1:5000/api/prestador/servicos/cancelados';
+                    endpoint = 'http://localhost:5000/api/prestador/servicos/finalizados';
                 }
 
                 const response = await fetch(endpoint, {
@@ -128,26 +63,14 @@ const DashboardPrestador = () => {
 
                 if (response.ok) {
                     const data = await response.json();
-                    console.log('Dados recebidos da API:', data);
-                    console.log('Tipo de dados:', typeof data);
-                    if (Array.isArray(data) && data.length > 0) {
-                        console.log('Primeiro item:', data[0]);
-                        console.log('Campos do primeiro item:', Object.keys(data[0]));
-                    }
-                    
-                    // Normaliza os dados antes de usar
-                    const normalizedData = normalizeServiceData(data || []);
-                    console.log('Dados normalizados:', normalizedData);
-                    setServicos(normalizedData);
+                    setServicos(data || []);
                 } else {
                     console.log('Resposta não OK, usando dados simulados');
-                    const simulatedData = getSimulatedData();
-                    setServicos(normalizeServiceData(simulatedData));
+                    setServicos(getSimulatedData());
                 }
             } catch (error) {
                 console.log('Erro na requisição, usando dados simulados:', error);
-                const simulatedData = getSimulatedData();
-                setServicos(normalizeServiceData(simulatedData));
+                setServicos(getSimulatedData());
             } finally {
                 setLoading(false);
             }
@@ -176,16 +99,12 @@ const DashboardPrestador = () => {
                 } else {
                     localStorage.setItem('token', 'demo-token-prestador');
                     localStorage.setItem('userType', 'prestador');
-                    const simulatedData = getSimulatedData();
-                    setServicos(normalizeServiceData(simulatedData));
-                    setLoading(false);
+                    fetchServicos();
                 }
             } catch (error) {
                 localStorage.setItem('token', 'demo-token-prestador');
                 localStorage.setItem('userType', 'prestador');
-                const simulatedData = getSimulatedData();
-                setServicos(normalizeServiceData(simulatedData));
-                setLoading(false);
+                fetchServicos();
             }
         };
 
@@ -194,7 +113,7 @@ const DashboardPrestador = () => {
         } else {
             fetchServicos();
         }
-    }, [activeTab, router]);
+    }, [activeTab]);
 
     const getSimulatedData = () => {
         const baseServicos = [
@@ -242,10 +161,17 @@ const DashboardPrestador = () => {
             return baseServicos.filter(s => s.Status === 'Em Andamento');
         } else if (activeTab === 'Finalizado') {
             return baseServicos.filter(s => s.Status === 'Finalizado');
-        } else if (activeTab === 'Cancelado') {
-            return baseServicos.filter(s => s.Status === 'Cancelado');
         }
         return baseServicos;
+    };
+
+    const getStatusColor = (status) => {
+        switch (status) {
+            case 'Pendente': return 'warning';
+            case 'Em Andamento': return 'primary';
+            case 'Finalizado': return 'success';
+            default: return 'default';
+        }
     };
 
     const handleDesistirProposta = async (servicoId) => {
@@ -277,59 +203,27 @@ const DashboardPrestador = () => {
     };
 
     const handleFinalizarServico = async (servicoId) => {
-        const token = localStorage.getItem('token');
         try {
-            const response = await fetch(`http://127.0.0.1:5000/api/prestador/servicos/${servicoId}/finalizar`, {
-                method: 'PUT',
-                headers: {
-                    'Authorization': `Bearer ${token}`,
-                },
-            });
-
-            if (!response.ok) {
-                const errorData = await response.json();
-                throw new Error(errorData.detail || 'Falha ao marcar serviço como finalizado.');
-            }
-
-            alert('Serviço marcado como finalizado. Aguardando confirmação do cliente.');
-            // Mudar para a aba de finalizados para ver o status atualizado
-            setActiveTab('Finalizado'); 
-
-        } catch (err) {
-            setError(err.message);
-            alert(err.message);
-        }
-    };
-
-    const handleCancelarServico = async (servicoId) => {
-        try {
-            setCancelandoServico(servicoId);
             const token = localStorage.getItem('token');
             
-            const response = await fetch(`http://127.0.0.1:5000/api/servicos/${servicoId}/cancelar`, {
+            const response = await fetch(`http://localhost:5000/api/servicos/${servicoId}/finalizar`, {
                 method: 'PUT',
                 headers: {
-                    'Content-Type': 'application/json',
                     'Authorization': `Bearer ${token}`,
-                },
-                body: JSON.stringify({
-                    cancelado_por: 'prestador',
-                    motivo_cancelamento: 'Cancelado pelo prestador'
-                })
+                    'Content-Type': 'application/json'
+                }
             });
 
-            if (!response.ok) {
-                throw new Error('Falha ao cancelar o serviço.');
+            if (response.ok) {
+                alert('Serviço finalizado com sucesso!');
+                setActiveTab('Finalizado');
+            } else {
+                const errorData = await response.json();
+                throw new Error(errorData.detail || 'Erro ao finalizar serviço');
             }
-
-            alert('Serviço cancelado com sucesso!');
-            // Recarrega os dados
-            window.location.reload();
-        } catch (err) {
-            console.error('Erro ao cancelar serviço:', err);
-            alert('Erro ao cancelar serviço. Tente novamente.');
-        } finally {
-            setCancelandoServico(null);
+        } catch (error) {
+            console.error('Erro ao finalizar serviço:', error);
+            alert('Erro ao finalizar serviço. Tente novamente.');
         }
     };
 
@@ -389,8 +283,6 @@ const DashboardPrestador = () => {
                     <TableColumn>SERVIÇO</TableColumn>
                     <TableColumn>CLIENTE</TableColumn>
                     <TableColumn>DATA</TableColumn>
-                    <TableColumn>VALOR</TableColumn>
-                    <TableColumn>TIPO DE VEÍCULO</TableColumn>
                     <TableColumn>STATUS</TableColumn>
                     <TableColumn>AÇÃO</TableColumn>
                 </TableHeader>
@@ -407,7 +299,7 @@ const DashboardPrestador = () => {
                             </TableCell>
                             <TableCell>
                                 {servico.cliente_nome || (
-                                    <span className={styles.noPrestador}>
+                                    <span className={styles.noCliente}>
                                         Cliente não informado
                                     </span>
                                 )}
@@ -416,71 +308,52 @@ const DashboardPrestador = () => {
                                 {new Date(servico.data_servico).toLocaleDateString('pt-BR')}
                             </TableCell>
                             <TableCell>
-                                {servico.valor || `R$ ${servico.valor_proposto}`}
-                            </TableCell>
-                            <TableCell>
-                                {servico.tipo_veiculo || servico.veiculo_tipo}
-                            </TableCell>
-                            <TableCell>
-                                <Chip color={getStatusColor(servico.Status || 'indefinido')} variant="flat">
-                                    {servico.Status || 'Status indefinido'}
+                                <Chip 
+                                    color={getStatusColor(servico.Status)}
+                                    variant="flat"
+                                    size="sm"
+                                >
+                                    {servico.Status}
                                 </Chip>
                             </TableCell>
                             <TableCell>
-                                {renderAcoes(servico)}
+                                {activeTab === 'Espera' && (
+                                    <Button 
+                                        size="sm"
+                                        color="danger"
+                                        variant="bordered"
+                                        onPress={() => handleDesistirProposta(servico.id)}
+                                        isLoading={desistindoProposta === servico.id}
+                                        isDisabled={desistindoProposta !== null}
+                                    >
+                                        ❌ Desistir
+                                    </Button>
+                                )}
+                                {activeTab === 'Em Andamento' && (
+                                    <Button 
+                                        size="sm"
+                                        color="success"
+                                        onPress={() => handleFinalizarServico(servico.id)}
+                                    >
+                                        ✅ Finalizar
+                                    </Button>
+                                )}
+                                {activeTab === 'Finalizado' && (
+                                    <Button 
+                                        size="sm"
+                                        color="primary"
+                                        variant="bordered"
+                                        onPress={() => handleViewDetails(servico)}
+                                    >
+                                        👁️ Ver Detalhes
+                                    </Button>
+                                )}
                             </TableCell>
                         </TableRow>
                     ))}
                 </TableBody>
             </Table>
         );
-    };
-
-    const renderAcoes = (servico) => {
-        const status = servico.Status?.toLowerCase() || 'indefinido';
-        console.log(`Renderizando ações para serviço ${servico.id} com status: "${status}"`);
-        
-        switch (status) {
-            case 'em andamento':
-                return (
-                    <Button 
-                        color="success" 
-                        onClick={() => handleFinalizarServico(servico.id)}
-                    >
-                        Finalizar Serviço
-                    </Button>
-                );
-            case 'pendente':
-                return (
-                    <Button 
-                        color="danger" 
-                        onClick={() => handleDesistirProposta(servico.id_proposta)}
-                        disabled={desistindoProposta === servico.id_proposta}
-                    >
-                        {desistindoProposta === servico.id_proposta ? <Spinner size="sm" /> : 'Desistir da Proposta'}
-                    </Button>
-                );
-            case 'indefinido':
-                return (
-                    <span style={{ fontSize: '12px', color: '#666' }}>
-                        Status indefinido
-                    </span>
-                );
-            default:
-                console.log(`Nenhuma ação disponível para status: "${status}"`);
-                return null;
-        }
-    };
-
-    const getStatusColor = (status) => {
-        switch (status?.toLowerCase()) {
-            case 'pendente': return 'warning';
-            case 'em andamento': return 'primary';
-            case 'finalizado': return 'success';
-            case 'cancelado': return 'danger';
-            case 'indefinido': return 'default';
-            default: return 'default';
-        }
     };
 
     return (
@@ -523,11 +396,6 @@ const DashboardPrestador = () => {
                                 </div>
                             </Tab>
                             <Tab key="Finalizado" title="✅ Finalizados">
-                                <div className={styles.tabContent}>
-                                    {renderServicos()}
-                                </div>
-                            </Tab>
-                            <Tab key="Cancelado" title="❌ Cancelados">
                                 <div className={styles.tabContent}>
                                     {renderServicos()}
                                 </div>
