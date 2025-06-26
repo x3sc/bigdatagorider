@@ -15,14 +15,40 @@ export default function PerfilCliente() {
     const [loading, setLoading] = useState(true);
     const [isEditing, setIsEditing] = useState(false);
 
-    // Mock: Substitua pelo ID do usuário logado
-    const id_cliente = 1; // Você precisará obter isso do estado de autenticação
-
     useEffect(() => {
         const fetchUserData = async () => {
-            if (!id_cliente) return;
+            const token = localStorage.getItem('token');
+            const userType = localStorage.getItem('userType');
+
+            if (!token || userType !== 'cliente') {
+                router.push('/Login');
+                return;
+            }
+
             try {
-                const response = await fetch(`http://127.0.0.1:5000/api/perfil-cliente/${id_cliente}`);
+                // Primeiro obter o ID do usuário atual
+                const userResponse = await fetch('http://127.0.0.1:5000/api/users/me', {
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json'
+                    }
+                });
+
+                if (!userResponse.ok) {
+                    throw new Error('Falha ao obter dados do usuário');
+                }
+
+                const currentUser = await userResponse.json();
+                const clienteId = currentUser.id;
+
+                // Agora buscar o perfil completo
+                const response = await fetch(`http://127.0.0.1:5000/api/perfil-cliente/${clienteId}`, {
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json'
+                    }
+                });
+
                 if (!response.ok) {
                     const errorData = await response.json();
                     throw new Error(errorData.detail || 'Falha ao buscar dados do perfil.');
@@ -38,17 +64,52 @@ export default function PerfilCliente() {
         };
 
         fetchUserData();
-    }, [id_cliente]);
+    }, [router]);
 
     const handleInputChange = (field, value) => {
         setUserData(prev => ({ ...prev, [field]: value }));
     };
 
     const handleSave = async () => {
-        // A lógica de salvar será implementada aqui
-        console.log("Salvando dados:", userData);
-        setIsEditing(false);
-        alert('Perfil atualizado com sucesso! (Simulado)');
+        try {
+            const token = localStorage.getItem('token');
+            
+            // Obter o ID do usuário atual
+            const userResponse = await fetch('http://127.0.0.1:5000/api/users/me', {
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json'
+                }
+            });
+
+            if (!userResponse.ok) {
+                throw new Error('Falha ao obter dados do usuário');
+            }
+
+            const currentUser = await userResponse.json();
+            const clienteId = currentUser.id;
+
+            const response = await fetch(`http://127.0.0.1:5000/api/perfil-cliente/${clienteId}`, {
+                method: 'PUT',
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(userData)
+            });
+
+            if (!response.ok) {
+                const errorData = await response.text();
+                throw new Error(`Erro ao atualizar perfil: ${errorData}`);
+            }
+
+            console.log("Perfil atualizado com sucesso!");
+            setIsEditing(false);
+            alert('Perfil atualizado com sucesso!');
+        } catch (error) {
+            console.error("Erro ao salvar:", error);
+            alert('Erro ao atualizar perfil. Tente novamente.');
+        }
     };
 
     const toggleEdit = () => {

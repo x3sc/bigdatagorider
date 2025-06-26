@@ -11,31 +11,57 @@ export default function PerfilPrestador() {
     const [userData, setUserData] = useState(null);
     const [loading, setLoading] = useState(true);
 
-    // Mock: Substitua pelo ID do usuário logado
-    const id_prestador = 1; // Você precisará obter isso do estado de autenticação
-
     useEffect(() => {
         const fetchUserData = async () => {
-            if (!id_prestador) return;
+            const token = localStorage.getItem('token');
+            const userType = localStorage.getItem('userType');
+
+            if (!token || userType !== 'prestador') {
+                router.push('/Login');
+                return;
+            }
 
             try {
-                const response = await fetch(`http://127.0.0.1:5000/api/perfil-prestador/${id_prestador}`);
+                // Primeiro obter o ID do usuário atual
+                const userResponse = await fetch('http://127.0.0.1:5000/api/users/me', {
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json'
+                    }
+                });
+
+                if (!userResponse.ok) {
+                    throw new Error('Falha ao obter dados do usuário');
+                }
+
+                const currentUser = await userResponse.json();
+                const prestadorId = currentUser.id;
+
+                // Agora buscar o perfil completo
+                const response = await fetch(`http://127.0.0.1:5000/api/perfil-prestador/${prestadorId}`, {
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json'
+                    }
+                });
+
                 if (!response.ok) {
                     const errorData = await response.json();
                     throw new Error(errorData.detail || 'Falha ao buscar dados do perfil.');
                 }
+                
                 const data = await response.json();
                 setUserData(data);
             } catch (error) {
                 console.error('Erro ao buscar dados do prestador:', error);
-                alert(error.message);
+                setUserData(null);
             } finally {
                 setLoading(false);
             }
         };
 
         fetchUserData();
-    }, [id_prestador]);
+    }, [router]);
 
     if (loading) {
         return <div>Carregando...</div>;

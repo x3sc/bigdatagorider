@@ -1,5 +1,5 @@
 "use client";
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { 
     Button, 
@@ -38,72 +38,13 @@ const DashboardCliente = () => {
     const [cancelandoServico, setCancelandoServico] = useState(null);
     const router = useRouter();
 
-    const getDadosTeste = useCallback(() => {
-        const todosServicos = [
-            {
-                id: 1,
-                nome: 'Mudança Residencial - Teste',
-                prestador_nome: 'Aguardando propostas',
-                data_servico: '2024-12-30',
-                status: 'Aberto'
-            },
-            {
-                id: 2,
-                nome: 'Transporte de Móveis',
-                prestador_nome: 'João Transportes',
-                data_servico: '2024-12-28',
-                status: 'Em Andamento'
-            },
-            {
-                id: 3,
-                nome: 'Entrega de Documentos',
-                prestador_nome: 'Maria Express',
-                data_servico: '2024-12-25',
-                status: 'Concluido'
-            },
-            {
-                id: 4,
-                nome: 'Serviço Cancelado Teste',
-                prestador_nome: 'Pedro Mudanças',
-                data_servico: '2024-12-20',
-                status: 'Cancelado',
-                cancelado_por: 'cliente'
-            },
-            {
-                id: 5,
-                nome: 'Serviço Aguardando Confirmação',
-                prestador_nome: 'Ana Transportes',
-                data_servico: '2024-12-26',
-                status: 'Aguardando Confirmação'
-            }
-        ];
-
-        // Filtrar por aba ativa
-        if (activeTab === 'Abertos') {
-            return todosServicos.filter(s => s.status === 'Aberto');
-        } else if (activeTab === 'Em Andamento') {
-            return todosServicos.filter(s => s.status === 'Em Andamento' || s.status === 'Aguardando Confirmação');
-        } else if (activeTab === 'Finalizados') {
-            return todosServicos.filter(s => s.status === 'Concluido' || s.status === 'Finalizado');
-        } else if (activeTab === 'Cancelados') {
-            return todosServicos.filter(s => s.status === 'Cancelado');
-        }
-        
-        return todosServicos;
-    }, [activeTab]);
-
     useEffect(() => {
         const token = localStorage.getItem('token');
         const userType = localStorage.getItem('userType');
 
-        // Para testes, simular token válido se não existir
-        if (!token) {
-            localStorage.setItem('token', 'fake-token-for-testing');
-            localStorage.setItem('userType', 'cliente');
-        }
-
-        if (userType !== 'cliente') {
-            localStorage.setItem('userType', 'cliente');
+        if (!token || userType !== 'cliente') {
+            router.push('/Login');
+            return;
         }
 
         const fetchServicos = async () => {
@@ -117,6 +58,10 @@ const DashboardCliente = () => {
                     status = 'andamento';
                 } else if (activeTab === 'Cancelados') {
                     status = 'cancelado';
+                } else if (activeTab === 'Abertos') {
+                    status = 'abertos';
+                } else if (activeTab === 'Finalizados') {
+                    status = 'finalizados';
                 }
 
                 const url = `http://127.0.0.1:5000/api/cliente/servicos/${status}`;
@@ -125,38 +70,32 @@ const DashboardCliente = () => {
                 const response = await fetch(url, {
                     headers: {
                         'Authorization': `Bearer ${localStorage.getItem('token')}`,
+                        'Content-Type': 'application/json'
                     },
                 });
 
                 console.log('Status da resposta:', response.status);
 
                 if (!response.ok) {
-                    const errorData = await response.json();
+                    const errorData = await response.text();
                     console.error('Erro da API:', errorData);
-                    
-                    // Em caso de erro de autenticação, usar dados de teste
-                    console.log('Usando dados de teste devido a erro de autenticação');
-                    const dadosTeste = getDadosTeste();
-                    setServicos(dadosTeste);
-                    return;
+                    throw new Error(`Erro ${response.status}: ${errorData}`);
                 }
 
                 const data = await response.json();
                 console.log('Dados recebidos:', data);
-                setServicos(data);
+                setServicos(data || []);
             } catch (err) {
                 console.error('Erro ao buscar serviços:', err);
-                // Em caso de erro de conexão, usar dados de teste
-                console.log('Usando dados de teste devido a erro de conexão');
-                const dadosTeste = getDadosTeste();
-                setServicos(dadosTeste);
+                setError(err.message);
+                setServicos([]);
             } finally {
                 setLoading(false);
             }
         };
 
         fetchServicos();
-    }, [router, activeTab, getDadosTeste]);
+    }, [router, activeTab]);
 
     const getStatusColor = (status) => {
         switch (status?.toLowerCase()) {
@@ -168,6 +107,8 @@ const DashboardCliente = () => {
             case 'concluido':
             case 'finalizado':
                 return 'success';
+            case 'aguardando':
+            case 'finalizando':
             case 'aguardando confirmação':
                 return 'secondary';
             case 'cancelado':
@@ -198,6 +139,8 @@ const DashboardCliente = () => {
                         Ver Propostas
                     </Button>
                 );
+            case 'aguardando':
+            case 'finalizando':
             case 'aguardando confirmação':
                  return (
                     <Button 

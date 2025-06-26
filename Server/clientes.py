@@ -6,6 +6,7 @@ from dotenv import load_dotenv
 from .utils import get_db_connection, sanitize_email, sanitize_string
 import pymysql
 from .dependencies import get_current_user
+from pydantic import BaseModel
 
 load_dotenv("server.env")
 findspark.init()
@@ -100,6 +101,55 @@ def get_perfil_cliente(cliente_id: int):
     except pymysql.MySQLError as e:
         print(f"Erro de banco de dados: {e}")
         raise HTTPException(status_code=500, detail="Erro ao buscar perfil do cliente")
+    except Exception as e:
+        print(f"Erro inesperado: {e}")
+        raise HTTPException(status_code=500, detail="Erro interno do servidor")
+    finally:
+        if cursor:
+            cursor.close()
+        if conn:
+            conn.close()
+
+# Modelo para atualização de perfil
+class PerfilClienteUpdate(BaseModel):
+    nome: str
+    telefone: str
+    fotoUrl: str = None
+
+# Endpoint para atualizar perfil do cliente
+@router.put("/perfil-cliente/{cliente_id}")
+def update_perfil_cliente(cliente_id: int, perfil_data: PerfilClienteUpdate, current_user: dict = Depends(get_current_user)):
+    if current_user.get('tipo') != 'cliente' or current_user.get('id') != cliente_id:
+        raise HTTPException(status_code=403, detail="Acesso negado")
+
+    conn = None
+    cursor = None
+    try:
+        conn = get_db_connection()
+        cursor = conn.cursor()
+
+        # Atualizar dados na tabela Usuarios
+        query = """
+            UPDATE Usuarios 
+            SET Nome = %s, Telefone = %s, Foto_URL = %s
+            WHERE ID_Usuario = %s AND TipoUsuario = 'cliente'
+        """
+        cursor.execute(query, (
+            perfil_data.nome,
+            perfil_data.telefone,
+            perfil_data.fotoUrl,
+            cliente_id
+        ))
+
+        if cursor.rowcount == 0:
+            raise HTTPException(status_code=404, detail="Cliente não encontrado")
+
+        conn.commit()
+        return {"message": "Perfil atualizado com sucesso"}
+
+    except pymysql.MySQLError as e:
+        print(f"Erro de banco de dados: {e}")
+        raise HTTPException(status_code=500, detail="Erro ao atualizar perfil do cliente")
     except Exception as e:
         print(f"Erro inesperado: {e}")
         raise HTTPException(status_code=500, detail="Erro interno do servidor")
