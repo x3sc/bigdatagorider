@@ -47,56 +47,6 @@ const DashboardPrestador = () => {
         const token = localStorage.getItem('token');
         const userType = localStorage.getItem('userType');
 
-        const getSimulatedData = () => {
-            const baseServicos = [
-                {
-                    id: 1,
-                    nome: 'Transporte para Aeroporto',
-                    descricao: 'Viagem até Aeroporto Internacional',
-                    cliente_nome: 'João Silva',
-                    origem: 'Centro da Cidade',
-                    destino: 'Aeroporto Internacional',
-                    data_servico: '2024-12-27',
-                    valor: 'R$ 45,00',
-                    tipo_veiculo: 'Carro',
-                    Status: 'Pendente'
-                },
-                {
-                    id: 2,
-                    nome: 'Mudança Residencial',
-                    descricao: 'Transporte de móveis e utensílios',
-                    cliente_nome: 'Maria Santos',
-                    origem: 'Bairro A',
-                    destino: 'Bairro B',
-                    data_servico: '2024-12-28',
-                    valor: 'R$ 120,00',
-                    tipo_veiculo: 'Caminhão',
-                    Status: 'Em Andamento'
-                },
-                {
-                    id: 3,
-                    nome: 'Entrega de Documentos',
-                    descricao: 'Documentos urgentes',
-                    cliente_nome: 'Carlos Lima',
-                    origem: 'Escritório Central',
-                    destino: 'Cartório',
-                    data_servico: '2024-12-25',
-                    valor: 'R$ 25,00',
-                    tipo_veiculo: 'Moto',
-                    Status: 'Finalizado'
-                }
-            ];
-
-            if (activeTab === 'Espera') {
-                return baseServicos.filter(s => s.Status === 'Pendente');
-            } else if (activeTab === 'Em Andamento') {
-                return baseServicos.filter(s => s.Status === 'Em Andamento');
-            } else if (activeTab === 'Finalizado') {
-                return baseServicos.filter(s => s.Status === 'Finalizado');
-            }
-            return baseServicos;
-        };
-
         if (!token || userType !== 'prestador') {
             router.push('/Login');
             return;
@@ -129,124 +79,27 @@ const DashboardPrestador = () => {
                 if (response.ok) {
                     const data = await response.json();
                     console.log('Dados recebidos da API:', data);
-                    console.log('Tipo de dados:', typeof data);
-                    if (Array.isArray(data) && data.length > 0) {
-                        console.log('Primeiro item:', data[0]);
-                        console.log('Campos do primeiro item:', Object.keys(data[0]));
-                    }
                     
                     // Normaliza os dados antes de usar
                     const normalizedData = normalizeServiceData(data || []);
                     console.log('Dados normalizados:', normalizedData);
                     setServicos(normalizedData);
                 } else {
-                    console.log('Resposta não OK, usando dados simulados');
-                    const simulatedData = getSimulatedData();
-                    setServicos(normalizeServiceData(simulatedData));
+                    const errorData = await response.text();
+                    console.error('Erro na resposta da API:', errorData);
+                    throw new Error(`Erro ${response.status}: ${errorData}`);
                 }
             } catch (error) {
-                console.log('Erro na requisição, usando dados simulados:', error);
-                const simulatedData = getSimulatedData();
-                setServicos(normalizeServiceData(simulatedData));
+                console.error('Erro na requisição:', error);
+                setError(error.message);
+                setServicos([]);
             } finally {
                 setLoading(false);
             }
         };
 
-        // Login simulado para demonstração
-        const simulateLogin = async () => {
-            try {
-                const response = await fetch('http://localhost:5000/api/auth/login', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({
-                        email: 'prestador@demo.com',
-                        password: 'demo123',
-                        user_type: 'prestador'
-                    })
-                });
-
-                if (response.ok) {
-                    const data = await response.json();
-                    localStorage.setItem('token', data.access_token);
-                    localStorage.setItem('userType', 'prestador');
-                    fetchServicos();
-                } else {
-                    localStorage.setItem('token', 'demo-token-prestador');
-                    localStorage.setItem('userType', 'prestador');
-                    const simulatedData = getSimulatedData();
-                    setServicos(normalizeServiceData(simulatedData));
-                    setLoading(false);
-                }
-            } catch (error) {
-                localStorage.setItem('token', 'demo-token-prestador');
-                localStorage.setItem('userType', 'prestador');
-                const simulatedData = getSimulatedData();
-                setServicos(normalizeServiceData(simulatedData));
-                setLoading(false);
-            }
-        };
-
-        if (!token || userType !== 'prestador') {
-            simulateLogin();
-        } else {
-            fetchServicos();
-        }
+        fetchServicos();
     }, [activeTab, router]);
-
-    const getSimulatedData = () => {
-        const baseServicos = [
-            {
-                id: 1,
-                nome: 'Transporte para Aeroporto',
-                descricao: 'Viagem até Aeroporto Internacional',
-                cliente_nome: 'João Silva',
-                origem: 'Centro da Cidade',
-                destino: 'Aeroporto Internacional',
-                data_servico: '2024-12-27',
-                valor: 'R$ 45,00',
-                tipo_veiculo: 'Carro',
-                Status: 'Pendente'
-            },
-            {
-                id: 2,
-                nome: 'Mudança Residencial',
-                descricao: 'Transporte de móveis e utensílios',
-                cliente_nome: 'Maria Santos',
-                origem: 'Bairro A',
-                destino: 'Bairro B',
-                data_servico: '2024-12-28',
-                valor: 'R$ 120,00',
-                tipo_veiculo: 'Caminhão',
-                Status: 'Em Andamento'
-            },
-            {
-                id: 3,
-                nome: 'Entrega de Documentos',
-                descricao: 'Documentos urgentes',
-                cliente_nome: 'Carlos Lima',
-                origem: 'Escritório Central',
-                destino: 'Cartório',
-                data_servico: '2024-12-25',
-                valor: 'R$ 25,00',
-                tipo_veiculo: 'Moto',
-                Status: 'Finalizado'
-            }
-        ];
-
-        if (activeTab === 'Espera') {
-            return baseServicos.filter(s => s.Status === 'Pendente');
-        } else if (activeTab === 'Em Andamento') {
-            return baseServicos.filter(s => s.Status === 'Em Andamento');
-        } else if (activeTab === 'Finalizado') {
-            return baseServicos.filter(s => s.Status === 'Finalizado');
-        } else if (activeTab === 'Cancelado') {
-            return baseServicos.filter(s => s.Status === 'Cancelado');
-        }
-        return baseServicos;
-    };
 
     const handleDesistirProposta = async (servicoId) => {
         try {
@@ -278,26 +131,91 @@ const DashboardPrestador = () => {
 
     const handleFinalizarServico = async (servicoId) => {
         const token = localStorage.getItem('token');
+        
+        if (!token) {
+            alert('Token de autenticação não encontrado. Faça login novamente.');
+            router.push('/Login');
+            return;
+        }
+
         try {
+            console.log(`Finalizando serviço ${servicoId}...`);
+            
             const response = await fetch(`http://127.0.0.1:5000/api/prestador/servicos/${servicoId}/finalizar`, {
                 method: 'PUT',
                 headers: {
                     'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json'
                 },
             });
 
-            if (!response.ok) {
-                const errorData = await response.json();
-                throw new Error(errorData.detail || 'Falha ao marcar serviço como finalizado.');
+            console.log('Resposta da finalização:', response.status, response.statusText);
+
+            if (response.status === 401) {
+                alert('Sessão expirada. Faça login novamente.');
+                localStorage.removeItem('token');
+                localStorage.removeItem('userType');
+                router.push('/Login');
+                return;
             }
 
-            alert('Serviço marcado como finalizado. Aguardando confirmação do cliente.');
-            // Mudar para a aba de finalizados para ver o status atualizado
-            setActiveTab('Finalizado'); 
+            if (response.status === 404) {
+                alert('Serviço não encontrado ou não pertence a este prestador.');
+                return;
+            }
+
+            if (response.status === 400) {
+                const errorData = await response.json();
+                alert(`Não é possível finalizar este serviço: ${errorData.detail}`);
+                return;
+            }
+
+            if (!response.ok) {
+                const errorData = await response.json().catch(() => ({ detail: 'Erro desconhecido' }));
+                console.error('Erro na resposta:', errorData);
+                throw new Error(errorData.detail || `Erro ${response.status}: ${response.statusText}`);
+            }
+
+            const result = await response.json();
+            console.log('Serviço finalizado com sucesso:', result);
+            
+            alert('Serviço marcado como finalizado. O cliente será notificado para confirmar.');
+            
+            // Atualiza apenas os dados sem recarregar a página toda
+            const currentToken = localStorage.getItem('token');
+            let endpoint = '';
+            
+            if (activeTab === 'Em Andamento') {
+                endpoint = 'http://127.0.0.1:5000/api/prestador/servicos/aceitos';
+            } else if (activeTab === 'Finalizado') {
+                endpoint = 'http://127.0.0.1:5000/api/prestador/servicos/finalizados';
+            }
+
+            if (endpoint) {
+                try {
+                    const refreshResponse = await fetch(endpoint, {
+                        headers: {
+                            'Authorization': `Bearer ${currentToken}`,
+                            'Content-Type': 'application/json'
+                        }
+                    });
+
+                    if (refreshResponse.ok) {
+                        const refreshData = await refreshResponse.json();
+                        const normalizedData = normalizeServiceData(refreshData || []);
+                        setServicos(normalizedData);
+                    }
+                } catch (refreshError) {
+                    console.error('Erro ao atualizar dados:', refreshError);
+                    // Em caso de erro ao atualizar, recarrega a página
+                    window.location.reload();
+                }
+            }
 
         } catch (err) {
+            console.error('Erro ao finalizar serviço:', err);
             setError(err.message);
-            alert(err.message);
+            alert(`Erro ao finalizar serviço: ${err.message}`);
         }
     };
 
@@ -439,6 +357,7 @@ const DashboardPrestador = () => {
     const renderAcoes = (servico) => {
         const status = servico.Status?.toLowerCase() || 'indefinido';
         console.log(`Renderizando ações para serviço ${servico.id} com status: "${status}"`);
+        console.log('Objeto do serviço completo:', servico);
         
         switch (status) {
             case 'em andamento':
@@ -454,11 +373,29 @@ const DashboardPrestador = () => {
                 return (
                     <Button 
                         color="danger" 
-                        onClick={() => handleDesistirProposta(servico.id_proposta)}
-                        disabled={desistindoProposta === servico.id_proposta}
+                        onClick={() => handleDesistirProposta(servico.id_proposta || servico.id)}
+                        disabled={desistindoProposta === (servico.id_proposta || servico.id)}
                     >
-                        {desistindoProposta === servico.id_proposta ? <Spinner size="sm" /> : 'Desistir da Proposta'}
+                        {desistindoProposta === (servico.id_proposta || servico.id) ? <Spinner size="sm" /> : 'Desistir da Proposta'}
                     </Button>
+                );
+            case 'aguardando':
+                return (
+                    <span style={{ fontSize: '12px', color: '#666' }}>
+                        Aguardando confirmação do cliente
+                    </span>
+                );
+            case 'finalizando':
+                return (
+                    <span style={{ fontSize: '12px', color: '#666' }}>
+                        Aguardando confirmação do cliente
+                    </span>
+                );
+            case 'aguardando confirmação':
+                return (
+                    <span style={{ fontSize: '12px', color: '#666' }}>
+                        Aguardando confirmação do cliente
+                    </span>
                 );
             case 'indefinido':
                 return (
@@ -468,7 +405,11 @@ const DashboardPrestador = () => {
                 );
             default:
                 console.log(`Nenhuma ação disponível para status: "${status}"`);
-                return null;
+                return (
+                    <span style={{ fontSize: '12px', color: '#666' }}>
+                        {status}
+                    </span>
+                );
         }
     };
 
@@ -476,6 +417,9 @@ const DashboardPrestador = () => {
         switch (status?.toLowerCase()) {
             case 'pendente': return 'warning';
             case 'em andamento': return 'primary';
+            case 'aguardando': return 'secondary';
+            case 'finalizando': return 'secondary';
+            case 'aguardando confirmação': return 'secondary';
             case 'finalizado': return 'success';
             case 'cancelado': return 'danger';
             case 'indefinido': return 'default';

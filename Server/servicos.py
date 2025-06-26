@@ -759,8 +759,8 @@ def confirmar_finalizacao_cliente(servico_id: int, current_user: dict = Depends(
         if servico[0] != 'Aguardando Confirmação':
             raise HTTPException(status_code=400, detail=f"Serviço não pode ser confirmado pois seu status é '{servico[0]}'")
 
-        # Atualiza o status do serviço para "Finalizado"
-        cursor.execute("UPDATE Servicos SET Status = 'Finalizado' WHERE ID_Servico = %s", (servico_id,))
+        # Atualiza o status do serviço para "Concluido"
+        cursor.execute("UPDATE Servicos SET Status = 'Concluido' WHERE ID_Servico = %s", (servico_id,))
         conn.commit()
 
         return {"message": "Serviço finalizado com sucesso!"}

@@ -185,6 +185,8 @@ def get_perfil_prestador(prestador_id: int):
 # Endpoint para o prestador marcar um serviço como finalizado (aguardando confirmação)
 @router.put("/prestador/servicos/{servico_id}/finalizar")
 def finalizar_servico_prestador(servico_id: int, current_user: dict = Depends(get_current_user)):
+    print(f"DEBUG: Iniciando finalização do serviço {servico_id} pelo prestador {current_user.get('id')}")
+    
     if current_user.get('tipo') != 'prestador':
         raise HTTPException(status_code=403, detail="Acesso negado.")
 
@@ -193,26 +195,60 @@ def finalizar_servico_prestador(servico_id: int, current_user: dict = Depends(ge
     try:
         conn = get_db_connection()
         cursor = conn.cursor()
+        
+        print(f"DEBUG: Verificando se serviço {servico_id} pertence ao prestador {current_user['id']}")
 
         # Verifica se o serviço pertence ao prestador e está em andamento
-        cursor.execute("SELECT Status FROM Servicos WHERE ID_Servico = %s AND ID_Prestador_Aceito = %s", (servico_id, current_user['id']))
+        cursor.execute("SELECT Status, ID_Cliente, Nome FROM Servicos WHERE ID_Servico = %s AND ID_Prestador_Aceito = %s", (servico_id, current_user['id']))
         servico = cursor.fetchone()
+        
+        print(f"DEBUG: Resultado da consulta: {servico}")
 
         if not servico:
             raise HTTPException(status_code=404, detail="Serviço não encontrado ou não pertence a este prestador.")
 
-        if servico[0] != 'Em Andamento':
-            raise HTTPException(status_code=400, detail=f"Serviço não pode ser finalizado pois seu status é '{servico[0]}'")
+        status_atual, cliente_id, nome_servico = servico
+        print(f"DEBUG: Status atual: {status_atual}, Cliente ID: {cliente_id}, Nome: {nome_servico}")
 
-        # Atualiza o status do serviço para "Aguardando Confirmação"
+        if status_atual != 'Em Andamento':
+            raise HTTPException(status_code=400, detail=f"Serviço não pode ser finalizado pois seu status é '{status_atual}'")
+
+        print(f"DEBUG: Atualizando status do serviço {servico_id} para 'Aguardando Confirmação'")
+        
+        # Atualiza o status do serviço para "Aguardando Confirmação" (aguardando confirmação do cliente)
         cursor.execute("UPDATE Servicos SET Status = 'Aguardando Confirmação' WHERE ID_Servico = %s", (servico_id,))
+        
+        if cursor.rowcount == 0:
+            raise HTTPException(status_code=500, detail="Nenhuma linha foi atualizada")
+            
         conn.commit()
+        print(f"DEBUG: Serviço {servico_id} finalizado com sucesso")
+
+        # Notificar o cliente sobre a finalização
+        try:
+            notificar_cliente_finalizacao(cliente_id, servico_id, nome_servico)
+        except Exception as notif_error:
+            print(f"AVISO: Erro ao notificar cliente: {notif_error}")
+            # Não falha a operação se a notificação der erro
+
+        # Notificar cliente sobre a finalização do serviço
+        nome_servico = "Serviço #" + str(servico_id)  # Obter o nome do serviço de alguma forma, se necessário
+        notificar_cliente_finalizacao(cliente_id, servico_id, nome_servico)
 
         return {"message": "Serviço marcado como finalizado. Aguardando confirmação do cliente."}
 
     except pymysql.MySQLError as e:
         print(f"Erro de banco de dados: {e}")
-        raise HTTPException(status_code=500, detail="Erro ao finalizar serviço.")
+        print(f"DEBUG: Detalhes do erro MySQL: {str(e)}")
+        if conn:
+            conn.rollback()
+        raise HTTPException(status_code=500, detail=f"Erro ao finalizar serviço: {str(e)}")
+    except Exception as e:
+        print(f"Erro inesperado: {e}")
+        print(f"DEBUG: Tipo do erro: {type(e)}")
+        if conn:
+            conn.rollback()
+        raise HTTPException(status_code=500, detail=f"Erro inesperado: {str(e)}")
     finally:
         if cursor:
             cursor.close()
@@ -245,16 +281,15 @@ def get_servicos_finalizados(current_user: dict = Depends(get_current_user)):
                 s.EnderecoDestino as destino,
                 s.TipoVeiculoRequerido as tipo_veiculo,
                 s.DataServico as data_inicio,
-                sv.DataConclusao as data_fim,
+                s.DataConclusao as data_fim,
                 uc.Nome as cliente_nome,
                 p.ValorProposto as valor_acordado,
                 s.Status
             FROM Servicos s
             JOIN PropostasServico p ON s.ID_Servico = p.ID_Servico AND p.Status = 'Aceita'
             JOIN Usuarios uc ON s.ID_Cliente = uc.ID_Usuario
-            LEFT JOIN ServicoVeiculos sv ON s.ID_Servico = sv.ID_Servico AND sv.Status = 'Concluido'
-            WHERE s.ID_Prestador_Aceito = %s AND s.Status = 'Concluido'
-            ORDER BY sv.DataConclusao DESC, s.DataServico DESC
+            WHERE s.ID_Prestador_Aceito = %s AND (s.Status = 'Concluido' OR s.Status = 'Aguardando Confirmação')
+            ORDER BY s.DataServico DESC
         """
         
         print(f"DEBUG: Executando query: {query}")
@@ -553,3 +588,20 @@ def get_servicos_cancelados(current_user: dict = Depends(get_current_user)):
             cursor.close()
         if conn:
             conn.close()
+
+# Função auxiliar para notificar cliente sobre finalização de serviço
+def notificar_cliente_finalizacao(cliente_id: int, servico_id: int, nome_servico: str):
+    """
+    Função placeholder para notificar o cliente sobre a finalização do serviço.
+    Em uma implementação real, isso poderia enviar email, push notification, etc.
+    """
+    print(f"NOTIFICAÇÃO: Cliente {cliente_id} - Serviço '{nome_servico}' (ID: {servico_id}) foi finalizado pelo prestador e aguarda sua confirmação.")
+    
+    # Aqui você poderia implementar:
+    # - Envio de email
+    # - Push notification
+    # - SMS
+    # - Webhook para sistema externo
+    # - Inserção em tabela de notificações
+    
+    return True
