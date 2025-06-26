@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import styles from './perfil.module.css';
-import HeaderPrestador from '@/components/headerPrestador';
+import Header from '@/components/header';
 import { Input } from '@heroui/input';
 import { Button } from '@heroui/button';
 import { Textarea } from '@heroui/react'; // Correção aqui
@@ -82,11 +82,9 @@ export default function EditarPerfilPrestador() {
 
     if (!userData) {
         return <div>Não foi possível carregar o perfil.</div>;
-    }
-
-    return (
+    }    return (
         <main>
-            <HeaderPrestador />
+            <Header />
             <div className={styles.container}>
                 <h1 className={styles.title}>Editar meu perfil</h1>
 

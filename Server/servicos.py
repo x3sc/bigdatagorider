@@ -258,6 +258,18 @@ def aceitar_proposta(proposta_id: int, current_user: dict = Depends(get_current_
                 VALUES (%s, %s, %s, 'Alocado')
             """, (id_servico, veiculo_id, id_prestador))
 
+        # 5. IMPORTANTE: Marca os veículos como "Em Servico" na tabela Veiculos
+        if veiculos_proposta:
+            placeholders = ','.join(['%s'] * len(veiculos_proposta))
+            query_marcar_veiculos = f"""
+                UPDATE Veiculos 
+                SET Status = 'Em Servico'
+                WHERE ID_Veiculo IN ({placeholders}) AND Status = 'Disponivel'
+            """
+            cursor.execute(query_marcar_veiculos, veiculos_proposta)
+            
+            print(f"DEBUG: {len(veiculos_proposta)} veículos marcados como 'Em Servico' para o serviço {id_servico}")
+
         conn.commit()
 
     except pymysql.MySQLError as e:
@@ -269,72 +281,11 @@ def aceitar_proposta(proposta_id: int, current_user: dict = Depends(get_current_
     return {"message": "Proposta aceita com sucesso! O serviço está agora em andamento."}
 
 
-@router.get("/prestador/servicos/{status}", response_model=List[Dict[str, Any]])
-def get_prestador_servicos_por_status(status: str, current_user: dict = Depends(get_current_user)):
-    if current_user.get('tipo') != 'prestador':
-        raise HTTPException(status_code=403, detail="Acesso negado. Apenas para prestadores.")
-
-    status_map = {
-        "espera": "Aberto",
-        "andamento": "Em Andamento",
-        "finalizado": "Concluido"
-    }
-    db_status = status_map.get(status.lower())
-    if not db_status:
-        raise HTTPException(status_code=400, detail="Status inválido.")
-
-    prestador_id = current_user['id']
-    conn = get_db_connection()
-    cursor = conn.cursor(pymysql.cursors.DictCursor)
-    servicos = []
-    try:
-        if db_status == 'Aberto':
-            query = """
-                SELECT s.ID_Servico, s.Nome, s.Descricao, u.Nome as cliente_nome, s.DataServico, 
-                       s.EnderecoOrigem, s.EnderecoDestino, s.ValorInicialCliente, s.TipoVeiculoRequerido,
-                       s.QuantidadeVeiculos
-                FROM Servicos s
-                JOIN Usuarios u ON s.ID_Cliente = u.ID_Usuario
-                WHERE s.Status = 'Aberto'
-                ORDER BY s.DataSolicitacao DESC
-            """
-            cursor.execute(query)
-        else:
-            query = """
-                SELECT s.ID_Servico, s.Nome, u.Nome as cliente_nome, s.DataServico, s.Status
-                FROM Servicos s
-                JOIN Usuarios u ON s.ID_Cliente = u.ID_Usuario
-                WHERE s.ID_Prestador_Aceito = %s AND s.Status = %s
-                ORDER BY s.DataSolicitacao DESC
-            """
-            cursor.execute(query, (prestador_id, db_status))
-        
-        rows = cursor.fetchall()
-        for row in rows:
-            servico_item = {
-                "id": row['ID_Servico'],
-                "nome": row['Nome'],
-                "cliente_nome": row['cliente_nome'],
-                "data_servico": str(row['DataServico']),
-                "status": db_status
-            }
-            if db_status == 'Aberto':
-                servico_item.update({
-                    "descricao": row['Descricao'],
-                    "origem": row['EnderecoOrigem'],
-                    "destino": row['EnderecoDestino'],
-                    "valor": row['ValorInicialCliente'],
-                    "tipo_veiculo_requerido": row['TipoVeiculoRequerido'],
-                    "quantidade_veiculos": row['QuantidadeVeiculos']
-                })
-            servicos.append(servico_item)
-            
-    except pymysql.MySQLError as e:
-        print(f"Erro no banco de dados: {e}")
-        raise HTTPException(status_code=500, detail="Erro ao buscar serviços do prestador.")
-    finally:
-        conn.close()        
-    return servicos
+# ROTA REMOVIDA - Conflitava com endpoints específicos do prestador.py
+# Use os endpoints específicos em prestador.py:
+# - /api/prestador/propostas/pendentes
+# - /api/prestador/servicos/aceitos  
+# - /api/prestador/servicos/finalizados
 
 
 @router.get("/cliente/servicos/{status}", response_model=List[Dict[str, Any]])
@@ -405,7 +356,19 @@ def finalizar_servico_prestador(servico_id: int, current_user: dict = Depends(ge
         if not cursor.fetchone():
             raise HTTPException(status_code=404, detail="Serviço não encontrado ou não pode ser finalizado por você.")
 
+        # Buscar os veículos alocados ao serviço para liberá-los
+        cursor.execute("""
+            SELECT ID_Veiculo FROM ServicoVeiculos 
+            WHERE ID_Servico = %s AND Status = 'Alocado'
+        """, (servico_id,))
+        veiculos_alocados = [row[0] for row in cursor.fetchall()]
+
+        # Atualizar o status do serviço para 'Aguardando Confirmação'
         cursor.execute("UPDATE Servicos SET Status = 'Aguardando Confirmação' WHERE ID_Servico = %s", (servico_id,))
+        
+        # NÃO liberar os veículos aqui - eles devem permanecer "Em Servico" até a confirmação do cliente
+        print(f"DEBUG: Serviço {servico_id} marcado como 'Aguardando Confirmação'. Veículos {veiculos_alocados} permanecem 'Em Servico' até confirmação do cliente.")
+
         conn.commit()
 
         if cursor.rowcount == 0:
@@ -417,7 +380,7 @@ def finalizar_servico_prestador(servico_id: int, current_user: dict = Depends(ge
     finally:
         conn.close()
 
-    return {"message": "Serviço marcado como finalizado. Aguardando confirmação do cliente."}
+    return {"message": "Serviço marcado como finalizado. Aguardando confirmação do cliente para liberar os veículos."}
 
 @router.put("/servicos/{servico_id}/confirmar", status_code=200)
 def confirmar_servico_cliente(servico_id: int, current_user: dict = Depends(get_current_user)):
@@ -425,10 +388,21 @@ def confirmar_servico_cliente(servico_id: int, current_user: dict = Depends(get_
         raise HTTPException(status_code=403, detail="Apenas clientes podem confirmar a finalização.")
 
     cliente_id = current_user['id']
+    print(f"DEBUG /confirmar: Cliente ID {cliente_id} tentando confirmar serviço ID {servico_id}")
+    
     conn = get_db_connection()
     cursor = conn.cursor()
 
     try:
+        # Verificar se o serviço existe e quem é o dono
+        cursor.execute("SELECT ID_Cliente, Status FROM Servicos WHERE ID_Servico = %s", (servico_id,))
+        servico_info = cursor.fetchone()
+        
+        if servico_info:
+            print(f"DEBUG: Serviço encontrado - Cliente dono: {servico_info[0]}, Status: {servico_info[1]}")
+        else:
+            print(f"DEBUG: Serviço ID {servico_id} não encontrado")
+        
         cursor.execute(
             "SELECT ID_Servico FROM Servicos WHERE ID_Servico = %s AND ID_Cliente = %s AND Status = 'Aguardando Confirmação'",
             (servico_id, cliente_id)
@@ -436,8 +410,27 @@ def confirmar_servico_cliente(servico_id: int, current_user: dict = Depends(get_
         if not cursor.fetchone():
             raise HTTPException(status_code=404, detail="Serviço não encontrado ou não está aguardando sua confirmação.")
 
-        # O status final agora é 'Concluido'
-        cursor.execute("UPDATE Servicos SET Status = 'Concluido', DataConclusao = %s WHERE ID_Servico = %s", (datetime.now(), servico_id))
+        # Buscar os veículos alocados ao serviço para liberá-los
+        cursor.execute("""
+            SELECT ID_Veiculo FROM ServicoVeiculos 
+            WHERE ID_Servico = %s AND Status = 'Alocado'
+        """, (servico_id,))
+        veiculos_alocados = [row[0] for row in cursor.fetchall()]
+        
+        # Atualizar o status do serviço para 'Concluido'
+        cursor.execute("UPDATE Servicos SET Status = 'Concluido' WHERE ID_Servico = %s", (servico_id,))
+        
+        # Liberar os veículos (voltar para "Disponivel")
+        if veiculos_alocados:
+            placeholders = ','.join(['%s'] * len(veiculos_alocados))
+            query_liberar_veiculos = f"""
+                UPDATE Veiculos 
+                SET Status = 'Disponivel'
+                WHERE ID_Veiculo IN ({placeholders}) AND Status = 'Em Servico'
+            """
+            cursor.execute(query_liberar_veiculos, veiculos_alocados)
+            print(f"DEBUG: {len(veiculos_alocados)} veículos liberados (voltaram para 'Disponivel') após confirmação do serviço {servico_id}")
+        
         conn.commit()
 
         if cursor.rowcount == 0:
@@ -445,6 +438,7 @@ def confirmar_servico_cliente(servico_id: int, current_user: dict = Depends(get_
 
     except pymysql.MySQLError as e:
         conn.rollback()
+        print(f"DEBUG: Erro MySQL: {e}")
         raise HTTPException(status_code=500, detail=f"Erro ao confirmar o serviço: {e}")
     finally:
         conn.close()
@@ -517,3 +511,66 @@ def create_veiculo(veiculo_data: VeiculoCreate, current_user: dict = Depends(get
         conn.close()
 
     return {"message": "Veículo cadastrado com sucesso!", "id_veiculo": new_veiculo_id}
+
+# Nova rota para listar serviços publicados/disponíveis para prestadores
+@router.get("/servicos/publicados", response_model=List[Dict[str, Any]])
+def get_servicos_publicados(current_user: dict = Depends(get_current_user)):
+    """
+    Lista todos os serviços abertos (disponíveis) para prestadores visualizarem e enviarem propostas.
+    """
+    if current_user.get('tipo') != 'prestador':
+        raise HTTPException(status_code=403, detail="Acesso negado. Apenas prestadores podem visualizar serviços publicados.")
+
+    conn = get_db_connection()
+    cursor = conn.cursor(pymysql.cursors.DictCursor)
+    
+    try:
+        query = """
+            SELECT 
+                s.ID_Servico as id,
+                s.Nome as nome,
+                s.Descricao as descricao,
+                u.Nome as cliente_nome,
+                s.DataServico as data_servico,
+                s.EnderecoOrigem as origem,
+                s.EnderecoDestino as destino,
+                s.ValorInicialCliente as valor,
+                s.TipoVeiculoRequerido as tipo_veiculo,
+                s.QuantidadeVeiculos as quantidade_veiculos,
+                s.DataSolicitacao as data_solicitacao
+            FROM Servicos s
+            JOIN Usuarios u ON s.ID_Cliente = u.ID_Usuario
+            WHERE s.Status = 'Aberto'
+            ORDER BY s.DataSolicitacao DESC
+        """
+        
+        cursor.execute(query)
+        rows = cursor.fetchall()
+        
+        servicos = []
+        for row in rows:
+            servico_item = {
+                "id": row['id'],
+                "nome": row['nome'],
+                "descricao": row['descricao'],
+                "cliente_nome": row['cliente_nome'],
+                "data_servico": str(row['data_servico']),
+                "origem": row['origem'],
+                "destino": row['destino'],
+                "valor": float(row['valor']),
+                "tipo_veiculo": row['tipo_veiculo'],
+                "quantidade_veiculos": row['quantidade_veiculos'],
+                "data_solicitacao": str(row['data_solicitacao'])
+            }
+            servicos.append(servico_item)
+        
+        return servicos
+        
+    except Exception as e:
+        print(f"Erro ao buscar serviços publicados: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"Erro interno do servidor: {str(e)}")
+    finally:
+        if cursor:
+            cursor.close()
+        if conn:
+            conn.close()

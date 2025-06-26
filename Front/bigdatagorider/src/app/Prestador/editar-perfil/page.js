@@ -3,7 +3,7 @@
 import React, { useState } from "react";
 import Image from 'next/image';
 import styles from './editar-perfil.module.css';
-import HeaderPrestador from "@/components/headerPrestador";
+import Header from "@/components/header";
 import Footer from "@/components/footer";
 
 export default function EditarPerfil() {

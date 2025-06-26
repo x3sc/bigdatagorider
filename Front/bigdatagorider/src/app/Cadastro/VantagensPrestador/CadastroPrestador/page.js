@@ -1,10 +1,9 @@
 "use client";
 import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import styles from '../../../Login/login.module.css'; // Usando o CSS do Login
+import styles from '../../../Login/login.module.css';
 import Header from '@/components/header';
-import { Input } from '@heroui/input';
-import { Button } from '@heroui/button';
+import { Input, Button, Card, CardBody, Divider, Checkbox } from '@heroui/react';
 import Image from 'next/image';
 
 export default function CadastroPrestador() {
@@ -72,53 +71,221 @@ export default function CadastroPrestador() {
         } finally {
             setLoading(false);
         }
-    };
-
-    return (
-        <main>
+    };    return (
+        <main className={styles.main}>
             <Header />
             <div className={styles.container}>
                 <div className={styles.contentWrapper}>
-                    <div className={styles.imageContainer}>
+                    <div className={styles.leftSection}>
                         <Image
-                            src="/assets/prestador/banner1.png" // Imagem específica do prestador
+                            src="/assets/prestador/banner1.png"
                             alt="Prestador de serviço"
-                            className={styles.leftImg}
                             width={500}
-                            height={500}
-                            priority
+                            height={400}
+                            className={styles.heroImage}
                         />
                     </div>
-                    <div className={styles.loginBox}>
-                        <form className={styles.form} onSubmit={handleSubmit}>
-                            <h2 className={styles.loginBoxTitle}>Crie sua Conta de Parceiro</h2>
-                            <p className={styles.formSubtitle}>
-                                Já tem uma conta? <a href="/Login" className={styles.loginLink}>Faça login</a>
-                            </p>
 
-                            <div className={styles.inputGroup}>
-                                <Input placeholder="Nome" name="nome" value={formData.nome} onValueChange={(val) => handleChange("nome", val)} required />
-                                <Input placeholder="Sobrenome" name="sobrenome" value={formData.sobrenome} onValueChange={(val) => handleChange("sobrenome", val)} required />
-                            </div>
+                    <div className={styles.rightSection}>
+                        <Card className={styles.loginCard}>
+                            <CardBody className={styles.cardBody}>
+                                <div className={styles.logoSection}>
+                                    <Image
+                                        src="/assets/login/LOGO 1.png"
+                                        alt="GoRider Logo"
+                                        width={120}
+                                        height={60}
+                                        className={styles.logo}
+                                    />
+                                </div>
 
-                            <Input placeholder="E-mail" type="email" name="email" value={formData.email} onValueChange={(val) => handleChange("email", val)} required className={styles.inputField} />
-                            <Input placeholder="CPF ou CNPJ" name="documento" value={formData.documento} onValueChange={(val) => handleChange("documento", val)} required className={styles.inputField} />
-                            <Input placeholder="Telefone" name="telefone" value={formData.telefone} onValueChange={(val) => handleChange("telefone", val)} required className={styles.inputField} />
-                            <Input placeholder="Data de Nascimento" type="date" name="data_nascimento" value={formData.data_nascimento} onValueChange={(val) => handleChange("data_nascimento", val)} required className={styles.inputField} />
-                            <Input placeholder="Senha" type="password" name="senha" value={formData.senha} onValueChange={(val) => handleChange("senha", val)} required className={styles.inputField} />
-                            <Input placeholder="Confirmar Senha" type="password" name="confirmarSenha" value={formData.confirmarSenha} onValueChange={(val) => handleChange("confirmarSenha", val)} required className={styles.inputField} />
+                                <h1 className={styles.title}>Crie sua Conta de Parceiro</h1>
 
-                            <div className={styles.termsContainer}>
-                                <input type="checkbox" id="terms" checked={agreedToTerms} onChange={(e) => setAgreedToTerms(e.target.checked)} />
-                                <label htmlFor="terms">
-                                    Eu li e concordo com os <a href="/termos" target="_blank" rel="noopener noreferrer" className={styles.loginLink}>Termos de Uso</a>
-                                </label>
-                            </div>
+                                <p className={styles.signupText}>
+                                    Já tem uma conta?{' '}
+                                    <Button
+                                        as="a"
+                                        href="/Login"
+                                        variant="light"
+                                        size="sm"
+                                        className={styles.signupLink}
+                                    >
+                                        Faça login
+                                    </Button>
+                                </p>
 
-                            <Button type="submit" className={styles.loginBtn} disabled={loading || !agreedToTerms}>
-                                {loading ? 'Aguarde...' : 'Cadastrar'}
-                            </Button>
-                        </form>
+                                <form onSubmit={handleSubmit}>
+                                    <div className={styles.inputGroup}>
+                                        <Input
+                                            type="text"
+                                            label="Nome"
+                                            placeholder="Digite seu nome"
+                                            value={formData.nome}
+                                            onValueChange={(val) => handleChange("nome", val)}
+                                            variant="bordered"
+                                            size="lg"
+                                            required
+                                            classNames={{
+                                                input: styles.input,
+                                                inputWrapper: styles.inputWrapper
+                                            }}
+                                        />
+                                    </div>
+
+                                    <div className={styles.inputGroup}>
+                                        <Input
+                                            type="text"
+                                            label="Sobrenome"
+                                            placeholder="Digite seu sobrenome"
+                                            value={formData.sobrenome}
+                                            onValueChange={(val) => handleChange("sobrenome", val)}
+                                            variant="bordered"
+                                            size="lg"
+                                            required
+                                            classNames={{
+                                                input: styles.input,
+                                                inputWrapper: styles.inputWrapper
+                                            }}
+                                        />
+                                    </div>
+
+                                    <div className={styles.inputGroup}>
+                                        <Input
+                                            type="email"
+                                            label="E-mail"
+                                            placeholder="Digite seu e-mail"
+                                            value={formData.email}
+                                            onValueChange={(val) => handleChange("email", val)}
+                                            variant="bordered"
+                                            size="lg"
+                                            required
+                                            classNames={{
+                                                input: styles.input,
+                                                inputWrapper: styles.inputWrapper
+                                            }}
+                                        />
+                                    </div>
+
+                                    <div className={styles.inputGroup}>
+                                        <Input
+                                            type="text"
+                                            label="CPF ou CNPJ"
+                                            placeholder="Digite seu documento"
+                                            value={formData.documento}
+                                            onValueChange={(val) => handleChange("documento", val)}
+                                            variant="bordered"
+                                            size="lg"
+                                            required
+                                            classNames={{
+                                                input: styles.input,
+                                                inputWrapper: styles.inputWrapper
+                                            }}
+                                        />
+                                    </div>
+
+                                    <div className={styles.inputGroup}>
+                                        <Input
+                                            type="tel"
+                                            label="Telefone"
+                                            placeholder="Digite seu telefone"
+                                            value={formData.telefone}
+                                            onValueChange={(val) => handleChange("telefone", val)}
+                                            variant="bordered"
+                                            size="lg"
+                                            required
+                                            classNames={{
+                                                input: styles.input,
+                                                inputWrapper: styles.inputWrapper
+                                            }}
+                                        />
+                                    </div>
+
+                                    <div className={styles.inputGroup}>
+                                        <Input
+                                            type="date"
+                                            label="Data de Nascimento"
+                                            value={formData.data_nascimento}
+                                            onValueChange={(val) => handleChange("data_nascimento", val)}
+                                            variant="bordered"
+                                            size="lg"
+                                            required
+                                            classNames={{
+                                                input: styles.input,
+                                                inputWrapper: styles.inputWrapper
+                                            }}
+                                        />
+                                    </div>
+
+                                    <div className={styles.inputGroup}>
+                                        <Input
+                                            type="password"
+                                            label="Senha"
+                                            placeholder="Digite sua senha"
+                                            value={formData.senha}
+                                            onValueChange={(val) => handleChange("senha", val)}
+                                            variant="bordered"
+                                            size="lg"
+                                            required
+                                            classNames={{
+                                                input: styles.input,
+                                                inputWrapper: styles.inputWrapper
+                                            }}
+                                        />
+                                    </div>
+
+                                    <div className={styles.inputGroup}>
+                                        <Input
+                                            type="password"
+                                            label="Confirmar Senha"
+                                            placeholder="Digite sua senha novamente"
+                                            value={formData.confirmarSenha}
+                                            onValueChange={(val) => handleChange("confirmarSenha", val)}
+                                            variant="bordered"
+                                            size="lg"
+                                            required
+                                            classNames={{
+                                                input: styles.input,
+                                                inputWrapper: styles.inputWrapper
+                                            }}
+                                        />
+                                    </div>
+
+                                    <div className={styles.inputGroup}>
+                                        <Checkbox
+                                            isSelected={agreedToTerms}
+                                            onValueChange={setAgreedToTerms}
+                                            color="danger"
+                                        >
+                                            Eu li e concordo com os{' '}
+                                            <Button
+                                                as="a"
+                                                href="/termos"
+                                                target="_blank"
+                                                rel="noopener noreferrer"
+                                                variant="light"
+                                                size="sm"
+                                                className={styles.signupLink}
+                                            >
+                                                Termos de Uso
+                                            </Button>
+                                        </Checkbox>
+                                    </div>
+
+                                    <Button
+                                        type="submit"
+                                        color="danger"
+                                        size="lg"
+                                        className={styles.loginButton}
+                                        isLoading={loading}
+                                        isDisabled={!agreedToTerms}
+                                        fullWidth
+                                    >
+                                        {loading ? 'Cadastrando...' : 'Cadastrar'}
+                                    </Button>
+                                </form>
+
+                            </CardBody>
+                        </Card>
                     </div>
                 </div>
             </div>

@@ -8,12 +8,21 @@
     padding: 0 40px;
     background-color: #000000;
     color: #FFFFFF;
-    position: fixed;
+    position: sticky;
     top: 0;
     left: 0;
     z-index: 1000;
     gap: 30px;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s ease-in-out;
+}
+
+.header.hidden {
+    transform: translateY(-100%);
+}
+
+.header.visible {
+    transform: translateY(0);
 }
 
 .logo {
@@ -46,6 +55,12 @@
 
 .menuItem:hover {
     text-decoration: underline;
+}
+
+.menuItemActive {
+    text-decoration: underline;
+    color: #ef4444 !important;
+    font-weight: 600;
 }
 
 .actions {
