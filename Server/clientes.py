@@ -1,9 +1,11 @@
 import os
 import findspark
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, HTTPException, Depends
 from pyspark.sql import SparkSession
 from dotenv import load_dotenv
-from .utils import sanitize_email, sanitize_string
+from .utils import get_db_connection, sanitize_email, sanitize_string
+import pymysql
+from .dependencies import get_current_user
 
 load_dotenv("server.env")
 findspark.init()
@@ -46,3 +48,63 @@ def listar_clientes():
         raise HTTPException(status_code=500, detail=str(e))
     finally:
         spark.stop()
+
+# Novo endpoint para buscar o perfil do cliente
+@router.get("/perfil-cliente/{cliente_id}")
+def get_perfil_cliente(cliente_id: int):
+    conn = None
+    cursor = None
+    try:
+        conn = get_db_connection()
+        cursor = conn.cursor(pymysql.cursors.DictCursor)
+
+        # Query para buscar os dados do cliente
+        query = """
+            SELECT
+                u.ID_Usuario as id,
+                u.Nome as nome,
+                u.Email as email,
+                u.Telefone as telefone,
+                u.Foto_URL as fotoUrl,
+                c.CPF as cpf,
+                c.DataNascimento as dataNascimento
+            FROM Usuarios u
+            JOIN Clientes c ON u.ID_Usuario = c.ID_Usuario
+            WHERE u.ID_Usuario = %s AND u.TipoUsuario = 'cliente'
+        """
+        cursor.execute(query, (cliente_id,))
+        cliente = cursor.fetchone()
+
+        if not cliente:
+            raise HTTPException(status_code=404, detail="Cliente não encontrado")
+
+        # Query para buscar as avaliações feitas pelo cliente
+        query_avaliacoes = """
+            SELECT
+                a.Estrelas as estrelas,
+                a.Comentario as comentario,
+                u.Nome as nome_prestador,
+                a.ID_Prestador as id_prestador
+            FROM Avaliacoes a
+            JOIN Usuarios u ON a.ID_Prestador = u.ID_Usuario
+            WHERE a.ID_Cliente = %s
+            ORDER BY a.DataAvaliacao DESC
+        """
+        cursor.execute(query_avaliacoes, (cliente_id,))
+        avaliacoes = cursor.fetchall()
+
+        cliente['avaliacoes'] = avaliacoes
+
+        return cliente
+
+    except pymysql.MySQLError as e:
+        print(f"Erro de banco de dados: {e}")
+        raise HTTPException(status_code=500, detail="Erro ao buscar perfil do cliente")
+    except Exception as e:
+        print(f"Erro inesperado: {e}")
+        raise HTTPException(status_code=500, detail="Erro interno do servidor")
+    finally:
+        if cursor:
+            cursor.close()
+        if conn:
+            conn.close()

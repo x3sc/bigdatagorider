@@ -83,3 +83,37 @@ def get_avaliacoes_prestador(id_prestador: int):
     finally:
         if cursor: cursor.close()
         if conn: conn.close()
+
+@router.get("/avaliacoes/cliente/{id_cliente}")
+def get_avaliacoes_cliente(id_cliente: int):
+    conn = None
+    cursor = None
+    try:
+        conn = get_db_connection()
+        cursor = conn.cursor(pymysql.cursors.DictCursor)
+
+        # A query agora junta com a tabela de Prestadores para obter o nome do prestador avaliado
+        query = """
+            SELECT 
+                a.ID_Avaliacao,
+                a.ID_Servico,
+                a.Nota,
+                a.Comentario,
+                a.DataAvaliacao,
+                p.Nome AS NomePrestador, 
+                p.Sobrenome AS SobrenomePrestador
+            FROM Avaliacoes a
+            JOIN Sobre_Prestador sp ON a.ID_Prestador_Avaliado = sp.ID_Prestador
+            JOIN Usuarios p ON sp.ID_Usuario = p.ID_Usuario
+            WHERE a.ID_Usuario_Avaliador = %s
+            ORDER BY a.DataAvaliacao DESC
+        """
+        cursor.execute(query, (id_cliente,))
+        avaliacoes = cursor.fetchall()
+        return avaliacoes
+
+    except Exception as e:
+        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=str(e))
+    finally:
+        if cursor: cursor.close()
+        if conn: conn.close()

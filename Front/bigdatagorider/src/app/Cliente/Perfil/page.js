@@ -1,25 +1,28 @@
-'use client';
+"use client";
 
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import styles from './perfil.module.css';
 import Header from '@/components/header';
+import { Input } from '@heroui/input';
+import { Button } from '@heroui/button';
+import { Textarea } from '@heroui/react';
 import Image from 'next/image';
 
-export default function PerfilPrestador() {
+export default function PerfilCliente() {
     const router = useRouter();
     const [userData, setUserData] = useState(null);
     const [loading, setLoading] = useState(true);
+    const [isEditing, setIsEditing] = useState(false);
 
     // Mock: Substitua pelo ID do usuário logado
-    const id_prestador = 1; // Você precisará obter isso do estado de autenticação
+    const id_cliente = 1; // Você precisará obter isso do estado de autenticação
 
     useEffect(() => {
         const fetchUserData = async () => {
-            if (!id_prestador) return;
-
+            if (!id_cliente) return;
             try {
-                const response = await fetch(`http://127.0.0.1:5000/api/perfil-prestador/${id_prestador}`);
+                const response = await fetch(`http://127.0.0.1:5000/api/perfil-cliente/${id_cliente}`);
                 if (!response.ok) {
                     const errorData = await response.json();
                     throw new Error(errorData.detail || 'Falha ao buscar dados do perfil.');
@@ -27,7 +30,7 @@ export default function PerfilPrestador() {
                 const data = await response.json();
                 setUserData(data);
             } catch (error) {
-                console.error('Erro ao buscar dados do prestador:', error);
+                console.error(error);
                 alert(error.message);
             } finally {
                 setLoading(false);
@@ -35,7 +38,22 @@ export default function PerfilPrestador() {
         };
 
         fetchUserData();
-    }, [id_prestador]);
+    }, [id_cliente]);
+
+    const handleInputChange = (field, value) => {
+        setUserData(prev => ({ ...prev, [field]: value }));
+    };
+
+    const handleSave = async () => {
+        // A lógica de salvar será implementada aqui
+        console.log("Salvando dados:", userData);
+        setIsEditing(false);
+        alert('Perfil atualizado com sucesso! (Simulado)');
+    };
+
+    const toggleEdit = () => {
+        setIsEditing(prev => !prev);
+    };
 
     if (loading) {
         return <div>Carregando...</div>;
@@ -45,22 +63,11 @@ export default function PerfilPrestador() {
         return <div>Não foi possível carregar o perfil.</div>;
     }
 
-    // Função para calcular a média das estrelas
-    const calcularMediaAvaliacoes = () => {
-        if (!userData.avaliacoes || userData.avaliacoes.length === 0) {
-            return 0;
-        }
-        const totalEstrelas = userData.avaliacoes.reduce((acc, avaliacao) => acc + avaliacao.estrelas, 0);
-        return (totalEstrelas / userData.avaliacoes.length).toFixed(1);
-    };
-
-    const mediaEstrelas = calcularMediaAvaliacoes();
-
     return (
         <main>
             <Header />
             <div className={styles.container}>
-                <h1 className={styles.title}>Meu Perfil de Prestador</h1>
+                <h1 className={styles.title}>Meu Perfil</h1>
 
                 <div className={styles.profileCard}>
                     <div className={styles.profileHeader}>
@@ -69,11 +76,7 @@ export default function PerfilPrestador() {
                         </div>
                         <div className={styles.profileInfo}>
                             <h2>{userData.nome}</h2>
-                            <p>Prestador de Serviço</p>
-                            <div className={styles.rating}>
-                                <span>{mediaEstrelas}</span> {'★'.repeat(Math.round(mediaEstrelas))}{'☆'.repeat(5 - Math.round(mediaEstrelas))}
-                                <span>({userData.avaliacoes.length} avaliações)</span>
-                            </div>
+                            <p>Cliente</p> 
                         </div>
                     </div>
 
@@ -84,21 +87,23 @@ export default function PerfilPrestador() {
                     </div>
 
                     <div className={styles.profileSection}>
-                        <h3>Avaliações Recebidas</h3>
+                        <h3>Minhas Avaliações Feitas</h3>
                         {userData.avaliacoes && userData.avaliacoes.length > 0 ? (
                             <ul className={styles.reviewList}>
                                 {userData.avaliacoes.map((avaliacao, index) => (
                                     <li key={index} className={styles.reviewItem}>
-                                        <p><strong>Cliente:</strong> {avaliacao.nome_cliente}</p>
+                                        <p><strong>Prestador:</strong> {avaliacao.nome_prestador}</p>
                                         <p><strong>Nota:</strong> {'★'.repeat(avaliacao.estrelas)}{'☆'.repeat(5 - avaliacao.estrelas)}</p>
                                         <p><strong>Comentário:</strong> {avaliacao.comentario}</p>
                                     </li>
                                 ))}
                             </ul>
                         ) : (
-                            <p>Você ainda não recebeu nenhuma avaliação.</p>
+                            <p>Você ainda não fez nenhuma avaliação.</p>
                         )}
                     </div>
+
+                    {/* Botões de ação podem ser adicionados aqui se necessário */}
                 </div>
             </div>
         </main>

@@ -1,4 +1,4 @@
-/* Dashboard Prestador - Estilo moderno com Hero UI */
+/* Dashboard Prestador - Estilo idêntico ao Cliente com Hero UI */
 
 .pageContainer {
     min-height: 100vh;
@@ -13,6 +13,29 @@
     gap: 2rem;
     display: flex;
     flex-direction: column;
+}
+
+/* Navegação Principal */
+.navigationCard {
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(229, 62, 62, 0.2);
+    box-shadow: 0 8px 32px rgba(229, 62, 62, 0.1);
+}
+
+.mainActions {
+    display: flex;
+    gap: 1.5rem;
+    justify-content: center;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+.primaryAction {
+    font-weight: 600;
+    font-size: 1.1rem;
+    padding: 1.5rem 2rem;
+    min-width: 200px;
 }
 
 /* Card de Conteúdo */
@@ -74,7 +97,6 @@
 .servicesTable tbody td {
     border-bottom: 1px solid rgba(229, 62, 62, 0.1);
     padding: 1rem;
-}
 
 .serviceInfo {
     display: flex;
@@ -87,81 +109,12 @@
     font-weight: 600;
 }
 
-.serviceType {
-    color: #718096;
-    font-size: 0.875rem;
-    font-style: italic;
-}
-
-.clientInfo {
-    color: #2d3748;
-    font-weight: 500;
-}
-
-.routeInfo {
-    display: flex;
-    flex-direction: column;
-    gap: 0.25rem;
-    font-size: 0.875rem;
-}
-
-.routeInfo div {
-    display: flex;
-    align-items: center;
-    gap: 0.25rem;
-}
-
-.proposalInfo {
-    display: flex;
-    flex-direction: column;
-    gap: 0.25rem;
-}
-
-.proposalInfo div {
-    color: #38a169;
-    font-weight: 600;
-}
-
-.proposalInfo small {
-    color: #718096;
-    font-size: 0.75rem;
-}
-
-.valueInfo {
-    color: #38a169;
-    font-weight: 700;
-    font-size: 1.1rem;
-}
-
-.dateInfo {
-    display: flex;
-    flex-direction: column;
-    gap: 0.25rem;
-    font-size: 0.875rem;
-}
-
-.actionButtons {
-    display: flex;
-    justify-content: center;
-}
-
-.waitingActions button {
-    opacity: 0.7;
-    cursor: not-allowed;
-}
-
-.inProgressActions,
-.completedActions {
-    display: flex;
-    justify-content: center;
-}
-
 .serviceDescription {
     color: #718096;
     font-size: 0.875rem;
 }
 
-.noCliente {
+.noPrestador {
     color: #a0aec0;
     font-style: italic;
 }
@@ -244,33 +197,178 @@
     border: 1px solid rgba(229, 62, 62, 0.1);
 }
 
-.modalHeader {
-    border-bottom: 2px solid rgba(229, 62, 62, 0.1);
-    padding: 2rem 2rem 1.5rem;
-}
-
-.modalHeader h3 {
+.modalHeaderContent {
     color: #2d3748;
     font-size: 1.5rem;
     font-weight: 700;
+    border-bottom: 2px solid rgba(229, 62, 62, 0.1);
+}
+
+.modalLoading {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 2rem;
+    gap: 1rem;
+}
+
+.modalLoading p {
+    color: #4a5568;
+    font-weight: 500;
+}
+
+/* Propostas no Modal */
+.emptyPropostas {
+    border: 2px dashed rgba(229, 62, 62, 0.3);
+    background: rgba(229, 62, 62, 0.02);
+}
+
+.emptyPropostasBody {
+    text-align: center;
+    padding: 2rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.emptyIcon {
+    font-size: 3rem;
+    margin-bottom: 0.5rem;
+}
+
+.emptyPropostasBody h4 {
+    color: #2d3748;
+    font-weight: 600;
     margin: 0;
 }
 
-.modalBody {
-    padding: 2rem;
+.emptyPropostasBody p {
+    color: #718096;
+    margin: 0;
 }
 
-.modalFooter {
-    border-top: 1px solid rgba(229, 62, 62, 0.1);
-    padding: 1.5rem 2rem 2rem;
+.propostasList {
+    display: flex;
+    flex-direction: column;
     gap: 1rem;
-    justify-content: flex-end;
+    max-height: 400px;
+    overflow-y: auto;
+    padding: 0.5rem;
 }
 
+.propostaCard {
+    border: 1px solid rgba(229, 62, 62, 0.1);
+    transition: all 0.3s ease;
+}
+
+.propostaCard:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(229, 62, 62, 0.15);
+}
+
+.propostaContent {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 1.5rem;
+}
+
+.propostaInfo {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+.propostaInfo h4 {
+    color: #2d3748;
+    font-weight: 600;
+    margin: 0;
+    font-size: 1.1rem;
+}
+
+.propostaDetails {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.mensagemProposta {
+    background: rgba(229, 62, 62, 0.05);
+    padding: 0.75rem;
+    border-radius: 8px;
+    border-left: 3px solid #e53e3e;
+}
+
+.mensagemProposta strong {
+    color: #2d3748;
+    font-size: 0.875rem;
+}
+
+.mensagemProposta p {
+    color: #4a5568;
+    margin: 0.25rem 0 0 0;
+    font-size: 0.9rem;
+}
+
+.acceptButton {
+    min-width: 120px;
+    font-weight: 600;
+}
+
+/* Estilos para Formulário de Criar Serviço */
 .formContainer {
     display: flex;
     flex-direction: column;
     gap: 1.5rem;
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+.formRow {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+}
+
+.formInput {
+    margin-bottom: 0.5rem;
+}
+
+.submitButton {
+    margin-top: 1rem;
+    font-weight: 600;
+    height: 3rem;
+    font-size: 1.1rem;
+}
+
+.errorMessage {
+    background: rgba(239, 68, 68, 0.1);
+    border: 1px solid rgba(239, 68, 68, 0.3);
+    border-radius: 8px;
+    padding: 0.75rem;
+    margin: 0.5rem 0;
+}
+
+.errorMessage p {
+    color: #dc2626;
+    margin: 0;
+    font-weight: 500;
+}
+
+.successMessage {
+    background: rgba(34, 197, 94, 0.1);
+    border: 1px solid rgba(34, 197, 94, 0.3);
+    border-radius: 8px;
+    padding: 0.75rem;
+    margin: 0.5rem 0;
+}
+
+.successMessage p {
+    color: #16a34a;
+    margin: 0;
+    font-weight: 500;
 }
 
 /* Responsividade */
@@ -303,6 +401,16 @@
         padding: 0.5rem 0;
     }
 
+    .propostaContent {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 1rem;
+    }
+
+    .acceptButton {
+        width: 100%;
+    }
+
     .servicesTable {
         font-size: 0.875rem;
     }
@@ -315,16 +423,13 @@
         font-size: 3rem;
     }
 
-    .modalBody {
-        padding: 1.5rem;
+    .formRow {
+        grid-template-columns: 1fr;
+        gap: 1rem;
     }
-
-    .modalHeader {
-        padding: 1.5rem 1.5rem 1rem;
-    }
-
-    .modalFooter {
-        padding: 1rem 1.5rem 1.5rem;
+    
+    .formContainer {
+        gap: 1rem;
     }
 }
 
@@ -341,4 +446,22 @@
         margin: 1rem;
         max-height: calc(100vh - 2rem);
     }
+
+    .propostasList {
+        max-height: 300px;
+    }
+    
+    .cardHeader h2 {
+        font-size: 1.5rem;
+    }
+    
+    .cardHeader p {
+        font-size: 0.9rem;
+    }
+    
+    .submitButton {
+        height: 2.5rem;
+        font-size: 1rem;
+    }
+}
 }
